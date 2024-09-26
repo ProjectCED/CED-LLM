@@ -9,7 +9,7 @@ Make sure you have the following installed:
 - [Docker](https://docs.docker.com/get-docker/) (if using Docker for containers)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
-## 1. Clone the Repository
+## Clone the Repository
 ```bash
 git clone https://github.com/ProjectCED/CED-LLM.git
 cd CED-LLM
@@ -58,10 +58,8 @@ If any dependencies change, update the Conda environment with:
 conda env update --file backend/environment.yml
 ```
 
-### 2. **Push the Environment Configuration to Git**
-To automate the setup of the Conda environment for your team, you can push the `environment.yml` file to the repository.
-
-## Setting up the Environment variables
+### **Push the Environment Configuration to Git**
+After changing the environment configuration, push the changes to Git.
 
 #### Create the `environment.yml` file:
 From your current Conda environment, export the environment configuration:
@@ -69,8 +67,11 @@ From your current Conda environment, export the environment configuration:
 conda env export > backend/environment.yml
 ```
 
-#### setup .env file
-rename the .env.example file to .env and fill in the required values using:
+## Setting up the Environment variables
+
+#### setup .env files
+rename the .env.example file to .env using:
 ```bash
 cp .env.example .env
 ```
+after renaming the file, fill in the required environment variables in the .env file
