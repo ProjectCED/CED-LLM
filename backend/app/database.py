@@ -38,11 +38,10 @@ def db_add_settings_node():
 # Modify Settings (Base) properties. Replaces specific property with new data.
 def db_modify_settings_data(property_name, data_a):
     # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:Settings {name: $name}) SET n." + property_name + " = $data_b"
+    query_string = "MATCH (n:Settings {name: 'Base'}) SET n." + property_name + " = $data_b"
 
     driver.execute_query(
         query_string,
-        name = 'Base',
         data_b = data_a,
         database_="neo4j",
     )
