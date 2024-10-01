@@ -78,7 +78,7 @@ def db_lookup_settings_data(property_name):
     return next(iter(records)).data()[property_name]
 
 
-### Settings for subject area
+### Subject area settings
 # Create new SubjectArea-node with specific name. Avoids duplicates.
 def db_add_subject_area_node(name_a):
     driver.execute_query(
