@@ -1,6 +1,24 @@
+### Database functions:
+# Debug purpose:
+# db_clear() , wipes database clean
+# db_show_all() , prints the whole database in console
+#
+# Global settings:
+# db_add_settings_node() , creates settings node
+# db_modify_settings_data(property_name, data) , modifies settings specific property with specific data
+# db_lookup_settings_data(property_name) , lookup settings specific property data
+#
+# Subject area settings:
+# db_add_subject_area_node(node_name) , creates subject area node of specific name
+# db_modify_subject_area_data(node_name, property_name, data) , modify subject area specific property with specific data
+# db_lookup_subject_area_data(node_name, property_name) , lookup subject area specific property data
+
 from neo4j import GraphDatabase
 
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=("test", "testtest"))
+
+# name of the global settings node
+settings_node_name = 'Base'
 
 ### Mainly debug purpose
 # Wipe database clean, deletes all data
@@ -29,7 +47,7 @@ def db_show_all():
 # Create new Settings-node named "Base". Avoids duplicates.
 def db_add_settings_node():
     driver.execute_query(
-        "MERGE (n:Settings {name: 'Base'})",
+        "MERGE (n:Settings {name: '" + settings_node_name + "'})",
         database_="neo4j",
     )
     return "Settings node (Base) added"
@@ -38,7 +56,7 @@ def db_add_settings_node():
 # Modify Settings (Base) properties. Replaces specific property with new data.
 def db_modify_settings_data(property_name, data_a):
     # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:Settings {name: 'Base'}) SET n." + property_name + " = $data_b"
+    query_string = "MATCH (n:Settings {name: '" + settings_node_name + "'}) SET n." + property_name + " = $data_b"
 
     driver.execute_query(
         query_string,
@@ -51,7 +69,7 @@ def db_modify_settings_data(property_name, data_a):
 # Return data of specific property from settings (Base)
 def db_lookup_settings_data(property_name):
     # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:Settings {name: 'Base'}) RETURN n." + property_name + " AS " + property_name
+    query_string = "MATCH (n:Settings {name: '" + settings_node_name + "'}) RETURN n." + property_name + " AS " + property_name
 
     records, summary, keys = driver.execute_query(
         query_string,
@@ -62,7 +80,7 @@ def db_lookup_settings_data(property_name):
 
 ### Settings for subject area
 # Create new SubjectArea-node with specific name. Avoids duplicates.
-def db_add_subject_node(name_a):
+def db_add_subject_area_node(name_a):
     driver.execute_query(
         "MERGE (n:SubjectArea {name: $name_b})",
         name_b = name_a,
@@ -72,7 +90,7 @@ def db_add_subject_node(name_a):
 
 
 # Modify SubjectArea-node's properties. Replaces specific property with new data.
-def db_modify_subject_data(name_a, property_name, data_a):
+def db_modify_subject_area_data(name_a, property_name, data_a):
     # define query string within python, because driver doesn't allow property types being a variable
     query_string = "MATCH (n:SubjectArea {name: $name_b}) SET n." + property_name + " = $data_b"
 
@@ -86,7 +104,7 @@ def db_modify_subject_data(name_a, property_name, data_a):
 
 
 # Return data of specific property from SubjectArea-node (Base)
-def db_lookup_subject_data(name, property_name):
+def db_lookup_subject_area_data(name, property_name):
     # define query string within python, because driver doesn't allow property types being a variable
     query_string = "MATCH (n:SubjectArea {name: '" + name + "'}) RETURN n." + property_name + " AS " + property_name
 
