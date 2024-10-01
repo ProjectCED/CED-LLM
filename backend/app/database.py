@@ -49,6 +49,18 @@ def db_modify_settings_data(property_name, data_a):
     return "Settings " + property_name + " modified"
 
 
+# Return data of specific property from settings (Base)
+def db_lookup_settings_data(property_name):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:Settings {name: 'Base'}) RETURN n." + property_name + " AS " + property_name
+
+    records, summary, keys = driver.execute_query(
+        query_string,
+        database_="neo4j",
+    )
+    return next(iter(records)).data()[property_name]
+
+
 ### Settings for subject area
 # Create new SubjectArea-node with specific name. Avoids duplicates.
 def db_add_subject_node(name_a):
@@ -74,3 +86,13 @@ def db_modify_subject_data(name_a, property_name, data_a):
     return "Subject area's " + name_a + "'s " + property_name + " modified"
 
 
+# Return data of specific property from SubjectArea-node (Base)
+def db_lookup_subject_data(name, property_name):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:SubjectArea {name: '" + name + "'}) RETURN n." + property_name + " AS " + property_name
+
+    records, summary, keys = driver.execute_query(
+        query_string,
+        database_="neo4j",
+    )
+    return next(iter(records)).data()[property_name]
