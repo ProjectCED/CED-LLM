@@ -8,12 +8,14 @@
 # db_modify_settings_data(property_name, data) , modifies specific property with specific data
 # db_lookup_settings_data(property_name) , lookup specific property data
 # db_delete_settings_data(property_name) , delete specific property data (also delete property)
+# db_delete_settings() , deletes settings with all it's related content.
 #
 # Subject area settings:
 # db_add_subject_area_node(node_name) , creates subject area node of specific name
 # db_modify_subject_area_data(node_name, property_name, data) , modify specific property with specific data
 # db_lookup_subject_area_data(node_name, property_name) , lookup specific property data
-# db_delete_subject_area_data(name_a, property_name) , delete specific property data (also delete property)
+# db_delete_subject_area_data(node_name, property_name) , delete specific property data (also delete property)
+# db_delete_subject_area(node_name) , deletes specific subject area with all it's related content.
 
 from neo4j import GraphDatabase
 
@@ -90,6 +92,17 @@ def db_lookup_settings_data(property_name):
     )
     return next(iter(records)).data()[property_name]
 
+# Deletes global settings with all it's related content.
+def db_delete_settings():
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:Settings {name: '" + settings_node_name + "'}) - [*0..] - (d) WITH DISTINCT d DETACH DELETE d"
+
+    driver.execute_query(
+        query_string,
+        database_="neo4j",
+    )
+    return "´Settings deleted"
+
 
 ### Subject area settings
 # Create new SubjectArea-node with specific name. Avoids duplicates.
@@ -139,3 +152,15 @@ def db_delete_subject_area_data(name_a, property_name):
         database_="neo4j",
     )
     return "Subject area's " + name_a + "'s " + property_name + " deleted"
+
+# Deletes specific subject area with all it's related content.
+def db_delete_subject_area(name_a):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:SubjectArea {name: $name_b}) - [*0..] - (d) WITH DISTINCT d DETACH DELETE d"
+
+    driver.execute_query(
+        query_string,
+        name_b = name_a,
+        database_="neo4j",
+    )
+    return "Subject area " + name_a + " deleted"
