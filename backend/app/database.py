@@ -1,14 +1,19 @@
 """
 Database functions:
 Debug purpose:
-db_clear() , wipes database clean
-db_show_all() , prints the whole database in console
+debug_db_clear() , wipes database clean
+debug_db_show_all() , prints the whole database in console
 
 Helper functions:
 db_add_node(node_type, node_name) , create node with a name attribute
-db_modify_node_data(node_type, node_name, property_name, new_data) , modify property data
+db_modify_node_data(node_type, node_name, property_name, new_data) , modify one property data
 db_lookup_whole_node(node_type, node_name) , lookup and return all properties from the node
-db_lookup_node_property(node_type, node_name, property_name) , lookup and return single 
+db_lookup_node_property(node_type, node_name, property_name) , lookup and return single property data
+db_delete_node_with_connections(node_type, node_name) , deletes node and all connected nodes 0..n deep
+db_delete_node(node_type, node_name) , delete certain node type with certain name
+db_delete_property(node_type, node_name, property_name) , delete specific property data
+db_connect_with_relationship(node_type_a, node_name_a, node_type_b, node_name_b, relationship_type) , connect node a -> node b with relationship type
+
 
 Global settings:
 db_add_settings_node() , creates settings node
@@ -17,12 +22,36 @@ db_lookup_settings_data(property_name) , lookup specific property data
 db_delete_settings_data(property_name) , delete specific property data (also delete property)
 db_delete_settings() , deletes settings with all it's related content.
 
-Subject area settings:
+Subject area:
 db_add_subject_area_node(node_name) , creates subject area node of specific name
 db_modify_subject_area_data(node_name, property_name, data) , modify specific property with specific data
 db_lookup_subject_area_data(node_name, property_name) , lookup specific property data
 db_delete_subject_area_data(node_name, property_name) , delete specific property data (also delete property)
-db_delete_subject_area(node_name) , deletes specific subject area with all it's related content.
+db_delete_subject_area(node_name) , deletes SubjectArea-node and it's Dataset-nodes
+
+Result:
+db_add_result_node(node_id)
+db_modify_result_data(node_id, property_name, new_data)
+db_delete_result_data(node_id, property_name)
+db_lookup_result_data(node_id, property_name)
+db_delete_result(node_id) , only deletes node
+
+Model:
+db_add_model_node(node_name)
+db_modify_model_data(node_name, property_name, new_data)
+db_delete_model_data(node_name, property_name)
+db_lookup_model_data(node_name, property_name)
+db_delete_model(node_name) , deletes Model-node and it's Dataset-nodes
+
+Dataset:
+db_add_dataset_node(node_id)
+db_modify_dataset_data(node_id, new_data)
+db_lookup_dataset_data(node_id)
+db_delete_dataset(node_id) , only deletes Dataset-node
+
+Connections:
+db_connect_dataset_to_subject_area(dataset_node_id, subject_area_node_name) , connect dataset -> subject area
+db_connect_dataset_to_model(dataset_node_id, model_node_name) , connect dataset -> model
 """
 
 from neo4j import GraphDatabase
@@ -90,6 +119,7 @@ def db_modify_node_data(node_type, node_name, property_name, new_data):
 
 # Lookup node and return all it's data
 def db_lookup_whole_node(node_type, node_name):
+    # define query string within python, because driver doesn't allow property types being a variable
     query_string = "MATCH (n:" + node_type + " {name: '" + node_name + "'}) RETURN n"
     
     records, summary, keys = driver.execute_query(
