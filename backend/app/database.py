@@ -141,6 +141,16 @@ def db_delete_property(node_type, node_name, property_name):
     )
     return "Deleted: " + node_type + "(" + node_name + ")." + property_name
 
+def db_connect_with_relationship(node_type_a, node_name_a, node_type_b, node_name_b, relationship_type):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:" + node_type_a + " {name: '" + node_name_a + "'}) MATCH (m:" + node_type_b + " {name: '" + node_name_b + "'}) MERGE (n)-[:" + relationship_type + "]->(m)"
+
+    driver.execute_query(
+        query_string,
+        database_= database_name,
+    )
+    return "Connected: " + node_type_a + "(" + node_name_a + ")->" + node_type_b + "(" + node_name_b + ")"
+
 
 """
 Global settings functions
@@ -253,3 +263,15 @@ def db_lookup_dataset_data(node_id):
 # Deletes specific Dataset with all it's related content.
 def db_delete_dataset(node_id):
     return db_delete_node('Dataset', node_id)
+
+"""
+Connection functions
+"""
+# Connect from dataset node to subject area node
+def db_connect_dataset_to_subject_area(dataset_node_id, subject_area_node_name):
+    return db_connect_with_relationship('Dataset', dataset_node_id, 'SubjectArea', subject_area_node_name, 'DATA_ANALYSATION')
+
+# Connect from dataset node to model node
+def db_connect_dataset_to_model(dataset_node_id, model_node_name):
+    return db_connect_with_relationship('Dataset', dataset_node_id, 'Model', model_node_name, 'MODEL_CREATION')
+
