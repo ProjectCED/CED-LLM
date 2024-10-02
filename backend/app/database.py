@@ -211,3 +211,26 @@ def db_lookup_result_data(node_name, property_name):
 # Deletes specific Result with all it's related content.
 def db_delete_result(node_name):
     return db_delete_node('Result', node_name)
+
+"""
+Model functions
+"""
+# Create new Model-node with specific name. Avoids duplicates.
+def db_add_model_node(node_name):
+    return db_add_node('Model', node_name)
+
+# Modify Model-node's properties. Replaces specific property with new data.
+def db_modify_model_data(node_name, property_name, new_data):
+    return db_modify_node_data('Model', node_name, property_name, new_data)
+
+# Removes specific Model property data (and property).
+def db_delete_model_data(node_name, property_name):
+    return db_delete_property('Model', node_name, property_name)
+
+# Return data of specific property from Model-node
+def db_lookup_model_data(node_name, property_name):
+    return db_lookup_node_property('Model', node_name, property_name)
+
+# Deletes specific Model with all it's related content.
+def db_delete_model(node_name):
+    return db_delete_node_with_connections('Model', node_name)
