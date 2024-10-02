@@ -33,7 +33,7 @@ database_name = 'neo4j'
 
 ### Mainly debug purpose
 # Wipe database clean, deletes all data
-def db_clear():
+def debug_db_clear():
     driver.execute_query(
         "MATCH (n) DETACH DELETE n",
         database_= database_name,
@@ -42,7 +42,7 @@ def db_clear():
 
 
 # Show the whole database, print it out in console.
-def db_show_all():
+def debug_db_show_all():
     records, summary, keys = driver.execute_query(
         "MATCH (n) RETURN n",
         database_= database_name,
