@@ -56,7 +56,7 @@ def debug_db_show_all():
     )
     
     for record in records:
-        print(record.data())
+        print(record)
 
     return "Whole database printed out in console"
 
