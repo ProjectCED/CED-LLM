@@ -16,6 +16,7 @@ cd CED-LLM
 
 # Create and Activate Conda Environment
 
+(In Visual Studio Code Terminal:)
 conda env create -f backend/environment.yml
 conda activate ced-backend
 
