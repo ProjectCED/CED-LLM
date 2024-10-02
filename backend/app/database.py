@@ -20,7 +20,7 @@ db_add_settings_node() , creates settings node
 db_modify_settings_data(property_name, data) , modifies specific property with specific data
 db_lookup_settings_data(property_name) , lookup specific property data
 db_delete_settings_data(property_name) , delete specific property data (also delete property)
-db_delete_settings() , deletes settings with all it's related content.
+db_delete_settings() , deletes settings node.
 
 Subject area:
 db_add_subject_area_node(node_name) , creates subject area node of specific name
