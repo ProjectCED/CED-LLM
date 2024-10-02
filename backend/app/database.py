@@ -119,7 +119,7 @@ Global settings functions
 """
 # Create new Settings-node named "Base". Avoids duplicates.
 def db_add_settings_node():
-    return db_add_node('Settings', 'Base')
+    return db_add_node('Settings', settings_node_name)
 
 # Modify Settings (Base) properties. Replaces specific property with new data.
 def db_modify_settings_data(property_name, new_data):
