@@ -163,7 +163,7 @@ def db_lookup_settings_data(property_name):
 
 # Deletes global settings with all it's related content.
 def db_delete_settings():
-    return db_delete_node_with_connections('Settings', settings_node_name)
+    return db_delete_node('Settings', settings_node_name)
 
 
 """
@@ -210,4 +210,4 @@ def db_lookup_result_data(node_name, property_name):
 
 # Deletes specific Result with all it's related content.
 def db_delete_result(node_name):
-    return db_delete_node_with_connections('Result', node_name)
+    return db_delete_node('Result', node_name)
