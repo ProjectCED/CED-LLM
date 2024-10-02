@@ -193,24 +193,24 @@ def db_delete_subject_area(node_name):
 Result functions
 """
 # Create new Result-node with specific name. Avoids duplicates.
-def db_add_result_node(node_name):
-    return db_add_node('Result', node_name)
+def db_add_result_node(node_id):
+    return db_add_node('Result', node_id)
 
 # Modify Result-node's properties. Replaces specific property with new data.
-def db_modify_result_data(node_name, property_name, new_data):
-    return db_modify_node_data('Result', node_name, property_name, new_data)
+def db_modify_result_data(node_id, property_name, new_data):
+    return db_modify_node_data('Result', node_id, property_name, new_data)
 
 # Removes specific Result property data (and property).
-def db_delete_result_data(node_name, property_name):
-    return db_delete_property('Result', node_name, property_name)
+def db_delete_result_data(node_id, property_name):
+    return db_delete_property('Result', node_id, property_name)
 
 # Return data of specific property from Result-node
-def db_lookup_result_data(node_name, property_name):
-    return db_lookup_node_property('Result', node_name, property_name)
+def db_lookup_result_data(node_id, property_name):
+    return db_lookup_node_property('Result', node_id, property_name)
 
 # Deletes specific Result with all it's related content.
-def db_delete_result(node_name):
-    return db_delete_node('Result', node_name)
+def db_delete_result(node_id):
+    return db_delete_node('Result', node_id)
 
 """
 Model functions
