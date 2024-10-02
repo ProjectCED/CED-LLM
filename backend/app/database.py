@@ -91,6 +91,15 @@ def db_delete_node_with_connections(node_type, node_name):
     )
     return node_type + "(" + node_name + ") deleted with connections"
 
+# Lookup node and return all it's data
+def db_lookup_whole_node(node_type, node_name):
+    query_string = "MATCH (n:" + node_type + " {name: '" + node_name + "'}) RETURN n"
+    
+    records, summary, keys = driver.execute_query(
+        query_string,
+        database_= database_name,
+    )
+    return next(iter(records)).data()
 
 ### Program global settings
 # Create new Settings-node named "Base". Avoids duplicates.
