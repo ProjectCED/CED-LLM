@@ -101,6 +101,17 @@ def db_lookup_whole_node(node_type, node_name):
     )
     return next(iter(records)).data()
 
+# Lookup individual property value from a node
+def db_lookup_node_property(node_type, node_name, property_name):
+    query_string = "MATCH (n:" + node_type + " {name: '" + node_name + "'}) RETURN n." + property_name + " AS " + property_name
+    
+    records, summary, keys = driver.execute_query(
+        query_string,
+        database_= database_name,
+    )
+    return next(iter(records)).data()[property_name]
+
+
 ### Program global settings
 # Create new Settings-node named "Base". Avoids duplicates.
 def db_add_settings_node():
@@ -126,14 +137,7 @@ def db_delete_settings_data(property_name):
 
 # Return data of specific property from settings (Base)
 def db_lookup_settings_data(property_name):
-    # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:Settings {name: '" + settings_node_name + "'}) RETURN n." + property_name + " AS " + property_name
-
-    records, summary, keys = driver.execute_query(
-        query_string,
-        database_= database_name,
-    )
-    return next(iter(records)).data()[property_name]
+    return db_lookup_node_property('Settings', settings_node_name, property_name)
 
 # Deletes global settings with all it's related content.
 def db_delete_settings():
@@ -142,8 +146,8 @@ def db_delete_settings():
 
 ### Subject area settings
 # Create new SubjectArea-node with specific name. Avoids duplicates.
-def db_add_subject_area_node(name_a):
-    return db_add_node('SubjectArea', name_a)
+def db_add_subject_area_node(node_name):
+    return db_add_node('SubjectArea', node_name)
 
 
 # Modify SubjectArea-node's properties. Replaces specific property with new data.
@@ -152,15 +156,8 @@ def db_modify_subject_area_data(node_name, property_name, new_data):
 
 
 # Return data of specific property from SubjectArea-node
-def db_lookup_subject_area_data(name, property_name):
-    # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:SubjectArea {name: '" + name + "'}) RETURN n." + property_name + " AS " + property_name
-
-    records, summary, keys = driver.execute_query(
-        query_string,
-        database_= database_name,
-    )
-    return next(iter(records)).data()[property_name]
+def db_lookup_subject_area_data(node_name, property_name):
+    return db_lookup_node_property('SubjectArea', node_name, property_name)
 
 
 # Deletes specific subject area with all it's related content.
