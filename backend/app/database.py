@@ -234,3 +234,26 @@ def db_lookup_model_data(node_name, property_name):
 # Deletes specific Model with all it's related content.
 def db_delete_model(node_name):
     return db_delete_node_with_connections('Model', node_name)
+
+"""
+Dataset functions
+"""
+# Create new Dataset-node with specific name. Avoids duplicates.
+def db_add_dataset_node(node_name):
+    return db_add_node('Dataset', node_name)
+
+# Modify Dataset-node's properties. Replaces specific property with new data.
+def db_modify_dataset_data(node_name, property_name, new_data):
+    return db_modify_node_data('Dataset', node_name, property_name, new_data)
+
+# Removes specific Dataset property data (and property).
+def db_delete_dataset_data(node_name, property_name):
+    return db_delete_property('Dataset', node_name, property_name)
+
+# Return data of specific property from Dataset-node
+def db_lookup_dataset_data(node_name, property_name):
+    return db_lookup_node_property('Dataset', node_name, property_name)
+
+# Deletes specific Dataset with all it's related content.
+def db_delete_dataset(node_name):
+    return db_delete_node('Dataset', node_name)
