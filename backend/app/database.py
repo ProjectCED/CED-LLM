@@ -53,15 +53,24 @@ def db_show_all():
 
     return "Whole database printed out in console"
 
+### Universal helper functions
+# Create node with specific type and name
+def db_add_node(node_type, node_name):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MERGE (n:" + node_type + " {name: $name})"
+
+    driver.execute_query(
+        query_string,
+        name = node_name,
+        database_= database_name,
+    )
+    return "Added node: " + node_type + " with a name:" + node_name
+
 
 ### Program global settings
 # Create new Settings-node named "Base". Avoids duplicates.
 def db_add_settings_node():
-    driver.execute_query(
-        "MERGE (n:Settings {name: '" + settings_node_name + "'})",
-        database_= database_name,
-    )
-    return "Settings node (Base) added"
+    return db_add_node('Settings', 'Base')
 
 
 # Modify Settings (Base) properties. Replaces specific property with new data.
@@ -75,6 +84,7 @@ def db_modify_settings_data(property_name, data_a):
         database_= database_name,
     )
     return "Settings " + property_name + " modified"
+
 
 # Removes specific Settings property data (and property).
 def db_delete_settings_data(property_name):
@@ -114,12 +124,7 @@ def db_delete_settings():
 ### Subject area settings
 # Create new SubjectArea-node with specific name. Avoids duplicates.
 def db_add_subject_area_node(name_a):
-    driver.execute_query(
-        "MERGE (n:SubjectArea {name: $name_b})",
-        name_b = name_a,
-        database_= database_name,
-    )
-    return "Subject node " + " added"
+    return db_add_node('SubjectArea', name_a)
 
 
 # Modify SubjectArea-node's properties. Replaces specific property with new data.
@@ -136,7 +141,7 @@ def db_modify_subject_area_data(name_a, property_name, data_a):
     return "Subject area's " + name_a + "'s " + property_name + " modified"
 
 
-# Return data of specific property from SubjectArea-node (Base)
+# Return data of specific property from SubjectArea-node
 def db_lookup_subject_area_data(name, property_name):
     # define query string within python, because driver doesn't allow property types being a variable
     query_string = "MATCH (n:SubjectArea {name: '" + name + "'}) RETURN n." + property_name + " AS " + property_name
