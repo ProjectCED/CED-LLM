@@ -1,21 +1,23 @@
-### Database functions:
-# Debug purpose:
-# db_clear() , wipes database clean
-# db_show_all() , prints the whole database in console
-#
-# Global settings:
-# db_add_settings_node() , creates settings node
-# db_modify_settings_data(property_name, data) , modifies specific property with specific data
-# db_lookup_settings_data(property_name) , lookup specific property data
-# db_delete_settings_data(property_name) , delete specific property data (also delete property)
-# db_delete_settings() , deletes settings with all it's related content.
-#
-# Subject area settings:
-# db_add_subject_area_node(node_name) , creates subject area node of specific name
-# db_modify_subject_area_data(node_name, property_name, data) , modify specific property with specific data
-# db_lookup_subject_area_data(node_name, property_name) , lookup specific property data
-# db_delete_subject_area_data(node_name, property_name) , delete specific property data (also delete property)
-# db_delete_subject_area(node_name) , deletes specific subject area with all it's related content.
+"""
+Database functions:
+Debug purpose:
+db_clear() , wipes database clean
+db_show_all() , prints the whole database in console
+
+Global settings:
+db_add_settings_node() , creates settings node
+db_modify_settings_data(property_name, data) , modifies specific property with specific data
+db_lookup_settings_data(property_name) , lookup specific property data
+db_delete_settings_data(property_name) , delete specific property data (also delete property)
+db_delete_settings() , deletes settings with all it's related content.
+
+Subject area settings:
+db_add_subject_area_node(node_name) , creates subject area node of specific name
+db_modify_subject_area_data(node_name, property_name, data) , modify specific property with specific data
+db_lookup_subject_area_data(node_name, property_name) , lookup specific property data
+db_delete_subject_area_data(node_name, property_name) , delete specific property data (also delete property)
+db_delete_subject_area(node_name) , deletes specific subject area with all it's related content.
+"""
 
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
