@@ -32,7 +32,7 @@ import os
 driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
 
 # name of the global settings node
-settings_node_name = 'Base'
+settings_node_name = 'Global'
 
 # database name (default = 'neo4j')
 database_name = 'neo4j'
