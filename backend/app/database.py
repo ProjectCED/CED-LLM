@@ -120,7 +120,7 @@ def db_delete_node_with_connections(node_type, node_name):
     return node_type + "(" + node_name + ") deleted with connections"
 
 # Delete node and it's connections
-def db_delete_node_with_connections(node_type, node_name):
+def db_delete_node(node_type, node_name):
     # define query string within python, because driver doesn't allow property types being a variable
     query_string = "MATCH (n:" + node_type + " {name: '" + node_name + "'}) DETACH DELETE n"
     
