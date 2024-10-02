@@ -80,6 +80,18 @@ def db_modify_node_data(node_type, node_name, property_name, new_data):
     return "Modified data: " + node_type + "("+ node_name +")."+ property_name
 
 
+# Delete node and all related nodes 0..n deep
+def db_delete_node_with_connections(node_type, node_name):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:" + node_type + " {name: '" + node_name + "'}) - [*0..] - (d) WITH DISTINCT d DETACH DELETE d"
+    
+    driver.execute_query(
+        query_string,
+        database_= database_name,
+    )
+    return node_type + "(" + node_name + ") deleted with connections"
+
+
 ### Program global settings
 # Create new Settings-node named "Base". Avoids duplicates.
 def db_add_settings_node():
@@ -116,14 +128,7 @@ def db_lookup_settings_data(property_name):
 
 # Deletes global settings with all it's related content.
 def db_delete_settings():
-    # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:Settings {name: '" + settings_node_name + "'}) - [*0..] - (d) WITH DISTINCT d DETACH DELETE d"
-
-    driver.execute_query(
-        query_string,
-        database_= database_name,
-    )
-    return "´Settings deleted"
+    return db_delete_node_with_connections('Settings', settings_node_name)
 
 
 ### Subject area settings
@@ -149,26 +154,6 @@ def db_lookup_subject_area_data(name, property_name):
     return next(iter(records)).data()[property_name]
 
 
-# Removes specific SubjectArea-node's property data (and property).
-def db_delete_subject_area_data(name_a, property_name):
-    # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:SubjectArea {name: $name_b}) REMOVE n." + property_name
-
-    driver.execute_query(
-        query_string,
-        name_b = name_a,
-        database_= database_name,
-    )
-    return "Subject area's " + name_a + "'s " + property_name + " deleted"
-
 # Deletes specific subject area with all it's related content.
-def db_delete_subject_area(name_a):
-    # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:SubjectArea {name: $name_b}) - [*0..] - (d) WITH DISTINCT d DETACH DELETE d"
-
-    driver.execute_query(
-        query_string,
-        name_b = name_a,
-        database_= database_name,
-    )
-    return "Subject area " + name_a + " deleted"
+def db_delete_subject_area(node_name):
+    return db_delete_node_with_connections('SubjectArea', node_name)
