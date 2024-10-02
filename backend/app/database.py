@@ -67,6 +67,19 @@ def db_add_node(node_type, node_name):
     return "Added node: " + node_type + " with a name:" + node_name
 
 
+# Modify node properties. Replaces specific property with new data.
+def db_modify_node_data(node_type, node_name, property_name, new_data):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:" + node_type + " {name: '" + node_name + "'}) SET n." + property_name + " = $old_data"
+
+    driver.execute_query(
+        query_string,
+        old_data = new_data,
+        database_= database_name,
+    )
+    return "Modified data: " + node_type + "("+ node_name +")."+ property_name
+
+
 ### Program global settings
 # Create new Settings-node named "Base". Avoids duplicates.
 def db_add_settings_node():
@@ -74,16 +87,8 @@ def db_add_settings_node():
 
 
 # Modify Settings (Base) properties. Replaces specific property with new data.
-def db_modify_settings_data(property_name, data_a):
-    # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:Settings {name: '" + settings_node_name + "'}) SET n." + property_name + " = $data_b"
-
-    driver.execute_query(
-        query_string,
-        data_b = data_a,
-        database_= database_name,
-    )
-    return "Settings " + property_name + " modified"
+def db_modify_settings_data(property_name, new_data):
+    return db_modify_node_data('Settings', settings_node_name, property_name, new_data)
 
 
 # Removes specific Settings property data (and property).
@@ -128,17 +133,8 @@ def db_add_subject_area_node(name_a):
 
 
 # Modify SubjectArea-node's properties. Replaces specific property with new data.
-def db_modify_subject_area_data(name_a, property_name, data_a):
-    # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:SubjectArea {name: $name_b}) SET n." + property_name + " = $data_b"
-
-    driver.execute_query(
-        query_string,
-        name_b = name_a,
-        data_b = data_a,
-        database_= database_name,
-    )
-    return "Subject area's " + name_a + "'s " + property_name + " modified"
+def db_modify_subject_area_data(node_name, property_name, new_data):
+    return db_modify_node_data('SubjectArea', node_name, property_name, new_data)
 
 
 # Return data of specific property from SubjectArea-node
