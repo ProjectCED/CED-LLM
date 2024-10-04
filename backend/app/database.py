@@ -205,7 +205,6 @@ def db_lookup_settings_data(property_name):
 def db_delete_settings():
     return db_delete_node('Settings', settings_node_name)
 
-
 """
 User settings functions
 """
@@ -228,7 +227,6 @@ def db_lookup_user_settings_data(user_name, property_name):
 # Deletes global UserSettings with all it's related content.
 def db_delete_user_settings(user_name):
     return db_delete_node('UserSettings', user_name)
-
 
 """
 Subject area functions
@@ -277,27 +275,50 @@ def db_delete_result(node_id):
     return db_delete_node('Result', node_id)
 
 """
-Model functions
+DataModel functions
+"""
+# Create new DataModel-node with specific name. Avoids duplicates.
+def db_add_data_model_node(node_name):
+    return db_add_node('DataModel', node_name)
+
+# Modify DataModel-node's properties. Replaces specific property with new data.
+def db_modify_data_model_data(node_name, property_name, new_data):
+    return db_modify_node_data('DataModel', node_name, property_name, new_data)
+
+# Removes specific DataModel property data (and property).
+def db_delete_data_model_data(node_name, property_name):
+    return db_delete_property('DataModel', node_name, property_name)
+
+# Return data of specific property from DataModel-node
+def db_lookup_data_model_data(node_name, property_name):
+    return db_lookup_node_property('DataModel', node_name, property_name)
+
+# Deletes specific DataModel with all it's related content.
+def db_delete_data_model(node_name):
+    return db_delete_node_with_connections('DataModel', node_name)
+
+"""
+AnalyzeModel functions
 """
 # Create new Model-node with specific name. Avoids duplicates.
-def db_add_model_node(node_name):
-    return db_add_node('Model', node_name)
+def db_add_analyze_model_node(node_name):
+    return db_add_node('AnalyzeModel', node_name)
 
 # Modify Model-node's properties. Replaces specific property with new data.
-def db_modify_model_data(node_name, property_name, new_data):
-    return db_modify_node_data('Model', node_name, property_name, new_data)
+def db_modify_analyze_model_data(node_name, property_name, new_data):
+    return db_modify_node_data('AnalyzeModel', node_name, property_name, new_data)
 
 # Removes specific Model property data (and property).
-def db_delete_model_data(node_name, property_name):
-    return db_delete_property('Model', node_name, property_name)
+def db_delete_analyze_model_data(node_name, property_name):
+    return db_delete_property('AnalyzeModel', node_name, property_name)
 
 # Return data of specific property from Model-node
-def db_lookup_model_data(node_name, property_name):
-    return db_lookup_node_property('Model', node_name, property_name)
+def db_lookup_analyze_model_data(node_name, property_name):
+    return db_lookup_node_property('AnalyzeModel', node_name, property_name)
 
 # Deletes specific Model with all it's related content.
-def db_delete_model(node_name):
-    return db_delete_node_with_connections('Model', node_name)
+def db_delete_analyze_model(node_name):
+    return db_delete_node_with_connections('AnalyzeModel', node_name)
 
 """
 Dataset functions
