@@ -184,7 +184,7 @@ def db_connect_with_relationship(node_type_a, node_name_a, node_type_b, node_nam
 
 def db_copy_node(node_type, new_node_type, id_type, id_value):
     # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:" + node_type + " {" + id_type + ": '" + id_value + "'}) CREATE (m:" + new_node_type + ") SET m = properties(n)"
+    query_string = "MATCH (n:" + node_type + " {" + id_type + ": '" + id_value + "'}) MERGE (m:" + new_node_type + " {" + id_type + ": '" + id_value + "'}) SET m = properties(n)"
 
     driver.execute_query(
         query_string,
@@ -212,7 +212,7 @@ def db_delete_settings_data(property_name):
 def db_lookup_settings_data(property_name):
     return db_lookup_node_property('Settings', settings_node_name, property_name)
 
-# Deletes global settings with all it's related content.
+# Deletes settings with all it's related content.
 def db_delete_settings():
     return db_delete_node('Settings', settings_node_name)
 
@@ -235,7 +235,7 @@ def db_delete_user_settings_data(user_name, property_name):
 def db_lookup_user_settings_data(user_name, property_name):
     return db_lookup_node_property('UserSettings', user_name, property_name)
 
-# Deletes global UserSettings with all it's related content.
+# Deletes UserSettings with all it's related content.
 def db_delete_user_settings(user_name):
     return db_delete_node('UserSettings', user_name)
 
