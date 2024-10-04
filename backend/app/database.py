@@ -300,25 +300,26 @@ def db_delete_data_model(node_name):
 """
 AnalyzeModel functions
 """
-# Create new Model-node with specific name. Avoids duplicates.
+# Create new AnalyzeModel-node with specific name. Avoids duplicates.
 def db_add_analyze_model_node(node_name):
     return db_add_node('AnalyzeModel', node_name)
 
-# Modify Model-node's properties. Replaces specific property with new data.
+# Modify AnalyzeModel-node's properties. Replaces specific property with new data.
 def db_modify_analyze_model_data(node_name, property_name, new_data):
     return db_modify_node_data('AnalyzeModel', node_name, property_name, new_data)
 
-# Removes specific Model property data (and property).
+# Removes specific AnalyzeModel property data (and property).
 def db_delete_analyze_model_data(node_name, property_name):
     return db_delete_property('AnalyzeModel', node_name, property_name)
 
-# Return data of specific property from Model-node
+# Return data of specific property from AnalyzeModel-node
 def db_lookup_analyze_model_data(node_name, property_name):
     return db_lookup_node_property('AnalyzeModel', node_name, property_name)
 
-# Deletes specific Model with all it's related content.
+# Deletes specific AnalyzeModel with all it's related content.
 def db_delete_analyze_model(node_name):
     return db_delete_node_with_connections('AnalyzeModel', node_name)
+
 
 """
 Dataset functions
