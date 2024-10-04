@@ -182,6 +182,17 @@ def db_connect_with_relationship(node_type_a, node_name_a, node_type_b, node_nam
     return "Connected: " + node_type_a + "(" + node_name_a + ")->" + node_type_b + "(" + node_name_b + ")"
 
 
+def db_copy_node(node_type, new_node_type, id_type, id_value):
+    # define query string within python, because driver doesn't allow property types being a variable
+    query_string = "MATCH (n:" + node_type + " {" + id_type + ":" + id_value + "}) SET n:" + new_node_type
+
+    driver.execute_query(
+        query_string,
+        database_= database_name,
+    )
+    return "Copied " + node_type + "(" + id_value + ") to " + new_node_type + "(" + id_value + ")"
+
+
 """
 Global settings functions
 """
@@ -320,7 +331,18 @@ def db_lookup_analyze_model_data(node_name, property_name):
 def db_delete_analyze_model(node_name):
     return db_delete_node_with_connections('AnalyzeModel', node_name)
 
+"""
+UsedAnalyzeModel functions
+"""
+# Create new UsedAnalyzeModel from a copy of AnalyzeModel
+# Connect it with Result
+def db_add_used_analyze_model_node(model_node_name, result_node_name):
+    return_a = db_copy_node('AnalyzeModel','UsedAnalyzeModel', 'name', model_node_name)
+    return_b = db_connect_dataset_to_analyze_model(model_node_name, result_node_name)
+    return return_a + "and" + return_b
 
+
+db_copy_node
 """
 Dataset functions
 """
@@ -354,4 +376,8 @@ def db_connect_dataset_to_data_model(dataset_node_id, model_node_name):
 # Connect from Dataset node to AnalyzeModel node
 def db_connect_dataset_to_analyze_model(dataset_node_id, model_node_name):
     return db_connect_with_relationship('Dataset', dataset_node_id, 'AnalyzeModel', model_node_name, 'USED_FOR_TRAINING')
+
+# Connect from UsedAnalyzeModel node to Result node
+def db_connect_used_analyze_model_to_result(model_node_name, result_node_name):
+    return db_connect_with_relationship('UsedAnalyzeModel', model_node_name, 'Result', result_node_name, 'USED_IN_ANALYSIS')
 
