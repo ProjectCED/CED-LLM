@@ -342,11 +342,15 @@ def db_delete_dataset(node_id):
 """
 Connection functions
 """
-# Connect from dataset node to subject area node
+# Connect from Dataset node to subject area node
 def db_connect_dataset_to_subject_area(dataset_node_id, subject_area_node_name):
-    return db_connect_with_relationship('Dataset', dataset_node_id, 'SubjectArea', subject_area_node_name, 'DATA_ANALYSATION')
+    return db_connect_with_relationship('Dataset', dataset_node_id, 'SubjectArea', subject_area_node_name, 'ANALYZED_IN')
 
-# Connect from dataset node to model node
-def db_connect_dataset_to_model(dataset_node_id, model_node_name):
-    return db_connect_with_relationship('Dataset', dataset_node_id, 'Model', model_node_name, 'MODEL_CREATION')
+# Connect from Dataset node to DataModel node
+def db_connect_dataset_to_data_model(dataset_node_id, model_node_name):
+    return db_connect_with_relationship('Dataset', dataset_node_id, 'DataModel', model_node_name, 'USED_FOR_TRAINING')
+
+# Connect from Dataset node to AnalyzeModel node
+def db_connect_dataset_to_analyze_model(dataset_node_id, model_node_name):
+    return db_connect_with_relationship('Dataset', dataset_node_id, 'AnalyzeModel', model_node_name, 'USED_FOR_TRAINING')
 
