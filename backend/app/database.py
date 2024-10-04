@@ -184,7 +184,7 @@ def db_connect_with_relationship(node_type_a, node_name_a, node_type_b, node_nam
 
 def db_copy_node(node_type, new_node_type, id_type, id_value):
     # define query string within python, because driver doesn't allow property types being a variable
-    query_string = "MATCH (n:" + node_type + " {" + id_type + ":" + id_value + "}) SET n:" + new_node_type
+    query_string = "MATCH (n:" + node_type + " {" + id_type + ": '" + id_value + "'}) SET n:" + new_node_type
 
     driver.execute_query(
         query_string,
