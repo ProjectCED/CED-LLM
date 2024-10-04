@@ -264,10 +264,15 @@ def db_delete_project(node_name):
 
 """
 Result functions
+todo:
+- delete all connected UsedInAnalysis nodes too
 """
 # Create new Result-node with specific name. Avoids duplicates.
-def db_add_result_node(node_id):
-    return db_add_node('Result', node_id)
+# Connect it with project
+def db_add_result_node(result_node_id, project_node_name):
+    return_a = db_add_node('Result', result_node_id)
+    return_b = db_connect_result_to_project(result_node_id, project_node_name)
+    return return_a + " and " + return_b
 
 # Modify Result-node's properties. Replaces specific property with new data.
 def db_modify_result_data(node_id, property_name, new_data):
@@ -339,7 +344,7 @@ UsedAnalyzeModel functions
 def db_add_used_analyze_model_node(model_node_name, result_node_name):
     return_a = db_copy_node('AnalyzeModel','UsedAnalyzeModel', 'name', model_node_name)
     return_b = db_connect_dataset_to_analyze_model(model_node_name, result_node_name)
-    return return_a + "and" + return_b
+    return return_a + " and " + return_b
 
 
 db_copy_node
@@ -380,4 +385,8 @@ def db_connect_dataset_to_analyze_model(dataset_node_id, model_node_name):
 # Connect from UsedAnalyzeModel node to Result node
 def db_connect_used_analyze_model_to_result(model_node_name, result_node_name):
     return db_connect_with_relationship('UsedAnalyzeModel', model_node_name, 'Result', result_node_name, 'USED_IN_ANALYSIS')
+
+# Connect from Result node to Project node
+def db_connect_result_to_project(result_node_name, project_node_name):
+    return db_connect_with_relationship('Result', result_node_name, 'Project', project_node_name, 'BELONGS_TO')
 
