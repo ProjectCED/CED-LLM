@@ -229,27 +229,27 @@ def db_delete_user_settings(user_name):
     return db_delete_node('UserSettings', user_name)
 
 """
-Subject area functions
+Project functions
 """
-# Create new SubjectArea-node with specific name. Avoids duplicates.
-def db_add_subject_area_node(node_name):
-    return db_add_node('SubjectArea', node_name)
+# Create new Project-node with specific name. Avoids duplicates.
+def db_add_project_node(node_name):
+    return db_add_node('Project', node_name)
 
-# Modify SubjectArea-node's properties. Replaces specific property with new data.
-def db_modify_subject_area_data(node_name, property_name, new_data):
-    return db_modify_node_data('SubjectArea', node_name, property_name, new_data)
+# Modify Project-node's properties. Replaces specific property with new data.
+def db_modify_project_data(node_name, property_name, new_data):
+    return db_modify_node_data('Project', node_name, property_name, new_data)
 
-# Removes specific subject area property data (and property).
-def db_delete_subject_area_data(node_name, property_name):
-    return db_delete_property('SubjectArea', node_name, property_name)
+# Removes specific Project property data (and property).
+def db_delete_project_data(node_name, property_name):
+    return db_delete_property('Project', node_name, property_name)
 
-# Return data of specific property from SubjectArea-node
-def db_lookup_subject_area_data(node_name, property_name):
-    return db_lookup_node_property('SubjectArea', node_name, property_name)
+# Return data of specific property from Project-node
+def db_lookup_project_data(node_name, property_name):
+    return db_lookup_node_property('Project', node_name, property_name)
 
-# Deletes specific subject area with all it's related content.
-def db_delete_subject_area(node_name):
-    return db_delete_node_with_connections('SubjectArea', node_name)
+# Deletes specific Project with all it's related content.
+def db_delete_project(node_name):
+    return db_delete_node_with_connections('Project', node_name)
 
 """
 Result functions
@@ -342,9 +342,9 @@ def db_delete_dataset(node_id):
 """
 Connection functions
 """
-# Connect from Dataset node to subject area node
-def db_connect_dataset_to_subject_area(dataset_node_id, subject_area_node_name):
-    return db_connect_with_relationship('Dataset', dataset_node_id, 'SubjectArea', subject_area_node_name, 'ANALYZED_IN')
+# Connect from Dataset node to project node
+def db_connect_dataset_to_project(dataset_node_id, project_node_name):
+    return db_connect_with_relationship('Dataset', dataset_node_id, 'Project', project_node_name, 'ANALYZED_IN')
 
 # Connect from Dataset node to DataModel node
 def db_connect_dataset_to_data_model(dataset_node_id, model_node_name):
