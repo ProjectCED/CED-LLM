@@ -207,6 +207,30 @@ def db_delete_settings():
 
 
 """
+User settings functions
+"""
+# Create new Settings-node named "Base". Avoids duplicates.
+def db_add_user_settings_node():
+    return db_add_node('UserSettings', settings_node_name)
+
+# Modify Settings (Base) properties. Replaces specific property with new data.
+def db_modify_user_settings_data(property_name, new_data):
+    return db_modify_node_data('UserSettings', settings_node_name, property_name, new_data)
+
+# Removes specific Settings property data (and property).
+def db_delete_user_settings_data(property_name):
+    return db_delete_property('UserSettings', settings_node_name, property_name)
+
+# Return data of specific property from settings (Base)
+def db_lookup_user_settings_data(property_name):
+    return db_lookup_node_property('UserSettings', settings_node_name, property_name)
+
+# Deletes global settings with all it's related content.
+def db_delete_user_settings():
+    return db_delete_node('UserSettings', settings_node_name)
+
+
+"""
 Subject area functions
 """
 # Create new SubjectArea-node with specific name. Avoids duplicates.
