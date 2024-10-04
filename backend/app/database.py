@@ -328,12 +328,12 @@ def db_add_dataset_node(node_id):
     return db_add_node('Dataset', node_id)
 
 # Modify Dataset-node's properties. Replaces data with new data.
-def db_modify_dataset_data(node_id, new_data):
-    return db_modify_node_data('Dataset', node_id, 'data', new_data)
+def db_modify_dataset_data(node_id, file_name):
+    return db_modify_node_data('Dataset', node_id, 'Filename', file_name)
 
 # Return data of specific property from Dataset-node
 def db_lookup_dataset_data(node_id):
-    return db_lookup_node_property('Dataset', node_id, 'data')
+    return db_lookup_node_property('Dataset', node_id, 'Filename')
 
 # Deletes specific Dataset with all it's related content.
 def db_delete_dataset(node_id):
