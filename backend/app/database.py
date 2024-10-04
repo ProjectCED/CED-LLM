@@ -185,11 +185,11 @@ def db_connect_with_relationship(node_type_a, node_name_a, node_type_b, node_nam
 """
 Global settings functions
 """
-# Create new Settings-node named "Base". Avoids duplicates.
+# Create new Settings-node. Avoids duplicates.
 def db_add_settings_node():
     return db_add_node('Settings', settings_node_name)
 
-# Modify Settings (Base) properties. Replaces specific property with new data.
+# Modify Settings properties. Replaces specific property with new data.
 def db_modify_settings_data(property_name, new_data):
     return db_modify_node_data('Settings', settings_node_name, property_name, new_data)
 
@@ -197,7 +197,7 @@ def db_modify_settings_data(property_name, new_data):
 def db_delete_settings_data(property_name):
     return db_delete_property('Settings', settings_node_name, property_name)
 
-# Return data of specific property from settings (Base)
+# Return data of specific property from settings
 def db_lookup_settings_data(property_name):
     return db_lookup_node_property('Settings', settings_node_name, property_name)
 
@@ -209,25 +209,25 @@ def db_delete_settings():
 """
 User settings functions
 """
-# Create new Settings-node named "Base". Avoids duplicates.
-def db_add_user_settings_node():
-    return db_add_node('UserSettings', settings_node_name)
+# Create new UserSettings-node. Avoids duplicates.
+def db_add_user_settings_node(user_name):
+    return db_add_node('UserSettings', user_name)
 
-# Modify Settings (Base) properties. Replaces specific property with new data.
-def db_modify_user_settings_data(property_name, new_data):
-    return db_modify_node_data('UserSettings', settings_node_name, property_name, new_data)
+# Modify UserSettings properties. Replaces specific property with new data.
+def db_modify_user_settings_data(user_name, property_name, new_data):
+    return db_modify_node_data('UserSettings', user_name, property_name, new_data)
 
-# Removes specific Settings property data (and property).
-def db_delete_user_settings_data(property_name):
-    return db_delete_property('UserSettings', settings_node_name, property_name)
+# Removes specific UserSettings property data (and property).
+def db_delete_user_settings_data(user_name, property_name):
+    return db_delete_property('UserSettings', user_name, property_name)
 
-# Return data of specific property from settings (Base)
-def db_lookup_user_settings_data(property_name):
-    return db_lookup_node_property('UserSettings', settings_node_name, property_name)
+# Return data of specific property from UserSettings
+def db_lookup_user_settings_data(user_name, property_name):
+    return db_lookup_node_property('UserSettings', user_name, property_name)
 
-# Deletes global settings with all it's related content.
-def db_delete_user_settings():
-    return db_delete_node('UserSettings', settings_node_name)
+# Deletes global UserSettings with all it's related content.
+def db_delete_user_settings(user_name):
+    return db_delete_node('UserSettings', user_name)
 
 
 """
