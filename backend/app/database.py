@@ -269,10 +269,11 @@ todo:
 """
 # Create new Result-node with specific name. Avoids duplicates.
 # Connect it with project
-def db_add_result_node(result_node_id, project_node_name):
+def db_add_result_node(result_node_id, project_node_name, analyze_model_name):
     return_a = db_add_node('Result', result_node_id)
     return_b = db_connect_result_to_project(result_node_id, project_node_name)
-    return return_a + " and " + return_b
+    return_c = db_add_used_analyze_model_node(analyze_model_name, result_node_id)
+    return return_a + " and " + return_b + " and " + return_c
 
 # Modify Result-node's properties. Replaces specific property with new data.
 def db_modify_result_data(node_id, property_name, new_data):
