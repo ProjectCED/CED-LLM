@@ -79,9 +79,9 @@ class database:
         return "Added node: " + type + "." + id_type + "(" + id_value + ")"
             
 
-    def __modify_node_data(self, type, id_type, id_value, property_name, new_data):
+    def __set_node_property(self, type, id_type, id_value, property_name, new_data):
         """return useful string message
-        Replaces specific node property with new data.
+        Set specific node property with new data.
         """
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) SET n." + property_name + " = $old_data"
 
@@ -157,9 +157,9 @@ class database:
         return type + "(" + id_value + ") deleted"
     
 
-    def __delete_property(self, type, id_type, id_value, property_name):
+    def __remove_property(self, type, id_type, id_value, property_name):
         """return useful string message
-        Delete node property.
+        Remove node property.
         """
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) REMOVE n." + property_name
         
@@ -167,7 +167,7 @@ class database:
             query_string,
             database_= self.name,
         )
-        return "Deleted: " + type + "(" + id_value + ")." + property_name
+        return "Removed: " + type + "(" + id_value + ")." + property_name
     
 
     def __connect_with_relationship(self, type_a, id_type_a, id_value_a, type_b, id_type_b, id_value_b, relationship_type):
@@ -194,20 +194,20 @@ class database:
         )
         return "Copied " + type + "(" + id_value + ") to " + node_type_new + "(" + id_value_new + ")"
     
-
+    ### Global settings
     def add_global_settings_node(self):
         """Create global settings node"""        
         return self.__add_node(self.global_settings_type, self.global_settings_id, self.global_settings_id_value)
 
 
-    def modify_global_settings_property(self, property_name, new_data):
-        """Modify global settings node""" 
-        return self.__modify_node_data(self.global_settings_type, self.global_settings_id, self.global_settings_id_value, property_name, new_data)
+    def set_global_settings_property(self, property_name, new_data):
+        """Set global settings property data.""" 
+        return self.__set_node_property(self.global_settings_type, self.global_settings_id, self.global_settings_id_value, property_name, new_data)
     
         
-    def delete_global_settings_property(self, property_name):
+    def remove_global_settings_property(self, property_name):
         """Removes specific Settings property data (and property)""" 
-        return self.__delete_property(self.global_settings_type, self.global_settings_id, self.global_settings_id_value, property_name)
+        return self.__remove_property(self.global_settings_type, self.global_settings_id, self.global_settings_id_value, property_name)
 
 
     def lookup_global_settings_property(self, property_name):
@@ -218,3 +218,31 @@ class database:
     def delete_global_settings(self):
         """Delete global settings node""" 
         return self.__delete_node(self.global_settings_type, self.global_settings_id, self.global_settings_id_value)
+    
+
+    ### User settings
+    def add_user_settings_node(self, id_value):
+        """Create user settings node"""        
+        return self.__add_node(self.user_settings_type, self.user_settings_id, id_value)
+
+
+    def set_user_settings_property(self, id_value, property_name, new_data):
+        """Set user settings property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.user_settings_type, self.user_settings_id, id_value, property_name, new_data)
+    
+        
+    def remove_user_settings_property(self, id_value, property_name):
+        """Removes specific Settings property data (and property)""" 
+        return self.__remove_property(self.user_settings_type, self.user_settings_id, id_value, property_name)
+
+
+    def lookup_global_settings_property(self, id_value, property_name):
+        """Return data of specific property from settings""" 
+        return self.__lookup_node_property(self.user_settings_type, self.user_settings_id, id_value, property_name)
+    
+
+    def delete_global_settings(self, id_value):
+        """Delete global settings node""" 
+        return self.__delete_node(self.user_settings_type, self.user_settings_id, id_value)
+    
+
