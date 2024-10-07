@@ -248,52 +248,52 @@ class database:
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
         """Connect Dataset to DataModel"""
-        return self.__connect_with_relationship(self.dataset_type, dataset_id_value, self.data_model_type, data_model_id_value, self.connect_dataset_data_model)
+        return self.__connect_with_relationship(self.dataset_type, self.dataset_id, dataset_id_value, self.data_model_type, self.data_model_id, data_model_id_value, self.connect_dataset_data_model)
     
 
     def connect_dataset_to_analyze_model(self, dataset_id_value, analyze_model_id_value):
         """Connect Dataset to AnalyzeModel"""
-        return self.__connect_with_relationship(self.dataset_type, dataset_id_value, self.analyze_model_type, analyze_model_id_value, self.connect_dataset_analyze_model)
+        return self.__connect_with_relationship(self.dataset_type, self.dataset_id, dataset_id_value, self.analyze_model_type, self.analyze_model_id, analyze_model_id_value, self.connect_dataset_analyze_model)
     
 
     def connect_data_model_to_project(self, data_model_id_value, project_id_value):
         """Connect DataModel to Project"""
-        return self.__connect_with_relationship(self.data_model_type, data_model_id_value, self.project_type, project_id_value, self.connect_data_model_project)
+        return self.__connect_with_relationship(self.data_model_type, self.data_model_id, data_model_id_value, self.project_type, self.project_id, project_id_value, self.connect_data_model_project)
 
 
     def connect_dataset_to_project(self, dataset_id_value, project_id_value):
         """Connect Dataset to Project"""
-        return self.__connect_with_relationship(self.dataset_type, dataset_id_value, self.project_type, project_id_value, self.connect_dataset_project)
+        return self.__connect_with_relationship(self.dataset_type, self.dataset_id, dataset_id_value, self.project_type, self.project_id, project_id_value, self.connect_dataset_project)
 
 
     def __connect_result_to_project(self, result_id_value, project_id_value):
         """Connect Result to Project"""
-        return self.__connect_with_relationship(self.result_type, result_id_value, self.project_type, project_id_value, self.connect_result_project)
+        return self.__connect_with_relationship(self.result_type, self.result_id, result_id_value, self.project_type, self.project_id, project_id_value, self.connect_result_project)
     
 
     def __connect_used_dataset_to_result(self, used_dataset_id_value, result_id_value):
         """Connect UsedDataset to Result"""
-        return self.__connect_with_relationship(self.used_dataset_type, used_dataset_id_value, self.result_type, result_id_value, self.connect_used_dataset_result)
+        return self.__connect_with_relationship(self.used_dataset_type, self.used_dataset_id, used_dataset_id_value, self.result_type, self.result_id, result_id_value, self.connect_used_dataset_result)
 
 
     def __connect_used_analyze_model_to_result(self, used_analyze_model_id_value, result_id_value):
         """Connect UsedAnalyzeModel to Result"""
-        return self.__connect_with_relationship(self.used_analyze_model_type, used_analyze_model_id_value, self.result_type, result_id_value, self.connect_used_analyze_model_result)
+        return self.__connect_with_relationship(self.used_analyze_model_type, self.used_analyze_model_id, used_analyze_model_id_value, self.result_type, self.result_id, result_id_value, self.connect_used_analyze_model_result)
     
 
     def __connect_used_data_model_to_result(self, used_data_model_id_value, result_id_value):
         """Connect UsedDataModel to Result"""
-        return self.__connect_with_relationship(self.used_data_model_type, used_data_model_id_value, self.result_type, result_id_value, self.connect_used_data_model_result)
+        return self.__connect_with_relationship(self.used_data_model_type, self.used_data_model_id, used_data_model_id_value, self.result_type, self.result_id, result_id_value, self.connect_used_data_model_result)
     
 
     def __connect_used_dataset_to_used_data_model(self, used_dataset_id_value, used_data_model_id_value):
         """Connect UsedDataset to UsedDataModel"""
-        return self.__connect_with_relationship(self.used_dataset_type, used_dataset_id_value, self.used_data_model_type, used_data_model_id_value, self.connect_used_dataset_used_data_model)
+        return self.__connect_with_relationship(self.used_dataset_type, self.used_dataset_id, used_dataset_id_value, self.used_data_model_type, self.used_data_model_id, used_data_model_id_value, self.connect_used_dataset_used_data_model)
     
 
     def __connect_used_dataset_to_used_analyze_model(self, used_dataset_id_value, used_analyze_model_id_value):
         """Connect UsedDataset to UsedAnalyzeModel"""
-        return self.__connect_with_relationship(self.used_dataset_type, used_dataset_id_value, self.used_analyze_model_type, used_analyze_model_id_value, self.connect_used_dataset_used_analyze_model)
+        return self.__connect_with_relationship(self.used_dataset_type, self.used_dataset_id, used_dataset_id_value, self.used_analyze_model_type, self.used_analyze_model_id, used_analyze_model_id_value, self.connect_used_dataset_used_analyze_model)
 
     
     ### Global settings
