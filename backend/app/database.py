@@ -226,6 +226,25 @@ class database:
         )
         return "Copied " + type + "(" + id_value + ") to " + node_type_new + "(" + id_value_new + ")"
     
+    def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
+        """return node property data or error string
+        Lookup individual property value from a neighboring node that is connected by certain relationship
+        """
+        id_value_a = str(id_value_a)
+        query_string = "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) <- [:" + relationship_type + "] - (b) RETURN b." + property_name + " AS " + property_name
+        
+        records, summary, keys = self.driver.execute_query(
+            query_string,
+            database_= self.name,
+        )
+        
+        try:
+            return next(iter(records)).data()[property_name]
+        except:
+            return "ERROR: Property not found"
+
+
+    
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
         """Connect Dataset to DataModel"""
