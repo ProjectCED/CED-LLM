@@ -420,6 +420,33 @@ class database:
     def delete_data_model(self, id_value):
         """Delete DataModel node""" 
         return self.__delete_node_with_connections(self.data_model_type, self.data_model_id, id_value)
+    
+
+
+        ### AnalyzeModel
+    def add_analyze_model_node(self, id_value):
+        """Create AnalyzeModel node. Avoids duplicates."""
+        return self.__add_node(self.analyze_model_type, self.analyze_model_id, id_value)
+
+
+    def set_analyze_model_property(self, id_value, property_name, new_data):
+        """Set AnalyzeModel property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.analyze_model_type, self.analyze_model_id, id_value, property_name, new_data)
+    
+        
+    def remove_analyze_model_property(self, id_value, property_name):
+        """Removes specific AnalyzeModel property data (and property)""" 
+        return self.__remove_property(self.analyze_model_type, self.analyze_model_id, id_value, property_name)
+
+
+    def lookup_analyze_model_property(self, id_value, property_name):
+        """Return data of specific property from AnalyzeModel""" 
+        return self.__lookup_node_property(self.analyze_model_type, self.analyze_model_id, id_value, property_name)
+    
+
+    def delete_analyze_model(self, id_value):
+        """Delete AnalyzeModel node""" 
+        return self.__delete_node_with_connections(self.analyze_model_type, self.analyze_model_id, id_value)
 
    
 
