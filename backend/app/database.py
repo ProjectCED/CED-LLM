@@ -456,29 +456,33 @@ class database:
         """Create Result node with all the connected information."""
         return_a = self.__add_node(self.result_type, self.result_id, result_id_value)
         return_b = self.__connect_result_to_project(result_id_value, project_id_value)
-        # search connected Dataset, make a copy of that and connect it
+        ### search connected Dataset, make a copy of that and connect it
         project_dataset_id_value = self.__lookup_connected_node_property(self.project_type, self.project_id, project_id_value, self.connect_dataset_project, self.dataset_id)
         return_e = self.__copy_node(self.dataset_type, self.dataset_id, project_dataset_id_value, self.used_dataset_type, self.used_dataset_id, used_dataset_id_value)
         return_f = self.__connect_used_dataset_to_result(used_dataset_id_value, result_id_value)
 
-        # make a copy of AnalyzeModel and connect it
-        return_c = self.__copy_node(self.analyze_model_type, analyze_model_id_value, self.used_analyze_model_type, self.used_analyze_model_id, used_analyze_model_id_value)
+        ### make a copy of AnalyzeModel and connect it
+        return_c = self.__copy_node(self.analyze_model_type, self.analyze_model_id, analyze_model_id_value, self.used_analyze_model_type, self.used_analyze_model_id, used_analyze_model_id_value)
         return_d = self.__connect_used_analyze_model_to_result(used_analyze_model_id_value, result_id_value)
-        # search connected Dataset, make a copy of that and connect it
+        ### search connected Dataset, make a copy of that and connect it
         analyze_model_dataset_id_value = self.__lookup_connected_node_property(self.analyze_model_type, self.analyze_model_id, analyze_model_id_value, self.connect_dataset_analyze_model, self.dataset_id)
-        return_e = self.__copy_node(self.dataset_type, self.dataset_id, analyze_model_dataset_id_value, self.used_dataset_type, self.used_dataset_id, used_dataset_id_value)
-        return_f = self.__connect_used_dataset_to_used_analyze_model(used_dataset_id_value, used_analyze_model_id_value)
+        return_e = self.__copy_node(self.dataset_type, self.dataset_id, analyze_model_dataset_id_value, self.used_dataset_type, self.used_dataset_id, 3)
+        return_f = self.__connect_used_dataset_to_used_analyze_model(3, used_analyze_model_id_value)
 
-        # search connected DataModel, make a copy of that and connect it
+        ### search connected DataModel, make a copy of that and connect it
         project_data_model_id_value = self.__lookup_connected_node_property(self.project_type, self.project_id, project_id_value, self.connect_data_model_project, self.data_model_id)
         return_e = self.__copy_node(self.data_model_type, self.data_model_id, project_data_model_id_value, self.used_data_model_type, self.used_data_model_id, used_data_model_id_value)
         return_f = self.__connect_used_data_model_to_result(used_data_model_id_value, result_id_value)
-        # search connected Dataset, make a copy of that and connect it
+        ### search connected Dataset, make a copy of that and connect it
         data_model_dataset_id_value = self.__lookup_connected_node_property(self.data_model_type, self.data_model_id, project_data_model_id_value, self.connect_dataset_data_model, self.dataset_id)
-        return_g = self.__copy_node(self.dataset_type, self.dataset_id, data_model_dataset_id_value, self.used_dataset_type, self.used_dataset_id, used_dataset_id_value)
-        return_h = self.__connect_used_dataset_to_used_data_model(used_dataset_id_value, used_data_model_id_value)
+        return_g = self.__copy_node(self.dataset_type, self.dataset_id, data_model_dataset_id_value, self.used_dataset_type, self.used_dataset_id, 2)
+        return_h = self.__connect_used_dataset_to_used_data_model(2, used_data_model_id_value)
 
         return "result node created"
+
+    def set_result_property(self, id_value, property_name, new_data):
+        """Set Result property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.result_type, self.result_id, id_value, property_name, new_data)
     
     def delete_result(self, id_value):
         """Delete Result node""" 
