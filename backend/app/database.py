@@ -394,6 +394,32 @@ class database:
     def delete_dataset(self, id_value):
         """Delete Dataset node"""
         return self.__delete_node(self.dataset_type, self.dataset_id, id_value)
+    
+
+    ### DataModel
+    def add_data_model_node(self, id_value):
+        """Create DataModel node. Avoids duplicates."""
+        return self.__add_node(self.data_model_type, self.data_model_id, id_value)
+
+
+    def set_data_model_property(self, id_value, property_name, new_data):
+        """Set DataModel property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.data_model_type, self.data_model_id, id_value, property_name, new_data)
+    
+        
+    def remove_data_model_property(self, id_value, property_name):
+        """Removes specific DataModel property data (and property)""" 
+        return self.__remove_property(self.data_model_type, self.data_model_id, id_value, property_name)
+
+
+    def lookup_data_model_property(self, id_value, property_name):
+        """Return data of specific property from DataModel""" 
+        return self.__lookup_node_property(self.data_model_type, self.data_model_id, id_value, property_name)
+    
+
+    def delete_data_model(self, id_value):
+        """Delete DataModel node""" 
+        return self.__delete_node_with_connections(self.data_model_type, self.data_model_id, id_value)
 
    
 
