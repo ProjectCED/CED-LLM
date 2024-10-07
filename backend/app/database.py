@@ -479,5 +479,9 @@ class database:
         return_h = self.__connect_used_dataset_to_used_data_model(used_dataset_id_value, used_data_model_id_value)
 
         return "result node created"
+    
+    def delete_result(self, id_value):
+        """Delete Result node""" 
+        return self.__delete_node_with_connections(self.result_type, self.result_id, id_value)
 
 
