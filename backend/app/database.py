@@ -33,11 +33,28 @@ class database:
         self.result_type = 'Result'
         self.result_id = 'id'
         
-        self.used_analyze_model_type = 'UsedAlayzeModel'
-        self.used_analyze_model_id = 'id'
-        
         self.used_dataset_type = 'UsedDataSet'
         self.used_dataset_id = 'id'
+
+        self.used_data_model_type = 'UsedDataModel'
+        self.used_data_model_id = 'id'
+
+        self.used_analyze_model_type = 'UsedAnalyzeModel'
+        self.used_analyze_model_id = 'id'
+        
+
+        self.connect_dataset_data_model = 'USED_FOR_TRAINING'
+        self.connect_dataset_analyze_model = 'USED_FOR_TRAINING'
+                
+        self.connect_dataset_project = 'ANALYZED_IN'
+        self.connect_result_project = 'BELONGS_TO'
+        self.connect_data_model_project = 'ACTIVE_IN'
+
+        self.connect_used_analyze_model_result = 'USED_IN_ANALYSIS'
+        self.connect_used_data_model_result = 'USED_IN_ANALYSIS'
+        self.connect_used_dataset_result = 'USED_IN_ANALYSIS'
+        self.connect_used_dataset_used_data_model = 'USED_FOR_TRAINING'
+        self.connect_used_dataset_used_analyze_model = 'USED_FOR_TRAINING'
 
 
     def debug_clear_all(self):
@@ -139,7 +156,6 @@ class database:
         id_value = str(id_value)
         if exclude_relationships == None:
             query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
-        # todo: make this work with list of exclusions
         elif isinstance(exclude_relationships,list):
             exclude_relationships = "','".join(exclude_relationships)
             query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) WHERE NONE ( rel IN r WHERE type(rel) IN ['"+ exclude_relationships + "']) DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
@@ -209,6 +225,57 @@ class database:
             database_= self.name,
         )
         return "Copied " + type + "(" + id_value + ") to " + node_type_new + "(" + id_value_new + ")"
+    
+    ### Connections
+    def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
+        """Connect Dataset to DataModel"""
+        return self.__connect_with_relationship(self.dataset_type, dataset_id_value, self.data_model_type, data_model_id_value, self.connect_dataset_data_model)
+    
+
+    def connect_dataset_to_analyze_model(self, dataset_id_value, analyze_model_id_value):
+        """Connect Dataset to AnalyzeModel"""
+        return self.__connect_with_relationship(self.dataset_type, dataset_id_value, self.analyze_model_type, analyze_model_id_value, self.connect_dataset_analyze_model)
+    
+
+    def connect_data_model_to_project(self, data_model_id_value, project_id_value):
+        """Connect DataModel to Project"""
+        return self.__connect_with_relationship(self.data_model_type, data_model_id_value, self.project_type, project_id_value, self.connect_data_model_project)
+
+
+    def connect_dataset_to_project(self, dataset_id_value, project_id_value):
+        """Connect Dataset to Project"""
+        return self.__connect_with_relationship(self.dataset_type, dataset_id_value, self.project_type, project_id_value, self.connect_dataset_project)
+
+
+    def __connect_result_to_project(self, result_id_value, project_id_value):
+        """Connect Result to Project"""
+        return self.__connect_with_relationship(self.result_type, result_id_value, self.project_type, project_id_value, self.connect_result_project)
+    
+
+    def __connect_used_dataset_to_result(self, used_dataset_id_value, result_id_value):
+        """Connect UsedDataset to Result"""
+        return self.__connect_with_relationship(self.used_dataset_type, used_dataset_id_value, self.result_type, result_id_value, self.connect_used_dataset_result)
+
+
+    def __connect_used_analyze_model_to_result(self, used_analyze_model_id_value, result_id_value):
+        """Connect UsedAnalyzeModel to Result"""
+        return self.__connect_with_relationship(self.used_analyze_model_type, used_analyze_model_id_value, self.result_type, result_id_value, self.connect_used_analyze_model_result)
+    
+
+    def __connect_used_data_model_to_result(self, used_data_model_id_value, result_id_value):
+        """Connect UsedDataModel to Result"""
+        return self.__connect_with_relationship(self.used_data_model_type, used_data_model_id_value, self.result_type, result_id_value, self.connect_used_data_model_result)
+    
+
+    def __connect_used_dataset_to_used_data_model(self, used_dataset_id_value, used_data_model_id_value):
+        """Connect UsedDataset to UsedDataModel"""
+        return self.__connect_with_relationship(self.used_dataset_type, used_dataset_id_value, self.used_data_model_type, used_data_model_id_value, self.connect_used_dataset_used_data_model)
+    
+
+    def __connect_used_dataset_to_used_analyze_model(self, used_dataset_id_value, used_analyze_model_id_value):
+        """Connect UsedDataset to UsedAnalyzeModel"""
+        return self.__connect_with_relationship(self.used_dataset_type, used_dataset_id_value, self.used_analyze_model_type, used_analyze_model_id_value, self.connect_used_dataset_used_analyze_model)
+
     
     ### Global settings
     def add_global_settings_node(self):
@@ -286,4 +353,7 @@ class database:
     def delete_project(self, id_value):
         """Delete project node""" 
         return self.__delete_node_with_connections(self.project_type, self.project_id, id_value, self.project_exclusion)
+    
+
+
 
