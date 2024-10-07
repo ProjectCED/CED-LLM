@@ -374,6 +374,29 @@ class database:
         return self.__delete_node_with_connections(self.project_type, self.project_id, id_value, self.project_exclusion)
     
 
+
+    ### Dataset
+    def add_dataset_node(self, id_value):
+        """Create Dataset node. Avoids duplicates."""        
+        return self.__add_node(self.dataset_type, self.dataset_id, id_value)
+
+
+    def set_dataset_property(self, id_value, property_name, new_data):
+        """Set Dataset property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.dataset_type, self.dataset_id, id_value, property_name, new_data)
+    
+        
+    def lookup_dataset_property(self, id_value, property_name):
+        """Return data of specific property from Dataset""" 
+        return self.__lookup_node_property(self.dataset_type, self.dataset_id, id_value, property_name)
+    
+
+    def delete_dataset(self, id_value):
+        """Delete Dataset node"""
+        return self.__delete_node(self.dataset_type, self.dataset_id, id_value)
+
+   
+
     ### Result
     # Todo: not needing to put id values(bad dupes), accept multiple relationships and accept no relationships
     def add_result_node(self, result_id_value, project_id_value, analyze_model_id_value, used_analyze_model_id_value, used_dataset_id_value, used_data_model_id_value):
