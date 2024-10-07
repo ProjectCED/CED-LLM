@@ -236,12 +236,12 @@ class database:
         return self.__remove_property(self.user_settings_type, self.user_settings_id, id_value, property_name)
 
 
-    def lookup_global_settings_property(self, id_value, property_name):
+    def lookup_user_settings_property(self, id_value, property_name):
         """Return data of specific property from settings""" 
         return self.__lookup_node_property(self.user_settings_type, self.user_settings_id, id_value, property_name)
     
 
-    def delete_global_settings(self, id_value):
+    def delete_user_settings(self, id_value):
         """Delete global settings node""" 
         return self.__delete_node(self.user_settings_type, self.user_settings_id, id_value)
     
