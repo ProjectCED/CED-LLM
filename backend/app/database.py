@@ -4,9 +4,39 @@ import os
 
 class database:
     def __init__(self) -> None:
+        """Start up database connection.
+        Setup types and identifier names according to database design.
+        """
         self.driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
         self.name = 'neo4j'     # database name
-        self.global_settings_name = 'Global'
+
+        self.global_settings_type = 'Settings'
+        self.global_settings_id = 'name'
+        self.global_settings_id_value = 'Global'
+
+        self.user_settings_type = 'UserSettings'
+        self.user_settings_id = 'user_name'
+        
+        self.dataset_type = 'Dataset'
+        self.dataset_id = 'id'
+        
+        self.data_model_type = 'DataModel'
+        self.data_model_id = 'id'
+        
+        self.analyze_model_type = 'AnalyzeModel'
+        self.analyze_model_id = 'id'
+        
+        self.project_type = 'Project'
+        self.project_id = 'id'
+        
+        self.result_type = 'Result'
+        self.result_id = 'id'
+        
+        self.used_analyze_model_type = 'UsedAlayzeModel'
+        self.used_analyze_model_id = 'id'
+        
+        self.used_dataset_type = 'UsedDataSet'
+        self.used_dataset_id = 'id'
 
 
     def debug_clear_all(self):
@@ -163,3 +193,5 @@ class database:
             database_= self.name,
         )
         return "Copied " + type + "(" + id_value + ") to " + node_type_new + "(" + id_value_new + ")"
+
+
