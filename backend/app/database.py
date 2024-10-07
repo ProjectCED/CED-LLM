@@ -216,4 +216,5 @@ class database:
     
 
     def delete_global_settings(self):
+        """Delete global settings node""" 
         return self.__delete_node(self.global_settings_type, self.global_settings_id, self.global_settings_id_value)
