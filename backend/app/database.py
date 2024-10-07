@@ -193,5 +193,27 @@ class database:
             database_= self.name,
         )
         return "Copied " + type + "(" + id_value + ") to " + node_type_new + "(" + id_value_new + ")"
+    
+
+    def add_global_settings_node(self):
+        """Create global settings node"""        
+        return self.__add_node(self.global_settings_type, self.global_settings_id, self.global_settings_id_value)
 
 
+    def modify_global_settings_property(self, property_name, new_data):
+        """Modify global settings node""" 
+        return self.__modify_node_data(self.global_settings_type, self.global_settings_id, self.global_settings_id_value, property_name, new_data)
+    
+        
+    def delete_global_settings_property(self, property_name):
+        """Removes specific Settings property data (and property)""" 
+        return self.__delete_property(self.global_settings_type, self.global_settings_id, self.global_settings_id_value, property_name)
+
+
+    def lookup_global_settings_property(self, property_name):
+        """Return data of specific property from settings""" 
+        return self.__lookup_node_property(self.global_settings_type, self.global_settings_id, self.global_settings_id_value, property_name)
+    
+
+    def delete_global_settings(self):
+        return self.__delete_node(self.global_settings_type, self.global_settings_id, self.global_settings_id_value)
