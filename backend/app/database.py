@@ -28,6 +28,7 @@ class database:
         
         self.project_type = 'Project'
         self.project_id = 'id'
+        self.project_exclusion = ['FAVORITED_IN'] # exclusion for deletion
         
         self.result_type = 'Result'
         self.result_id = 'id'
@@ -69,6 +70,7 @@ class database:
         """return useful string message
         Create a node with specific node-type, id-type and it's value. Can't duplicate.
         """
+        id_value = str(id_value)
         query_string = "MERGE (n:" + type + " {" + id_type + ": $value})"
 
         self.driver.execute_query(
@@ -83,6 +85,7 @@ class database:
         """return useful string message
         Set specific node property with new data.
         """
+        id_value = str(id_value)
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) SET n." + property_name + " = $old_data"
 
         self.driver.execute_query(
@@ -97,6 +100,7 @@ class database:
         """return whole node data or error string
         Lookup a node and return all it's data
         """
+        id_value = str(id_value)
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) RETURN n"
         
         records, summary, keys = self.driver.execute_query(
@@ -114,6 +118,7 @@ class database:
         """return node property data or error string
         Lookup individual property value from a node
         """
+        id_value = str(id_value)
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) RETURN n." + property_name + " AS " + property_name
         
         records, summary, keys = self.driver.execute_query(
@@ -131,12 +136,17 @@ class database:
         """return useful string message
         Delete node and all related nodes with incoming connections 0..n deep. Possible to exclude relationships.
         """
+        id_value = str(id_value)
         if exclude_relationships == None:
-            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) WITH DISTINCT d DETACH DELETE d,n"
-        if isinstance(exclude_relationships,list):
-            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r:*0..] - (d) WHERE NOT type(r) IN "+ exclude_relationships + " WITH DISTINCT d DETACH DELETE d,n"
+            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
+        # todo: make this work with list of exclusions
+        elif isinstance(exclude_relationships,list):
+            exclude_relationships = "','".join(exclude_relationships)
+            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) WHERE NONE ( rel IN r WHERE type(rel) IN ['"+ exclude_relationships + "']) DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
+        elif isinstance(exclude_relationships,str):
+            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) WHERE NONE ( rel IN r WHERE type(rel) = '"+ exclude_relationships + "') DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
         else:
-            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r:*0..] - (d) WHERE NOT type(r) IN ['"+ exclude_relationships + "'] WITH DISTINCT d DETACH DELETE d,n"
+            return "ERROR: exclude_relationships was something else than None, string or list of string"
         
         self.driver.execute_query(
             query_string,
@@ -148,6 +158,7 @@ class database:
         """return useful string message
         Delete a node and it's connections
         """
+        id_value = str(id_value)
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) DETACH DELETE n"
         
         self.driver.execute_query(
@@ -161,6 +172,7 @@ class database:
         """return useful string message
         Remove node property.
         """
+        id_value = str(id_value)
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) REMOVE n." + property_name
         
         self.driver.execute_query(
@@ -174,6 +186,8 @@ class database:
         """return useful string message
         Connect node a to node b with specific relationship. (a)-[rela]->(b).
         """
+        id_value_a = str(id_value_a)
+        id_value_b = str(id_value_b)
         query_string = "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) MATCH (b:" + type_b + " {" + id_type_b + ": '" + id_value_b + "'}) MERGE (a)-[:" + relationship_type + "]->(b)"
 
         self.driver.execute_query(
@@ -186,6 +200,8 @@ class database:
         """return useful string message
         Copy node into a new node type.
         """
+        id_value = str(id_value)
+        id_value_new = str(id_value_new)
         query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) MERGE (m:" + node_type_new + " {" + id_type_new + ": '" + id_value_new + "'}) SET m = properties(n)"
 
         self.driver.execute_query(
@@ -245,4 +261,29 @@ class database:
         """Delete global settings node""" 
         return self.__delete_node(self.user_settings_type, self.user_settings_id, id_value)
     
+
+    ### Project
+    def add_project_node(self, id_value):
+        """Create Project node. Avoids duplicates."""        
+        return self.__add_node(self.project_type, self.project_id, id_value)
+
+
+    def set_project_property(self, id_value, property_name, new_data):
+        """Set Project property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.project_type, self.project_id, id_value, property_name, new_data)
+    
+        
+    def remove_project_property(self, id_value, property_name):
+        """Removes specific Project property data (and property)""" 
+        return self.__remove_property(self.project_type, self.project_id, id_value, property_name)
+
+
+    def lookup_project_property(self, id_value, property_name):
+        """Return data of specific property from Project""" 
+        return self.__lookup_node_property(self.project_type, self.project_id, id_value, property_name)
+    
+
+    def delete_project(self, id_value):
+        """Delete project node""" 
+        return self.__delete_node_with_connections(self.project_type, self.project_id, id_value, self.project_exclusion)
 
