@@ -255,8 +255,6 @@ class database:
             database_= self.__name,
         )
 
-        print(records)
-
         if not records:
             return False
         else:
