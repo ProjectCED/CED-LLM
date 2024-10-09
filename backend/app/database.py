@@ -242,6 +242,25 @@ class database:
             return next(iter(records)).data()[property_name]
         except:
             return "ERROR: Property not found"
+    
+    def __does_node_exist(self, type, id_type, id_value):
+        """return true/false
+        Check if node exists with specific node type and property value
+        """
+        id_value = str(id_value)
+        query_string = "MATCH (a:" + type + " {" + id_type + ": '" + id_value + "'}) RETURN a"
+        
+        records, summary, keys = self.__driver.execute_query(
+            query_string,
+            database_= self.__name,
+        )
+
+        print(records)
+
+        if not records:
+            return False
+        else:
+            return True
 
 
     
