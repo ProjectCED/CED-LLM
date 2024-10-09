@@ -484,6 +484,10 @@ class database:
         """Set Result property. Creates/overwrites current data.""" 
         return self.__set_node_property(self.result_type, self.result_id, id_value, property_name, new_data)
     
+    def lookup_result_property(self, id_value, property_name):
+        """Return data of specific property from Result""" 
+        return self.__lookup_node_property(self.result_type, self.result_id, id_value, property_name)
+    
     def delete_result(self, id_value):
         """Delete Result node""" 
         return self.__delete_node_with_connections(self.result_type, self.result_id, id_value)
