@@ -243,7 +243,7 @@ class database:
         except:
             return "ERROR: Property not found"
     
-    def __does_node_exist(self, type, id_type, id_value):
+    def __does_node_property_exist(self, type, id_type, id_value):
         """return true/false
         Check if node exists with specific node type and property value
         """
