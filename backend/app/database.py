@@ -107,7 +107,10 @@ class database:
         Set specific node property with new data.
         """
         id_value = str(id_value)
-        query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) SET n." + property_name + " = $old_data"
+        query_string = (
+            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "SET n." + property_name + " = $old_data" 
+        )
 
         self.__driver.execute_query(
             query_string,
@@ -122,8 +125,11 @@ class database:
         Lookup a node and return all it's data
         """
         id_value = str(id_value)
-        query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) RETURN n"
-        
+        query_string = (
+            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "RETURN n"
+        )
+
         records, summary, keys = self.__driver.execute_query(
             query_string,
             database_= self.__name,
@@ -140,7 +146,10 @@ class database:
         Lookup individual property value from a node
         """
         id_value = str(id_value)
-        query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) RETURN n." + property_name + " AS " + property_name
+        query_string = (
+            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "RETURN n." + property_name + " AS " + property_name
+        )
         
         records, summary, keys = self.__driver.execute_query(
             query_string,
@@ -159,12 +168,29 @@ class database:
         """
         id_value = str(id_value)
         if exclude_relationships == None:
-            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
+            query_string = (
+                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) "
+                "DETACH DELETE n "
+                "WITH DISTINCT d "
+                "DETACH DELETE d"
+            )
         elif isinstance(exclude_relationships,list):
             exclude_relationships = "','".join(exclude_relationships)
-            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) WHERE NONE ( rel IN r WHERE type(rel) IN ['"+ exclude_relationships + "']) DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
+            query_string = (
+                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
+                "WHERE NONE ( rel IN r WHERE type(rel) IN ['"+ exclude_relationships + "']) "
+                "DETACH DELETE n "
+                "WITH DISTINCT d "
+                "DETACH DELETE d"
+            )
         elif isinstance(exclude_relationships,str):
-            query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) WHERE NONE ( rel IN r WHERE type(rel) = '"+ exclude_relationships + "') DETACH DELETE n WITH DISTINCT d DETACH DELETE d"
+            query_string = (
+                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
+                "WHERE NONE ( rel IN r WHERE type(rel) = '"+ exclude_relationships + "') "
+                "DETACH DELETE n "
+                "WITH DISTINCT d "
+                "DETACH DELETE d"
+            )
         else:
             return "ERROR: exclude_relationships was something else than None, string or list of string"
         
@@ -179,7 +205,10 @@ class database:
         Delete a node and it's connections
         """
         id_value = str(id_value)
-        query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) DETACH DELETE n"
+        query_string = (
+            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "DETACH DELETE n"
+        )
         
         self.__driver.execute_query(
             query_string,
@@ -193,7 +222,10 @@ class database:
         Remove node property.
         """
         id_value = str(id_value)
-        query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) REMOVE n." + property_name
+        query_string = (
+            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "REMOVE n." + property_name
+        )
         
         self.__driver.execute_query(
             query_string,
@@ -208,7 +240,11 @@ class database:
         """
         id_value_a = str(id_value_a)
         id_value_b = str(id_value_b)
-        query_string = "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) MATCH (b:" + type_b + " {" + id_type_b + ": '" + id_value_b + "'}) MERGE (a)-[:" + relationship_type + "]->(b)"
+        query_string = (
+            "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) "
+            "MATCH (b:" + type_b + " {" + id_type_b + ": '" + id_value_b + "'}) "
+            "MERGE (a)-[:" + relationship_type + "]->(b)"
+        )
 
         self.__driver.execute_query(
             query_string,
@@ -222,7 +258,11 @@ class database:
         """
         id_value = str(id_value)
         id_value_new = str(id_value_new)
-        query_string = "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) MERGE (m:" + node_type_new + " {" + id_type_new + ": '" + id_value_new + "'}) SET m = properties(n)"
+        query_string = (
+            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "MERGE (m:" + node_type_new + " {" + id_type_new + ": '" + id_value_new + "'}) "
+            "SET m = properties(n)"
+        )
 
         self.__driver.execute_query(
             query_string,
@@ -235,7 +275,10 @@ class database:
         Lookup individual property value from a neighboring node that is connected by certain relationship
         """
         id_value_a = str(id_value_a)
-        query_string = "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) <- [:" + relationship_type + "] - (b) RETURN b." + property_name + " AS " + property_name
+        query_string = (
+            "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) <- [:" + relationship_type + "] - (b) "
+            "RETURN b." + property_name + " AS " + property_name
+        )
         
         records, summary, keys = self.__driver.execute_query(
             query_string,
@@ -252,7 +295,10 @@ class database:
         Check if node exists with specific node type and property value
         """
         id_value = str(id_value)
-        query_string = "MATCH (a:" + type + " {" + id_type + ": '" + id_value + "'}) RETURN a"
+        query_string = (
+            "MATCH (a:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "RETURN a"
+        )
         
         records, summary, keys = self.__driver.execute_query(
             query_string,
