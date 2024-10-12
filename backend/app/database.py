@@ -159,7 +159,7 @@ class database:
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
             "RETURN n." + property_name + " AS " + property_name
         )
-        
+
         records, summary, keys = self.__driver.execute_query(
             query_string,
             database_= self.__name,
@@ -321,7 +321,31 @@ class database:
         except:
             return None
     
-    def __does_node_property_exist(self, type, id_type, id_value):
+    def __does_property_exist(self, type, id_type, id_value, property_name):
+        """return true/false
+        Check if node exists with specific node type and property value
+        """
+        id_value = str(id_value)
+        query_string = (
+            "MATCH (a:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "WHERE a." + property_name + " IS NOT NULL "
+            "RETURN a"
+        )
+
+        try:
+            records, summary, keys = self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+        
+            if not records:
+                return False
+            else:
+                return True
+        except:
+            return False
+        
+    def __does_node_exist(self, type, id_type, id_value):
         """return true/false
         Check if node exists with specific node type and property value
         """
@@ -399,7 +423,7 @@ class database:
     
     ### Global settings
     def add_global_settings_node(self):
-        """Create global settings node"""        
+        """Create global settings node"""
         return self.__add_node(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value)
 
 
