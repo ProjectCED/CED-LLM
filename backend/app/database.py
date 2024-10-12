@@ -8,7 +8,7 @@ class database:
         Setup types and identifier names according to database design.
         """
         self.__driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
-        self.__name = 'neo4j'     # database name
+        self.__name = os.getenv('NEO4J_DB_NAME')
 
         self.__global_settings_type = 'Settings'
         self.__global_settings_id = 'name'
@@ -42,14 +42,18 @@ class database:
         self.__used_analyze_model_type = 'UsedAnalyzeModel'
         self.__used_analyze_model_id = 'id'
         
-
+        # model related connections
         self.__connect_dataset_data_model = 'USED_FOR_TRAINING'
         self.__connect_dataset_analyze_model = 'USED_FOR_TRAINING'
 
+        # project related connections
         self.__connect_dataset_project = 'ANALYZED_IN'
         self.__connect_result_project = 'BELONGS_TO'
+
+        # model(s) used to construct the data structure in project, used for making result node (complicated way)
         self.__connect_data_model_project = 'ACTIVE_IN'
 
+        # result node related
         self.__connect_used_analyze_model_result = 'USED_IN_ANALYSIS'
         self.__connect_used_data_model_result = 'USED_IN_ANALYSIS'
         self.__connect_used_dataset_result = 'USED_IN_ANALYSIS'
