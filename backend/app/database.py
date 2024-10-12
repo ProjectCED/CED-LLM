@@ -88,22 +88,27 @@ class database:
     
 
     def __add_node(self, type, id_type, id_value):
-        """return useful string message
-        Create a node with specific node-type, id-type and it's value. Can't duplicate.
+        """return True when nothing went wrong, False if database query error.
+        Create a node with specific node-type, id-type and it's value.
+        Doesn't give False when node exists
         """
         id_value = str(id_value)
         query_string = "MERGE (n:" + type + " {" + id_type + ": $value})"
 
-        self.__driver.execute_query(
-            query_string,
-            value = id_value,
-            database_= self.__name,
-        )
-        return "Added node: " + type + "." + id_type + "(" + id_value + ")"
+        try:
+            self.__driver.execute_query(
+                query_string,
+                value = id_value,
+                database_= self.__name,
+            )
+        except:
+            return False
+
+        return True
             
 
     def __set_node_property(self, type, id_type, id_value, property_name, new_data):
-        """return useful string message
+        """return True when query succeeded
         Set specific node property with new data.
         """
         id_value = str(id_value)
@@ -112,16 +117,20 @@ class database:
             "SET n." + property_name + " = $old_data" 
         )
 
-        self.__driver.execute_query(
-            query_string,
-            old_data = new_data,
-            database_= self.__name,
-        )
-        return "Modified data: " + type + "("+ id_value +")."+ property_name
+        try:
+            self.__driver.execute_query(
+                query_string,
+                old_data = new_data,
+                database_= self.__name,
+            )
+        except:
+            return False
+
+        return True
     
 
     def __lookup_whole_node(self, type, id_type, id_value):
-        """return whole node data or error string
+        """return whole node data or None if nothing was found
         Lookup a node and return all it's data
         """
         id_value = str(id_value)
@@ -138,11 +147,11 @@ class database:
         try:
             return next(iter(records)).data()
         except:
-            return "ERROR: Node not found"
+            return None
 
 
     def __lookup_node_property(self, type, id_type, id_value, property_name):
-        """return node property data or error string
+        """return node property data or None if nothing was found
         Lookup individual property value from a node
         """
         id_value = str(id_value)
@@ -159,14 +168,16 @@ class database:
         try:
             return next(iter(records)).data()[property_name]
         except:
-            return "ERROR: Property not found"
+            return None
         
         
     def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
-        """return useful string message
+        """return True when query succeeded
         Delete node and all related nodes with incoming connections 0..n deep. Possible to exclude relationships.
         """
         id_value = str(id_value)
+
+        # Supporting: None, string list, single string
         if exclude_relationships == None:
             query_string = (
                 "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) "
@@ -192,16 +203,21 @@ class database:
                 "DETACH DELETE d"
             )
         else:
-            return "ERROR: exclude_relationships was something else than None, string or list of string"
+            #return "ERROR: exclude_relationships was something else than None, string or list of string"
+            return False
         
-        self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        return type + "(" + id_value + ") deleted with connections"
+        try:
+            self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+        except:
+            return False
+
+        return True
 
     def __delete_node(self, type, id_type, id_value):
-        """return useful string message
+        """return True when query succeeded
         Delete a node and it's connections
         """
         id_value = str(id_value)
@@ -210,15 +226,19 @@ class database:
             "DETACH DELETE n"
         )
         
-        self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        return type + "(" + id_value + ") deleted"
+        try:
+            self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+        except:
+            return False
+
+        return True
     
 
     def __remove_property(self, type, id_type, id_value, property_name):
-        """return useful string message
+        """return True when query succeeded
         Remove node property.
         """
         id_value = str(id_value)
@@ -227,33 +247,41 @@ class database:
             "REMOVE n." + property_name
         )
         
-        self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        return "Removed: " + type + "(" + id_value + ")." + property_name
+        try:
+            self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+        except:
+            return False
+
+        return True
     
 
     def __connect_with_relationship(self, type_a, id_type_a, id_value_a, type_b, id_type_b, id_value_b, relationship_type):
-        """return useful string message
-        Connect node a to node b with specific relationship. (a)-[rela]->(b).
+        """return True when query succeeded
+        Connect node a to node b with specific relationship. (a)-[rel]->(b).
         """
         id_value_a = str(id_value_a)
         id_value_b = str(id_value_b)
         query_string = (
             "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) "
             "MATCH (b:" + type_b + " {" + id_type_b + ": '" + id_value_b + "'}) "
-            "MERGE (a)-[:" + relationship_type + "]->(b)"
+            "MERGE (a)-[r:" + relationship_type + "]->(b)"
         )
 
-        self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        return "Connected: " + type_a + "(" + id_value_a + ")-[" + relationship_type + "]>" + type_b + "(" + id_value_b + ")"
+        try:
+            self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+        except:
+            return False
+
+        return True
     
     def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new):
-        """return useful string message
+        """return True when query succeeded
         Copy node into a new node type.
         """
         id_value = str(id_value)
@@ -264,14 +292,18 @@ class database:
             "SET m = properties(n)"
         )
 
-        self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        return "Copied " + type + "(" + id_value + ") to " + node_type_new + "(" + id_value_new + ")"
+        try:
+            self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+        except:
+            return False
+
+        return True
     
     def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
-        """return node property data or error string
+        """return node property data or None
         Lookup individual property value from a neighboring node that is connected by certain relationship
         """
         id_value_a = str(id_value_a)
@@ -280,15 +312,14 @@ class database:
             "RETURN b." + property_name + " AS " + property_name
         )
         
-        records, summary, keys = self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        
         try:
+            records, summary, keys = self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
             return next(iter(records)).data()[property_name]
         except:
-            return "ERROR: Property not found"
+            return None
     
     def __does_node_property_exist(self, type, id_type, id_value):
         """return true/false
@@ -299,16 +330,19 @@ class database:
             "MATCH (a:" + type + " {" + id_type + ": '" + id_value + "'}) "
             "RETURN a"
         )
-        
-        records, summary, keys = self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
 
-        if not records:
+        try:
+            records, summary, keys = self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+
+            if not records:
+                return False
+            else:
+                return True
+        except:
             return False
-        else:
-            return True
 
 
     
