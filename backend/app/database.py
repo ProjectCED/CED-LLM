@@ -92,6 +92,10 @@ class database:
         Create a node with specific node-type, id-type and it's value.
         Doesn't give False when node exists
         """
+        # check if node already exists
+        if self.__does_node_exist(type, id_type, id_value):
+            return False
+
         id_value = str(id_value)
         query_string = "MERGE (n:" + type + " {" + id_type + ": $value})"
 
@@ -111,6 +115,10 @@ class database:
         """return True when query succeeded
         Set specific node property with new data.
         """
+        # check if node exists
+        if not self.__does_node_exist(type, id_type, id_value):
+            return False
+
         id_value = str(id_value)
         query_string = (
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
@@ -175,6 +183,10 @@ class database:
         """return True when query succeeded
         Delete node and all related nodes with incoming connections 0..n deep. Possible to exclude relationships.
         """
+        # check if node exists
+        if not self.__does_node_exist(type, id_type, id_value):
+            return False
+
         id_value = str(id_value)
 
         # Supporting: None, string list, single string
@@ -220,6 +232,10 @@ class database:
         """return True when query succeeded
         Delete a node and it's connections
         """
+        # check if node exists
+        if not self.__does_node_exist(type, id_type, id_value):
+            return False
+
         id_value = str(id_value)
         query_string = (
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
@@ -241,6 +257,10 @@ class database:
         """return True when query succeeded
         Remove node property.
         """
+        # check if property exists
+        if not self.__does_property_exist(type, id_type, id_value, property_name):
+            return False
+
         id_value = str(id_value)
         query_string = (
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
@@ -262,6 +282,14 @@ class database:
         """return True when query succeeded
         Connect node a to node b with specific relationship. (a)-[rel]->(b).
         """
+        # check if node a exists
+        if not self.__does_node_exist(type_a, id_type_a, id_value_a):
+            return False
+        
+        # check if node b exists
+        if not self.__does_node_exist(type_b, id_type_b, id_value_b):
+            return False
+
         id_value_a = str(id_value_a)
         id_value_b = str(id_value_b)
         query_string = (
