@@ -5,7 +5,7 @@ import os
 class database:
     def __init__(self) -> None:
         """Start up database connection.
-        Setup types and identifier names according to database design.
+        Setup types and identifier names according to database design v3.
         """
         self.__driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
         self.__name = os.getenv('NEO4J_DB_NAME')
@@ -19,6 +19,7 @@ class database:
         
         self.__dataset_type = 'Dataset'
         self.__dataset_id = 'id'
+        self.__dataset_property = 'file_name' # only one known property
         
         self.__data_model_type = 'DataModel'
         self.__data_model_id = 'id'
@@ -28,7 +29,7 @@ class database:
         
         self.__project_type = 'Project'
         self.__project_id = 'id'
-        self.__project_exclusion = ['FAVORITED_IN'] # exclusion for deletion
+        self.__project_exclusion = ['FAVORITED_IN'] # exclusion relationships for deletion
         
         self.__result_type = 'Result'
         self.__result_id = 'id'
@@ -87,28 +88,36 @@ class database:
         return "Whole database printed out in console"
     
 
-    def __add_node(self, type, id_type, id_value):
-        """return True when nothing went wrong, False if database query error.
+    def __add_node(self, type, id_type, id_value = None):
+        """return value of node identifier on successful creation, None if database query error.
         Create a node with specific node-type, id-type and it's value.
-        Doesn't give False when node exists
         """
         # check if node already exists
         if self.__does_node_exist(type, id_type, id_value):
             return False
 
-        id_value = str(id_value)
-        query_string = "MERGE (n:" + type + " {" + id_type + ": $value})"
+        if id_value == None:
+            query_string = (
+                "CREATE (n:" + type + " {" + id_type + ": randomUUID()}) "
+                "RETURN n." + id_type + " AS " + id_type
+            )
+        else:
+            id_value = str(id_value)
+            query_string = (
+                "MERGE (n:" + type + " {" + id_type + ": $value}) "
+                "RETURN n." + id_type + " AS " + id_type
+            )
 
         try:
-            self.__driver.execute_query(
+            records, summary, keys = self.__driver.execute_query(
                 query_string,
                 value = id_value,
                 database_= self.__name,
             )
+            return next(iter(records)).data()[id_type]
         except:
-            return False
-
-        return True
+            print('h')
+            return None
             
 
     def __set_node_property(self, type, id_type, id_value, property_name, new_data):
@@ -475,6 +484,11 @@ class database:
         return self.__delete_node(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value)
     
 
+    def get_global_settings_id_type(self):
+        """Get global settings id type""" 
+        return self.__global_settings_id
+    
+
     ### User settings
     def add_user_settings_node(self, id_value):
         """Create user settings node"""        
@@ -501,10 +515,15 @@ class database:
         return self.__delete_node(self.__user_settings_type, self.__user_settings_id, id_value)
     
 
+    def get_user_settings_id_type(self):
+        """Get user settings id type""" 
+        return self.__user_settings_id
+    
+
     ### Project
-    def add_project_node(self, id_value):
+    def add_project_node(self):
         """Create Project node. Avoids duplicates."""        
-        return self.__add_node(self.__project_type, self.__project_id, id_value)
+        return self.__add_node(self.__project_type, self.__project_id)
 
 
     def set_project_property(self, id_value, property_name, new_data):
@@ -527,21 +546,31 @@ class database:
         return self.__delete_node_with_connections(self.__project_type, self.__project_id, id_value, self.__project_exclusion)
     
 
+    def get_project_id_type(self):
+        """Get project id type""" 
+        return self.__project_id
+    
+
 
     ### Dataset
-    def add_dataset_node(self, id_value):
+    def add_dataset_node(self):
         """Create Dataset node. Avoids duplicates."""        
-        return self.__add_node(self.__dataset_type, self.__dataset_id, id_value)
+        return self.__add_node(self.__dataset_type, self.__dataset_id)
 
 
-    def set_dataset_property(self, id_value, property_name, new_data):
+    def set_dataset_property(self, id_value, new_data):
         """Set Dataset property. Creates/overwrites current data.""" 
-        return self.__set_node_property(self.__dataset_type, self.__dataset_id, id_value, property_name, new_data)
+        return self.__set_node_property(self.__dataset_type, self.__dataset_id, id_value, self.__dataset_property, new_data)
     
         
-    def lookup_dataset_property(self, id_value, property_name):
+    def lookup_dataset_property(self, id_value):
         """Return data of specific property from Dataset""" 
-        return self.__lookup_node_property(self.__dataset_type, self.__dataset_id, id_value, property_name)
+        return self.__lookup_node_property(self.__dataset_type, self.__dataset_id, id_value, self.__dataset_property)
+    
+
+    def remove_dataset_property(self, id_value):
+        """Remove data of specific property from Dataset"""
+        return self.__remove_property(self.__dataset_type, self.__dataset_id, id_value, self.__dataset_property)
     
 
     def delete_dataset(self, id_value):
@@ -549,10 +578,15 @@ class database:
         return self.__delete_node(self.__dataset_type, self.__dataset_id, id_value)
     
 
+    def get_dataset_id_type(self):
+        """Get dataset id type""" 
+        return self.__dataset_id
+    
+
     ### DataModel
-    def add_data_model_node(self, id_value):
+    def add_data_model_node(self):
         """Create DataModel node. Avoids duplicates."""
-        return self.__add_node(self.__data_model_type, self.__data_model_id, id_value)
+        return self.__add_node(self.__data_model_type, self.__data_model_id)
 
 
     def set_data_model_property(self, id_value, property_name, new_data):
@@ -575,11 +609,15 @@ class database:
         return self.__delete_node_with_connections(self.__data_model_type, self.__data_model_id, id_value)
     
 
+    def get_data_model_id_type(self):
+        """Get data model id type""" 
+        return self.__data_model_id
+    
 
         ### AnalyzeModel
-    def add_analyze_model_node(self, id_value):
+    def add_analyze_model_node(self):
         """Create AnalyzeModel node. Avoids duplicates."""
-        return self.__add_node(self.__analyze_model_type, self.__analyze_model_id, id_value)
+        return self.__add_node(self.__analyze_model_type, self.__analyze_model_id)
 
 
     def set_analyze_model_property(self, id_value, property_name, new_data):
@@ -600,6 +638,11 @@ class database:
     def delete_analyze_model(self, id_value):
         """Delete AnalyzeModel node""" 
         return self.__delete_node_with_connections(self.__analyze_model_type, self.__analyze_model_id, id_value)
+    
+
+    def get_analyze_model_id_type(self):
+        """Get analyze model id type""" 
+        return self.__analyze_model_id
 
    
 
@@ -645,5 +688,9 @@ class database:
     def delete_result(self, id_value):
         """Delete Result node""" 
         return self.__delete_node_with_connections(self.__result_type, self.__result_id, id_value)
+    
+    def get_result_id_type(self):
+        """Get result id type""" 
+        return self.__result_id
 
 
