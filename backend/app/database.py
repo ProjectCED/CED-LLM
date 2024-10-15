@@ -1,6 +1,49 @@
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
+from enum import Enum
 import os
+
+class NodeProperties():
+    """All allowed property names for each node type.
+    """
+    class Settings(Enum):
+        # Settings
+        # example <FOO> = "foo"
+        pass
+
+    class UserSettings(Enum):
+        # User settings
+        # example <FOO> = "foo"
+        NAME = "name"
+
+    class Dataset(Enum):
+        # Dataset
+        # example <FOO> = "foo"
+        FILE_NAME = "file_name"
+
+    class DataModel(Enum):
+        # Data model
+        # example <FOO> = "foo"
+        NAME = "name"
+        NODE_TYPES = "node_types"
+        RELATIONSHIP_TYPES = "relationship_types"
+    
+    class AnalyzeModel(Enum):
+        # Analyze model
+        # example <FOO> = "foo"
+        NAME = "name"
+        KEYWORDS = "keywords"
+
+    class Project(Enum):
+        # Project
+        # example <FOO> = "foo"
+        NAME = "name"
+
+    class Result(Enum):
+        # Result
+        # example <FOO> = "foo"
+        pass
+
 
 class Database:
     def __init__(self) -> None:
