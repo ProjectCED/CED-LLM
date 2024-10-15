@@ -5,6 +5,7 @@ import os
 
 class NodeProperties:
     """All allowed property names for each node type.
+    Check Database class init for reserved names for identifier usage before adding new property names.
     """
     class GlobalSettings(Enum):
         # Settings
