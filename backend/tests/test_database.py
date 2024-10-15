@@ -430,6 +430,94 @@ class db_test:
         print( 'Failed: ' + str(failed) )
         print( '--------------------')
 
+    def test_blueprint(self):
+        success = 0
+        failed = 0
+
+        print( '### Blueprint testing' )
+        
+        print( '<Creation>' )
+        id_value = db.add_blueprint_node()
+        if id_value == None:
+            print( 'Failed' )
+            failed += 1
+        else:
+            success += 1
+
+        print( '<Set property>' )
+        if db.set_blueprint_property(id_value, NodeProperties.Blueprint.TEST_PASS, 'puhe_malli'):
+            success += 1
+        else:
+            print( 'Failed' )
+            failed += 1
+
+        print( '<Lookup property>' )
+        if db.lookup_blueprint_property(id_value, NodeProperties.Blueprint.TEST_PASS) == 'puhe_malli':
+            success += 1
+        else:
+            print( 'Failed' )
+            failed += 1
+        
+        print( '<Lookup property from non existent node>' )
+        if db.lookup_blueprint_property('wrong_node_id_value', NodeProperties.Blueprint.TEST_PASS) == None:
+            success += 1
+        else:
+            print( 'Failed' )
+            failed += 1
+        
+        print( '<Lookup non existent property>' )
+        if db.lookup_blueprint_property(id_value, NodeProperties.Blueprint.TEST_FAIL) == None:
+            success += 1
+        else:
+            print( 'Failed' )
+            failed += 1
+        
+        print( '<Remove property>' )
+        if db.remove_blueprint_property(id_value, NodeProperties.Blueprint.TEST_PASS):
+            success += 1
+        else:
+            print( 'Failed' )
+            failed += 1
+
+        print( '<Remove property from non existent node>' )
+        if db.remove_blueprint_property('wrong_node_id_value', NodeProperties.Blueprint.TEST_PASS):
+            print( 'Failed' )
+            failed += 1
+        else:
+            success += 1
+
+        print( '<Remove non existent property>' )
+        if db.remove_blueprint_property(id_value, NodeProperties.Blueprint.TEST_FAIL):
+            print( 'Failed' )
+            failed += 1
+        else:
+            success += 1
+
+        print( '<Delete node>' )
+        if db.delete_blueprint(id_value):
+            success += 1
+        else:
+            print( 'Failed' )
+            failed += 1
+        
+        print( '<Delete non existent node>' )
+        if db.delete_blueprint('wrong_node_id_value'):
+            print( 'Failed' )
+            failed += 1
+        else:
+            success += 1
+
+
+        self.__success += success
+        self.__failed += failed
+
+
+        print( '--------------------')
+        print( 'Blueprint testing:' )
+        print( 'Success: ' + str(success) )
+        print( 'Failed: ' + str(failed) )
+        print( '--------------------')
+
 
     def test_analyze_model(self):
         success = 0
@@ -661,6 +749,7 @@ class db_test:
         self.test_user_settings()
         self.test_dataset()
         self.test_data_model()
+        self.test_blueprint()
         self.test_analyze_model()
         self.test_project()
 

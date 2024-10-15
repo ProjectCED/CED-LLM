@@ -22,11 +22,13 @@ class NodeProperties:
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
 
+
     # has only one property, enforced by function call
     #class Dataset(Enum):
         # Dataset
         # example <FOO> = "foo"
     #    FILE_NAME = "file_name"
+
 
     class DataModel(Enum):
         # Data model
@@ -38,7 +40,14 @@ class NodeProperties:
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
 
+
+    class Blueprint(Enum):
+        # Blueprint
+        # example <FOO> = "foo"
+        TEST_PASS = "test_pass"
+        TEST_FAIL = "test_fail"
     
+
     class AnalyzeModel(Enum):
         # Analyze model
         # example <FOO> = "foo"
@@ -48,6 +57,7 @@ class NodeProperties:
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
 
+
     class Project(Enum):
         # Project
         # example <FOO> = "foo"
@@ -55,6 +65,7 @@ class NodeProperties:
         
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
+
 
     class Result(Enum):
         # Result
@@ -89,6 +100,9 @@ class Database:
         
         self.__analyze_model_type = 'AnalyzeModel'
         self.__analyze_model_id = 'id'
+
+        self.__blueprint_type = 'Blueprint'
+        self.__blueprint_id = 'id'
         
         self.__project_type = 'Project'
         self.__project_id = 'id'
@@ -673,9 +687,40 @@ class Database:
     
 
     def get_data_model_id_type(self):
-        """Get data model id type""" 
+        """Get DataModel id type""" 
         return self.__data_model_id
     
+
+    ### Blueprint
+    def add_blueprint_node(self):
+        """Create Blueprint node. Avoids duplicates."""
+        return self.__add_node(self.__blueprint_type, self.__blueprint_id)
+
+
+    def set_blueprint_property(self, id_value, property_name: NodeProperties.DataModel, new_data):
+        """Set Blueprint property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.__blueprint_type, self.__blueprint_id, id_value, property_name.value, new_data)
+    
+        
+    def remove_blueprint_property(self, id_value, property_name: NodeProperties.DataModel):
+        """Removes specific Blueprint property data (and property)""" 
+        return self.__remove_property(self.__blueprint_type, self.__data_model_id, id_value, property_name.value)
+
+
+    def lookup_blueprint_property(self, id_value, property_name: NodeProperties.DataModel):
+        """Return data of specific property from Blueprint""" 
+        return self.__lookup_node_property(self.__blueprint_type, self.__data_model_id, id_value, property_name.value)
+    
+
+    def delete_blueprint(self, id_value):
+        """Delete Blueprint node""" 
+        return self.__delete_node_with_connections(self.__blueprint_type, self.__data_model_id, id_value)
+    
+
+    def get_blueprint_id_type(self):
+        """Get Blueprint id type""" 
+        return self.__data_model_id
+
 
         ### AnalyzeModel
     def add_analyze_model_node(self):
@@ -704,7 +749,7 @@ class Database:
     
 
     def get_analyze_model_id_type(self):
-        """Get analyze model id type""" 
+        """Get AnalyzeModel id type""" 
         return self.__analyze_model_id
 
    
