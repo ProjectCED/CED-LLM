@@ -11,7 +11,7 @@ class NodeProperties:
         # Settings
         # example <FOO> = "foo"
         TEST_PASS = "test_pass"
-        TEST_FAILED = "test_failed"
+        TEST_FAIL = "test_fail"
 
 
     class UserSettings(Enum):
@@ -20,7 +20,7 @@ class NodeProperties:
         NAME = "name"
 
         TEST_PASS = "test_pass"
-        TEST_FAILED = "test_failed"
+        TEST_FAIL = "test_fail"
 
     # has only one property, enforced by function call
     #class Dataset(Enum):
@@ -36,7 +36,7 @@ class NodeProperties:
         RELATIONSHIP_TYPES = "relationship_types"
 
         TEST_PASS = "test_pass"
-        TEST_FAILED = "test_failed"
+        TEST_FAIL = "test_fail"
 
     
     class AnalyzeModel(Enum):
@@ -46,7 +46,7 @@ class NodeProperties:
         KEYWORDS = "keywords"
 
         TEST_PASS = "test_pass"
-        TEST_FAILED = "test_failed"
+        TEST_FAIL = "test_fail"
 
     class Project(Enum):
         # Project
@@ -54,13 +54,13 @@ class NodeProperties:
         NAME = "name"
         
         TEST_PASS = "test_pass"
-        TEST_FAILED = "test_failed"
+        TEST_FAIL = "test_fail"
 
     class Result(Enum):
         # Result
         # example <FOO> = "foo"
         TEST_PASS = "test_pass"
-        TEST_FAILED = "test_failed"
+        TEST_FAIL = "test_fail"
 
 
 class Database:

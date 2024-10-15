@@ -48,7 +48,7 @@ class db_test:
             failed += 1
         
         print( '<Lookup non existent property>' )
-        if db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_FAILED) == None:
+        if db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_FAIL) == None:
             success += 1
         else:
             print( 'Failed' )
@@ -62,7 +62,7 @@ class db_test:
             failed += 1
 
         print( '<Remove non existent property>' )
-        if db.remove_global_settings_property(NodeProperties.GlobalSettings.TEST_FAILED):
+        if db.remove_global_settings_property(NodeProperties.GlobalSettings.TEST_FAIL):
             print( 'Failed' )
             failed += 1
         else:
@@ -124,7 +124,7 @@ class db_test:
             failed += 1
         
         print( '<Lookup non existent property>' )
-        if db.lookup_user_settings_property(id_value, NodeProperties.UserSettings.TEST_FAILED) == None:
+        if db.lookup_user_settings_property(id_value, NodeProperties.UserSettings.TEST_FAIL) == None:
             success += 1
         else:
             print( 'Failed' )
@@ -145,7 +145,7 @@ class db_test:
             success += 1
 
         print( '<Remove non existent property>' )
-        if db.remove_user_settings_property(id_value, NodeProperties.UserSettings.TEST_FAILED):
+        if db.remove_user_settings_property(id_value, NodeProperties.UserSettings.TEST_FAIL):
             print( 'Failed' )
             failed += 1
         else:
@@ -211,7 +211,7 @@ class db_test:
             failed += 1
         
         print( '<Lookup non existent property>' )
-        if db.lookup_project_property(id_value, NodeProperties.Project.TEST_FAILED) == None:
+        if db.lookup_project_property(id_value, NodeProperties.Project.TEST_FAIL) == None:
             success += 1
         else:
             print( 'Failed' )
@@ -232,7 +232,7 @@ class db_test:
             success += 1
 
         print( '<Remove non existent property>' )
-        if db.remove_project_property(id_value, NodeProperties.Project.TEST_FAILED):
+        if db.remove_project_property(id_value, NodeProperties.Project.TEST_FAIL):
             print( 'Failed' )
             failed += 1
         else:
@@ -378,7 +378,7 @@ class db_test:
             failed += 1
         
         print( '<Lookup non existent property>' )
-        if db.lookup_data_model_property(id_value, NodeProperties.DataModel.TEST_FAILED) == None:
+        if db.lookup_data_model_property(id_value, NodeProperties.DataModel.TEST_FAIL) == None:
             success += 1
         else:
             print( 'Failed' )
@@ -399,7 +399,7 @@ class db_test:
             success += 1
 
         print( '<Remove non existent property>' )
-        if db.remove_data_model_property(id_value, NodeProperties.DataModel.TEST_FAILED):
+        if db.remove_data_model_property(id_value, NodeProperties.DataModel.TEST_FAIL):
             print( 'Failed' )
             failed += 1
         else:
@@ -467,7 +467,7 @@ class db_test:
             failed += 1
         
         print( '<Lookup non existent property>' )
-        if db.lookup_analyze_model_property(id_value, NodeProperties.AnalyzeModel.TEST_FAILED) == None:
+        if db.lookup_analyze_model_property(id_value, NodeProperties.AnalyzeModel.TEST_FAIL) == None:
             success += 1
         else:
             print( 'Failed' )
@@ -488,7 +488,7 @@ class db_test:
             success += 1
 
         print( '<Remove non existent property>' )
-        if db.remove_analyze_model_property(id_value, NodeProperties.AnalyzeModel.TEST_FAILED):
+        if db.remove_analyze_model_property(id_value, NodeProperties.AnalyzeModel.TEST_FAIL):
             print( 'Failed' )
             failed += 1
         else:
