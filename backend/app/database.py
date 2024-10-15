@@ -2,7 +2,7 @@ from neo4j import GraphDatabase
 from dotenv import load_dotenv
 import os
 
-class database:
+class Database:
     def __init__(self) -> None:
         """Start up database connection.
         Setup types and identifier names according to database design v3.
