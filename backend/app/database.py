@@ -44,6 +44,8 @@ class NodeProperties:
     class Blueprint(Enum):
         # Blueprint
         # example <FOO> = "foo"
+        NAME = "name"
+
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
     
@@ -67,9 +69,11 @@ class NodeProperties:
         TEST_FAIL = "test_fail"
 
 
-    class Result(Enum):
+    class ResultBlueprint(Enum):
         # Result
         # example <FOO> = "foo"
+        RESULT = "result"
+
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
 
@@ -108,14 +112,17 @@ class Database:
         self.__project_id = 'id'
         self.__project_exclusion = ['FAVORITED_IN'] # exclusion relationships for deletion
         
-        self.__result_type = 'Result'
-        self.__result_id = 'id'
+        self.__result_blueprint_type = 'ResultBlueprint'
+        self.__result_blueprint_id = 'id'
         
         self.__used_dataset_type = 'UsedDataSet'
         self.__used_dataset_id = 'id'
 
         self.__used_data_model_type = 'UsedDataModel'
         self.__used_data_model_id = 'id'
+
+        self.__used_blueprint_type = 'UsedBlueprint'
+        self.__used_blueprint_id = 'id'
 
         self.__used_analyze_model_type = 'UsedAnalyzeModel'
         self.__used_analyze_model_id = 'id'
@@ -129,12 +136,14 @@ class Database:
         self.__connect_result_project = 'BELONGS_TO'
 
         # model(s) used to construct the data structure in project, used for making result node (complicated way)
-        self.__connect_data_model_project = 'ACTIVE_IN'
+        # probably useless
+        #self.__connect_data_model_project = 'ACTIVE_IN' 
 
         # result node related
-        self.__connect_used_analyze_model_result = 'USED_IN_ANALYSIS'
-        self.__connect_used_data_model_result = 'USED_IN_ANALYSIS'
-        self.__connect_used_dataset_result = 'USED_IN_ANALYSIS'
+        #self.__connect_used_analyze_model_result = 'USED_IN_ANALYSIS' # directs to old result
+        self.__connect_used_data_model_result_blueprint = 'USED_IN_ANALYSIS'
+        self.__connect_used_dataset_result_blueprint = 'USED_IN_ANALYSIS'
+        self.__connect_used_blueprint_result_blueprint = 'USED_IN_ANALYSIS'
         self.__connect_used_dataset_used_data_model = 'USED_FOR_TRAINING'
         self.__connect_used_dataset_used_analyze_model = 'USED_FOR_TRAINING'
 
@@ -179,21 +188,19 @@ class Database:
                 "RETURN n." + id_type + " AS " + id_type
             )
         else:
-            id_value = str(id_value)
+            #id_value = str(id_value)
             query_string = (
-                "MERGE (n:" + type + " {" + id_type + ": $value}) "
+                "MERGE (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
                 "RETURN n." + id_type + " AS " + id_type
             )
 
         try:
             records, summary, keys = self.__driver.execute_query(
                 query_string,
-                value = id_value,
                 database_= self.__name,
             )
             return next(iter(records)).data()[id_type]
         except:
-            print('h')
             return None
             
 
@@ -204,7 +211,6 @@ class Database:
         # check if node exists
         if not self.__does_node_exist(type, id_type, id_value):
             return False
-
         id_value = str(id_value)
         query_string = (
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
@@ -394,27 +400,38 @@ class Database:
 
         return True
     
-    def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new):
+    def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new = None):
         """return True when query succeeded
         Copy node into a new node type.
         """
         id_value = str(id_value)
-        id_value_new = str(id_value_new)
-        query_string = (
+        if id_value_new == None:
+            query_string = (
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
-            "MERGE (m:" + node_type_new + " {" + id_type_new + ": '" + id_value_new + "'}) "
-            "SET m = properties(n)"
+            "CREATE (m:" + node_type_new + ") "
+            "SET m = properties(n) "
+            "SET m." + id_type_new + " = randomUUID() "
+            "RETURN m." + id_type + " AS " + id_type
         )
+        else:
+            id_value_new = str(id_value_new)
+            query_string = (
+                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+                "CREATE (m:" + node_type_new + " ) "
+                "SET m = properties(n) "
+                "SET m." + id_type_new + " = '" + id_value_new + "' "
+                "RETURN m." + id_type + " AS " + id_type
+            )
 
         try:
-            self.__driver.execute_query(
+            records, summary, keys = self.__driver.execute_query(
                 query_string,
                 database_= self.__name,
             )
+            return next(iter(records)).data()[id_type]
         except:
-            return False
+            return None
 
-        return True
     
     def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
         """return node property data or None
@@ -474,7 +491,6 @@ class Database:
                 query_string,
                 database_= self.__name,
             )
-
             if not records:
                 return False
             else:
@@ -495,9 +511,10 @@ class Database:
         return self.__connect_with_relationship(self.__dataset_type, self.__dataset_id, dataset_id_value, self.__analyze_model_type, self.__analyze_model_id, analyze_model_id_value, self.__connect_dataset_analyze_model)
     
 
-    def connect_data_model_to_project(self, data_model_id_value, project_id_value):
-        """Connect DataModel to Project"""
-        return self.__connect_with_relationship(self.__data_model_type, self.__data_model_id, data_model_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_data_model_project)
+    # probably useless
+    #def connect_data_model_to_project(self, data_model_id_value, project_id_value):
+    #    """Connect DataModel to Project"""
+    #    return self.__connect_with_relationship(self.__data_model_type, self.__data_model_id, data_model_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_data_model_project)
 
 
     def connect_dataset_to_project(self, dataset_id_value, project_id_value):
@@ -505,24 +522,30 @@ class Database:
         return self.__connect_with_relationship(self.__dataset_type, self.__dataset_id, dataset_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_dataset_project)
 
 
-    def __connect_result_to_project(self, result_id_value, project_id_value):
+    def __connect_result_blueprint_to_project(self, result_id_value, project_id_value):
         """Connect Result to Project"""
-        return self.__connect_with_relationship(self.__result_type, self.__result_id, result_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_result_project)
+        return self.__connect_with_relationship(self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_result_project)
     
 
-    def __connect_used_dataset_to_result(self, used_dataset_id_value, result_id_value):
-        """Connect UsedDataset to Result"""
-        return self.__connect_with_relationship(self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value, self.__result_type, self.__result_id, result_id_value, self.__connect_used_dataset_result)
+    def __connect_used_dataset_to_result_blueprint(self, used_dataset_id_value, result_id_value):
+        """Connect UsedDataset to ResultBlueprint"""
+        return self.__connect_with_relationship(self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_dataset_result_blueprint)
 
 
-    def __connect_used_analyze_model_to_result(self, used_analyze_model_id_value, result_id_value):
-        """Connect UsedAnalyzeModel to Result"""
-        return self.__connect_with_relationship(self.__used_analyze_model_type, self.__used_analyze_model_id, used_analyze_model_id_value, self.__result_type, self.__result_id, result_id_value, self.__connect_used_analyze_model_result)
+    # todo: this is old result
+    #def __connect_used_analyze_model_to_result(self, used_analyze_model_id_value, result_id_value):
+    #    """Connect UsedAnalyzeModel to Result"""
+    #    return self.__connect_with_relationship(self.__used_analyze_model_type, self.__used_analyze_model_id, used_analyze_model_id_value, self.__result_type, self.__result_id, result_id_value, self.__connect_used_analyze_model_result)
     
 
-    def __connect_used_data_model_to_result(self, used_data_model_id_value, result_id_value):
-        """Connect UsedDataModel to Result"""
-        return self.__connect_with_relationship(self.__used_data_model_type, self.__used_data_model_id, used_data_model_id_value, self.__result_type, self.__result_id, result_id_value, self.__connect_used_data_model_result)
+    def __connect_used_data_model_to_result_blueprint(self, used_data_model_id_value, result_id_value):
+        """Connect UsedDataModel to ResultBlueprint"""
+        return self.__connect_with_relationship(self.__used_data_model_type, self.__used_data_model_id, used_data_model_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_data_model_result_blueprint)
+
+
+    def __connect_used_blueprint_to_result_blueprint(self, used_blueprint_id_value, result_id_value):
+        """Connect UsedBlueprint to ResultBlueprint"""
+        return self.__connect_with_relationship(self.__used_blueprint_type, self.__used_blueprint_id, used_blueprint_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_blueprint_result_blueprint)
 
 
     def __connect_used_dataset_to_used_data_model(self, used_dataset_id_value, used_data_model_id_value):
@@ -722,7 +745,7 @@ class Database:
         return self.__data_model_id
 
 
-        ### AnalyzeModel
+    ### AnalyzeModel
     def add_analyze_model_node(self):
         """Create AnalyzeModel node. Avoids duplicates."""
         return self.__add_node(self.__analyze_model_type, self.__analyze_model_id)
@@ -752,53 +775,87 @@ class Database:
         """Get AnalyzeModel id type""" 
         return self.__analyze_model_id
 
-   
+    ### Used dataset
+    def __set_used_dataset_property(self, id_value, new_data):
+        """Set Used Dataset property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.__used_dataset_type, self.__used_dataset_id, id_value, self.__dataset_property, new_data)
 
-    ### Result
-    # Todo: not needing to put id values(bad dupes), accept multiple relationships and accept no relationships
+    ### Result Blueprint
+
+    # if datasets for result are present in database when pressing analyse
+    # def add_result_blueprint_node(self, dataset_ids, blueprint_ids, datamodel_ids):
+    #     """Create Result-blueprint node. Avoids duplicates."""
+    #     try:
+    #         result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+            
+            
+    #         # copy nodes into used node versions and connect them to result
+    #         for id in dataset_ids:
+    #             used_dataset_id = self.__copy_node(self.__dataset_type, id, self.__used_dataset_type)
+    #             if not self.__connect_used_dataset_to_result_blueprint(used_dataset_id, result_blueprint_id): return None
+
+    #         for id in blueprint_ids:
+    #             used_blueprint_id = self.__copy_node(self.__blueprint_type, id, self.__used_blueprint_type)
+    #             if not self.__connect_used_blueprint_to_result_blueprint(used_blueprint_id, result_blueprint_id): return None
+
+    #         for id in datamodel_ids:
+    #             used_data_model_id = self.__copy_node(self.__data_model_type, id, self.__used_data_model_type)
+    #             if not self.__connect_used_data_model_to_result_blueprint(used_data_model_id, result_blueprint_id): return None
+
+    #         return result_blueprint_id
+    #     except:
+    #         return None
     
-    # def add_result_node(self, result_id_value, project_id_value, analyze_model_id_value, used_analyze_model_id_value, used_dataset_id_value, used_data_model_id_value):
-    #     """Create Result node with all the connected information."""
-    #     return_a = self.__add_node(self.__result_type, self.__result_id, result_id_value)
-    #     return_b = self.__connect_result_to_project(result_id_value, project_id_value)
-    #     ### search connected Dataset, make a copy of that and connect it
-    #     project_dataset_id_value = self.__lookup_connected_node_property(self.__project_type, self.__project_id, project_id_value, self.__connect_dataset_project, self.__dataset_id)
-    #     return_e = self.__copy_node(self.__dataset_type, self.__dataset_id, project_dataset_id_value, self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value)
-    #     return_f = self.__connect_used_dataset_to_result(used_dataset_id_value, result_id_value)
-
-    #     ### make a copy of AnalyzeModel and connect it
-    #     return_c = self.__copy_node(self.__analyze_model_type, self.__analyze_model_id, analyze_model_id_value, self.__used_analyze_model_type, self.__used_analyze_model_id, used_analyze_model_id_value)
-    #     return_d = self.__connect_used_analyze_model_to_result(used_analyze_model_id_value, result_id_value)
-    #     ### search connected Dataset, make a copy of that and connect it
-    #     analyze_model_dataset_id_value = self.__lookup_connected_node_property(self.__analyze_model_type, self.__analyze_model_id, analyze_model_id_value, self.__connect_dataset_analyze_model, self.__dataset_id)
-    #     return_e = self.__copy_node(self.__dataset_type, self.__dataset_id, analyze_model_dataset_id_value, self.__used_dataset_type, self.__used_dataset_id, 3)
-    #     return_f = self.__connect_used_dataset_to_used_analyze_model(3, used_analyze_model_id_value)
-
-    #     ### search connected DataModel, make a copy of that and connect it
-    #     project_data_model_id_value = self.__lookup_connected_node_property(self.__project_type, self.__project_id, project_id_value, self.__connect_data_model_project, self.__data_model_id)
-    #     return_e = self.__copy_node(self.__data_model_type, self.__data_model_id, project_data_model_id_value, self.__used_data_model_type, self.__used_data_model_id, used_data_model_id_value)
-    #     return_f = self.__connect_used_data_model_to_result(used_data_model_id_value, result_id_value)
-    #     ### search connected Dataset, make a copy of that and connect it
-    #     data_model_dataset_id_value = self.__lookup_connected_node_property(self.__data_model_type, self.__data_model_id, project_data_model_id_value, self.__connect_dataset_data_model, self.__dataset_id)
-    #     return_g = self.__copy_node(self.__dataset_type, self.__dataset_id, data_model_dataset_id_value, self.__used_dataset_type, self.__used_dataset_id, 2)
-    #     return_h = self.__connect_used_dataset_to_used_data_model(2, used_data_model_id_value)
-
-    #     return "result node created"
-
-    def set_result_property(self, id_value, property_name, new_data):
-        """Set Result property. Creates/overwrites current data.""" 
-        return self.__set_node_property(self.__result_type, self.__result_id, id_value, property_name, new_data)
     
-    def lookup_result_property(self, id_value, property_name):
-        """Return data of specific property from Result""" 
-        return self.__lookup_node_property(self.__result_type, self.__result_id, id_value, property_name)
+    def add_result_blueprint_node(self, project_id, dataset_list, blueprint_ids, datamodel_ids):
+        """Create Result-blueprint node. Avoids duplicates."""
+        try:
+            
+            result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+            
+            # copy nodes into used node versions and connect them to result
+            for file_name in dataset_list:
+                used_dataset_id = self.__add_node(self.__used_dataset_type, self.__used_dataset_id)
+                self.__set_used_dataset_property(used_dataset_id, file_name)
+                self.__connect_used_dataset_to_result_blueprint(used_dataset_id, result_blueprint_id)
+
+            for id in blueprint_ids:
+                used_blueprint_id = self.__copy_node(self.__blueprint_type, self.__blueprint_id, id, self.__used_blueprint_type, self.__used_blueprint_id)
+                self.__connect_used_blueprint_to_result_blueprint(used_blueprint_id, result_blueprint_id)
+
+            for id in datamodel_ids:
+                used_data_model_id = self.__copy_node(self.__data_model_type, self.__data_model_id, id, self.__used_data_model_type, self.__used_data_model_id)
+                self.__connect_used_data_model_to_result_blueprint(used_data_model_id, result_blueprint_id)
+
+            self.__connect_result_blueprint_to_project(result_blueprint_id, project_id)
+
+            return result_blueprint_id
+        except:
+            return None
+        
+
+    def set_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint, new_data):
+        """Set Result-blueprint property. Creates/overwrites current data.""" 
+        return self.__set_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value, new_data)
+
+
+    def remove_project_property(self, id_value, property_name: NodeProperties.ResultBlueprint):
+        """Removes specific Project property data (and property)""" 
+        return self.__remove_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value)
+
+
+    def lookup_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint):
+        """Return data of specific property from Result-blueprint""" 
+        return self.__lookup_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name)
     
-    def delete_result(self, id_value):
-        """Delete Result node""" 
-        return self.__delete_node_with_connections(self.__result_type, self.__result_id, id_value)
+
+    def delete_result_blueprint(self, id_value):
+        """Delete Result-blueprint node""" 
+        return self.__delete_node_with_connections(self.__result_blueprint_type, self.__result_blueprint_id, id_value)
     
-    def get_result_id_type(self):
-        """Get result id type""" 
-        return self.__result_id
+
+    def get_result_blueprint_id_type(self):
+        """Get Result-blueprint id type""" 
+        return self.__result_blueprint_id
 
 
