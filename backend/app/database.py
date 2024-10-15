@@ -274,12 +274,11 @@ class Database:
             return None
 
 
-    def __lookup_nodes(self, type, id_type, id_value, property_name):
+    def __lookup_nodes(self, type, id_type, property_name):
         """return nodes with (id, property_name) combo or None if nothing was found"""
-        id_value = str(id_value)
         query_string = (
-            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
-            "RETURN n." + property_name + " AS " + property_name
+            "MATCH (n:" + type + " ) "
+            "RETURN COLLECT ([n." + id_type + ", n." + property_name + "]) AS list"
         )
 
         records, summary, keys = self.__driver.execute_query(
@@ -288,7 +287,10 @@ class Database:
         )
         
         try:
-            return next(iter(records)).data()[property_name]
+            # gives out [[ ]]
+            double_list = next(iter(records)).data()['list']
+            single_list = [item for sublist in double_list for item in sublist]
+            return single_list
         except:
             return None
         
@@ -623,17 +625,22 @@ class Database:
     
         
     def remove_user_settings_property(self, id_value, property_name: NodeProperties.UserSettings):
-        """Removes specific Settings property data (and property)""" 
+        """Removes specific user settings property data (and property)""" 
         return self.__remove_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value)
 
 
     def lookup_user_settings_property(self, id_value, property_name: NodeProperties.UserSettings):
-        """Return data of specific property from settings""" 
+        """Return data of specific property from user settings""" 
         return self.__lookup_node_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value)
     
 
+    def lookup_data_model_nodes(self):
+        """Return list of user settings"""
+        return self.__lookup_nodes(self.__user_settings_type, self.__user_settings_id, NodeProperties.UserSettings.NAME.value)
+    
+
     def delete_user_settings(self, id_value):
-        """Delete global settings node""" 
+        """Delete user settings node""" 
         return self.__delete_node(self.__user_settings_type, self.__user_settings_id, id_value)
     
 
@@ -661,6 +668,11 @@ class Database:
     def lookup_project_property(self, id_value, property_name: NodeProperties.Project):
         """Return data of specific property from Project""" 
         return self.__lookup_node_property(self.__project_type, self.__project_id, id_value, property_name.value)
+    
+
+    def lookup_project_nodes(self):
+        """Return list of Projects"""
+        return self.__lookup_nodes(self.__project_type, self.__project_id, NodeProperties.Project.NAME.value)
     
 
     def delete_project(self, id_value):
@@ -725,6 +737,10 @@ class Database:
         """Return data of specific property from DataModel""" 
         return self.__lookup_node_property(self.__data_model_type, self.__data_model_id, id_value, property_name.value)
     
+    def lookup_data_model_nodes(self):
+        """Return list of DataModel"""
+        return self.__lookup_nodes(self.__data_model_type, self.__data_model_id, NodeProperties.DataModel.NAME.value)
+    
 
     def delete_data_model(self, id_value):
         """Delete DataModel node""" 
@@ -749,22 +765,27 @@ class Database:
         
     def remove_blueprint_property(self, id_value, property_name: NodeProperties.DataModel):
         """Removes specific Blueprint property data (and property)""" 
-        return self.__remove_property(self.__blueprint_type, self.__data_model_id, id_value, property_name.value)
+        return self.__remove_property(self.__blueprint_type, self.__blueprint_id, id_value, property_name.value)
 
 
     def lookup_blueprint_property(self, id_value, property_name: NodeProperties.DataModel):
         """Return data of specific property from Blueprint""" 
-        return self.__lookup_node_property(self.__blueprint_type, self.__data_model_id, id_value, property_name.value)
+        return self.__lookup_node_property(self.__blueprint_type, self.__blueprint_id, id_value, property_name.value)
+    
+
+    def lookup_blueprint_nodes(self):
+        """Return list of Blueprint"""
+        return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, NodeProperties.Blueprint.NAME.value)
     
 
     def delete_blueprint(self, id_value):
         """Delete Blueprint node""" 
-        return self.__delete_node_with_connections(self.__blueprint_type, self.__data_model_id, id_value)
+        return self.__delete_node_with_connections(self.__blueprint_type, self.__blueprint_id, id_value)
     
 
     def get_blueprint_id_type(self):
         """Get Blueprint id type""" 
-        return self.__data_model_id
+        return self.__blueprint_id
 
 
     ### AnalyzeModel
@@ -788,11 +809,16 @@ class Database:
         return self.__lookup_node_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name.value)
     
 
+    def lookup_analyze_model_nodes(self):
+        """Return list of AnalyzeModel"""
+        return self.__lookup_nodes(self.__analyze_model_type, self.__analyze_model_id, NodeProperties.AnalyzeModel.NAME.value)
+
+
     def delete_analyze_model(self, id_value):
         """Delete AnalyzeModel node""" 
         return self.__delete_node_with_connections(self.__analyze_model_type, self.__analyze_model_id, id_value)
     
-
+   
     def get_analyze_model_id_type(self):
         """Get AnalyzeModel id type""" 
         return self.__analyze_model_id
@@ -869,7 +895,7 @@ class Database:
 
     def lookup_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint):
         """Return data of specific property from Result-blueprint""" 
-        return self.__lookup_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name)
+        return self.__lookup_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value)
     
 
     def delete_result_blueprint(self, id_value):
