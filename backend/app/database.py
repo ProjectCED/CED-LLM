@@ -77,7 +77,7 @@ class NodeProperties:
 class Database:
     def __init__(self) -> None:
         """Start up database connection.
-        Setup types and identifier names according to database design v3.
+        Setup types and identifier names according to database design v4.
         """
         #self.__enum_properties = NodeProperties()
 
@@ -523,7 +523,7 @@ class Database:
     def __connect_used_data_model_to_result(self, used_data_model_id_value, result_id_value):
         """Connect UsedDataModel to Result"""
         return self.__connect_with_relationship(self.__used_data_model_type, self.__used_data_model_id, used_data_model_id_value, self.__result_type, self.__result_id, result_id_value, self.__connect_used_data_model_result)
-    
+
 
     def __connect_used_dataset_to_used_data_model(self, used_dataset_id_value, used_data_model_id_value):
         """Connect UsedDataset to UsedDataModel"""
