@@ -492,7 +492,7 @@ class Database:
                 query_string,
                 database_= self.__name,
             )
-        
+
             if not records:
                 return False
             else:
@@ -888,7 +888,7 @@ class Database:
         return self.__set_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value, new_data)
 
 
-    def remove_project_property(self, id_value, property_name: NodeProperties.ResultBlueprint):
+    def remove_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint):
         """Removes specific Project property data (and property)""" 
         return self.__remove_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value)
 
