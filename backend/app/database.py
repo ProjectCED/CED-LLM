@@ -3,23 +3,29 @@ from dotenv import load_dotenv
 from enum import Enum
 import os
 
-class NodeProperties():
+class NodeProperties:
     """All allowed property names for each node type.
     """
-    class Settings(Enum):
+    class GlobalSettings(Enum):
         # Settings
         # example <FOO> = "foo"
-        pass
+        TEST_PASS = "test_pass"
+        TEST_FAILED = "test_failed"
+
 
     class UserSettings(Enum):
         # User settings
         # example <FOO> = "foo"
         NAME = "name"
 
-    class Dataset(Enum):
+        TEST_PASS = "test_pass"
+        TEST_FAILED = "test_failed"
+
+    # has only one property, enforced by function call
+    #class Dataset(Enum):
         # Dataset
         # example <FOO> = "foo"
-        FILE_NAME = "file_name"
+    #    FILE_NAME = "file_name"
 
     class DataModel(Enum):
         # Data model
@@ -27,6 +33,10 @@ class NodeProperties():
         NAME = "name"
         NODE_TYPES = "node_types"
         RELATIONSHIP_TYPES = "relationship_types"
+
+        TEST_PASS = "test_pass"
+        TEST_FAILED = "test_failed"
+
     
     class AnalyzeModel(Enum):
         # Analyze model
@@ -34,15 +44,22 @@ class NodeProperties():
         NAME = "name"
         KEYWORDS = "keywords"
 
+        TEST_PASS = "test_pass"
+        TEST_FAILED = "test_failed"
+
     class Project(Enum):
         # Project
         # example <FOO> = "foo"
         NAME = "name"
+        
+        TEST_PASS = "test_pass"
+        TEST_FAILED = "test_failed"
 
     class Result(Enum):
         # Result
         # example <FOO> = "foo"
-        pass
+        TEST_PASS = "test_pass"
+        TEST_FAILED = "test_failed"
 
 
 class Database:
@@ -50,6 +67,8 @@ class Database:
         """Start up database connection.
         Setup types and identifier names according to database design v3.
         """
+        #self.__enum_properties = NodeProperties()
+
         self.__driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
         self.__name = os.getenv('NEO4J_DB_NAME')
 
@@ -507,19 +526,19 @@ class Database:
         return self.__add_node(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value)
 
 
-    def set_global_settings_property(self, property_name, new_data):
+    def set_global_settings_property(self, property_name: NodeProperties.GlobalSettings, new_data):
         """Set global settings property data.""" 
-        return self.__set_node_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name, new_data)
+        return self.__set_node_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name.value, new_data)
     
         
-    def remove_global_settings_property(self, property_name):
+    def remove_global_settings_property(self, property_name: NodeProperties.GlobalSettings):
         """Removes specific Settings property data (and property)""" 
-        return self.__remove_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name)
+        return self.__remove_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name.value)
 
 
-    def lookup_global_settings_property(self, property_name):
+    def lookup_global_settings_property(self, property_name: NodeProperties.GlobalSettings):
         """Return data of specific property from settings""" 
-        return self.__lookup_node_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name)
+        return self.__lookup_node_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name.value)
     
 
     def delete_global_settings(self):
@@ -538,19 +557,19 @@ class Database:
         return self.__add_node(self.__user_settings_type, self.__user_settings_id, id_value)
 
 
-    def set_user_settings_property(self, id_value, property_name, new_data):
+    def set_user_settings_property(self, id_value, property_name: NodeProperties.UserSettings, new_data):
         """Set user settings property. Creates/overwrites current data.""" 
-        return self.__set_node_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name, new_data)
+        return self.__set_node_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value, new_data)
     
         
-    def remove_user_settings_property(self, id_value, property_name):
+    def remove_user_settings_property(self, id_value, property_name: NodeProperties.UserSettings):
         """Removes specific Settings property data (and property)""" 
-        return self.__remove_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name)
+        return self.__remove_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value)
 
 
-    def lookup_user_settings_property(self, id_value, property_name):
+    def lookup_user_settings_property(self, id_value, property_name: NodeProperties.UserSettings):
         """Return data of specific property from settings""" 
-        return self.__lookup_node_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name)
+        return self.__lookup_node_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value)
     
 
     def delete_user_settings(self, id_value):
@@ -569,19 +588,19 @@ class Database:
         return self.__add_node(self.__project_type, self.__project_id)
 
 
-    def set_project_property(self, id_value, property_name, new_data):
+    def set_project_property(self, id_value, property_name: NodeProperties.Project, new_data):
         """Set Project property. Creates/overwrites current data.""" 
-        return self.__set_node_property(self.__project_type, self.__project_id, id_value, property_name, new_data)
+        return self.__set_node_property(self.__project_type, self.__project_id, id_value, property_name.value, new_data)
     
         
-    def remove_project_property(self, id_value, property_name):
+    def remove_project_property(self, id_value, property_name: NodeProperties.Project):
         """Removes specific Project property data (and property)""" 
-        return self.__remove_property(self.__project_type, self.__project_id, id_value, property_name)
+        return self.__remove_property(self.__project_type, self.__project_id, id_value, property_name.value)
 
 
-    def lookup_project_property(self, id_value, property_name):
+    def lookup_project_property(self, id_value, property_name: NodeProperties.Project):
         """Return data of specific property from Project""" 
-        return self.__lookup_node_property(self.__project_type, self.__project_id, id_value, property_name)
+        return self.__lookup_node_property(self.__project_type, self.__project_id, id_value, property_name.value)
     
 
     def delete_project(self, id_value):
@@ -632,19 +651,19 @@ class Database:
         return self.__add_node(self.__data_model_type, self.__data_model_id)
 
 
-    def set_data_model_property(self, id_value, property_name, new_data):
+    def set_data_model_property(self, id_value, property_name: NodeProperties.DataModel, new_data):
         """Set DataModel property. Creates/overwrites current data.""" 
-        return self.__set_node_property(self.__data_model_type, self.__data_model_id, id_value, property_name, new_data)
+        return self.__set_node_property(self.__data_model_type, self.__data_model_id, id_value, property_name.value, new_data)
     
         
-    def remove_data_model_property(self, id_value, property_name):
+    def remove_data_model_property(self, id_value, property_name: NodeProperties.DataModel):
         """Removes specific DataModel property data (and property)""" 
-        return self.__remove_property(self.__data_model_type, self.__data_model_id, id_value, property_name)
+        return self.__remove_property(self.__data_model_type, self.__data_model_id, id_value, property_name.value)
 
 
-    def lookup_data_model_property(self, id_value, property_name):
+    def lookup_data_model_property(self, id_value, property_name: NodeProperties.DataModel):
         """Return data of specific property from DataModel""" 
-        return self.__lookup_node_property(self.__data_model_type, self.__data_model_id, id_value, property_name)
+        return self.__lookup_node_property(self.__data_model_type, self.__data_model_id, id_value, property_name.value)
     
 
     def delete_data_model(self, id_value):
@@ -663,19 +682,19 @@ class Database:
         return self.__add_node(self.__analyze_model_type, self.__analyze_model_id)
 
 
-    def set_analyze_model_property(self, id_value, property_name, new_data):
+    def set_analyze_model_property(self, id_value, property_name: NodeProperties.AnalyzeModel, new_data):
         """Set AnalyzeModel property. Creates/overwrites current data.""" 
-        return self.__set_node_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name, new_data)
+        return self.__set_node_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name.value, new_data)
     
         
-    def remove_analyze_model_property(self, id_value, property_name):
+    def remove_analyze_model_property(self, id_value, property_name: NodeProperties.AnalyzeModel):
         """Removes specific AnalyzeModel property data (and property)""" 
-        return self.__remove_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name)
+        return self.__remove_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name.value)
 
 
-    def lookup_analyze_model_property(self, id_value, property_name):
+    def lookup_analyze_model_property(self, id_value, property_name: NodeProperties.AnalyzeModel):
         """Return data of specific property from AnalyzeModel""" 
-        return self.__lookup_node_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name)
+        return self.__lookup_node_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name.value)
     
 
     def delete_analyze_model(self, id_value):
