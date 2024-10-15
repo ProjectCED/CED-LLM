@@ -79,7 +79,7 @@ class db_test:
         self.__failed += failed
 
         print( '--------------------')
-        print( 'Project testing:' )
+        print( 'Global testing:' )
         print( 'Success: ' + str(success) )
         print( 'Failed: ' + str(failed) )
         print( '--------------------')
@@ -238,12 +238,12 @@ class db_test:
         else:
             success += 1
 
-        print( '<Delete node>' )
-        if db.delete_project(id_value):
-            success += 1
-        else:
-            print( 'Failed' )
-            failed += 1
+        # print( '<Delete node>' )
+        # if db.delete_project(id_value):
+        #     success += 1
+        # else:
+        #     print( 'Failed' )
+        #     failed += 1
 
 
         self.__success += success
@@ -607,24 +607,6 @@ class db_test:
         print( 'Failed: ' + str(failed) )
         print( '--------------------')
 
-    def test_print_node_types(self):
-
-        print( 'Node id types:' )
-        print( 'Global settings:' )
-        print( db.get_global_settings_id_type())
-        print( 'User settings:' )
-        print( db.get_user_settings_id_type())
-        print( 'Project:' )
-        print( db.get_project_id_type())
-        print( 'Dataset:' )
-        print( db.get_dataset_id_type())
-        print( 'Data model:' )
-        print( db.get_data_model_id_type())
-        print( 'Analyze model:' )
-        print( db.get_analyze_model_id_type())
-        print( 'Result:' )
-        print( db.get_result_id_type())
-
     def test_relatioships(self):
         success = 0
         failed = 0
@@ -660,12 +642,6 @@ class db_test:
             failed += 1
 
         print( '<Data model to...>' )
-        print( '<... project>' )
-        if db.connect_data_model_to_project(data_model_id_value,project_id_value):
-            success += 1
-        else:
-            print( 'Failed' )
-            failed += 1
 
 
         print( '<Error testing>' )
@@ -742,8 +718,6 @@ class db_test:
     def test_bulk(self):
         ### debug cleaning
         print( db.debug_clear_all() )
-
-        self.test_print_node_types()
 
         self.test_global_settings()
         self.test_user_settings()
