@@ -214,12 +214,7 @@ class Database:
         if not self.__does_node_exist(type, id_type, id_value):
             return False
         
-        # is new data datetime
-        try:
-            datetime.strptime(new_data, "%Y-%m-%dT%H:%M:%S")
-        except:
-            id_value = str(id_value)
-
+        id_value = str(id_value)
         query_string = (
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
             "SET n." + property_name + " = $old_data" 
@@ -279,7 +274,23 @@ class Database:
             return None
 
 
+    def __lookup_nodes(self, type, id_type, id_value, property_name):
+        """return nodes with (id, property_name) combo or None if nothing was found"""
+        id_value = str(id_value)
+        query_string = (
+            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+            "RETURN n." + property_name + " AS " + property_name
+        )
 
+        records, summary, keys = self.__driver.execute_query(
+            query_string,
+            database_= self.__name,
+        )
+        
+        try:
+            return next(iter(records)).data()[property_name]
+        except:
+            return None
         
         
     def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
