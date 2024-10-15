@@ -274,12 +274,21 @@ class Database:
             return None
 
 
-    def __lookup_nodes(self, type, id_type, property_name):
-        """return nodes with (id, property_name) combo or None if nothing was found"""
-        query_string = (
-            "MATCH (n:" + type + " ) "
-            "RETURN COLLECT ([n." + id_type + ", n." + property_name + "]) AS list"
-        )
+    def __lookup_nodes(self, type, id_type, property_name, parent_info = None):
+        """return nodes with (id, property_name) combo or None if nothing was found
+        optional: parent_info dict includes: {node_type, id_type, id_value} to search under certain node
+        """
+
+        if parent_info == None:
+            query_string = (
+                "MATCH (n:" + type + " ) "
+                "RETURN COLLECT ([n." + id_type + ", n." + property_name + "]) AS list"
+            )
+        else:
+            query_string = (
+                "MATCH (n:" + type + " ) - [] -> (:" + parent_info["node_type"] + " {" + parent_info["id_type"] + ": '" + parent_info["id_value"] + "'}) "
+                "RETURN COLLECT ([n." + id_type + ", n." + property_name + "]) AS list"
+            )
 
         records, summary, keys = self.__driver.execute_query(
             query_string,
@@ -897,6 +906,10 @@ class Database:
         """Return data of specific property from Result-blueprint""" 
         return self.__lookup_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value)
     
+    def lookup_result_blueprint_nodes(self, project_id):
+        """Return list of result_blueprints from specific project""" 
+        project_info = { "node_type" : self.__project_type, "id_type" : self.__project_id, "id_value" : project_id }
+        return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME.value, project_info)
 
     def delete_result_blueprint(self, id_value):
         """Delete Result-blueprint node""" 
