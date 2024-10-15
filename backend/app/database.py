@@ -1,6 +1,7 @@
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
 from enum import Enum
+from datetime import datetime
 import os
 
 class NodeProperties:
@@ -73,6 +74,7 @@ class NodeProperties:
         # Result
         # example <FOO> = "foo"
         RESULT = "result"
+        DATETIME = "datetime"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -211,7 +213,13 @@ class Database:
         # check if node exists
         if not self.__does_node_exist(type, id_type, id_value):
             return False
-        id_value = str(id_value)
+        
+        # is new data datetime
+        try:
+            datetime.strptime(new_data, "%Y-%m-%dT%H:%M:%S")
+        except:
+            id_value = str(id_value)
+
         query_string = (
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
             "SET n." + property_name + " = $old_data" 
@@ -269,6 +277,9 @@ class Database:
             return next(iter(records)).data()[property_name]
         except:
             return None
+
+
+
         
         
     def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
@@ -812,6 +823,7 @@ class Database:
         try:
             
             result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+            self.set_result_blueprint_property(result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
             
             # copy nodes into used node versions and connect them to result
             for file_name in dataset_list:
