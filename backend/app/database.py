@@ -434,17 +434,18 @@ class Database:
         return True
     
     def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new = None):
-        """return True when query succeeded
+        """return id of new node when copy succeeded, None if failed
+        new id value is optional
         Copy node into a new node type.
         """
         id_value = str(id_value)
         if id_value_new == None:
             query_string = (
-            "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
-            "CREATE (m:" + node_type_new + ") "
-            "SET m = properties(n) "
-            "SET m." + id_type_new + " = randomUUID() "
-            "RETURN m." + id_type + " AS " + id_type
+                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+                "CREATE (m:" + node_type_new + ") "
+                "SET m = properties(n) "
+                "SET m." + id_type_new + " = randomUUID() "
+                "RETURN m." + id_type + " AS " + id_type
         )
         else:
             id_value_new = str(id_value_new)
@@ -453,7 +454,7 @@ class Database:
                 "CREATE (m:" + node_type_new + " ) "
                 "SET m = properties(n) "
                 "SET m." + id_type_new + " = '" + id_value_new + "' "
-                "RETURN m." + id_type + " AS " + id_type
+                "RETURN m." + id_type_new + " AS " + id_type_new
             )
 
         try:
@@ -462,6 +463,29 @@ class Database:
                 database_= self.__name,
             )
             return next(iter(records)).data()[id_type]
+        except:
+            return None
+
+
+    def __lookup_node_neighbours(self, type_parent, id_type_parent, id_value_parent, type, id_type, relationship):
+        """return return id of new node when copy succeeded, None if failed
+        Copy node into a new node type.
+        """
+        id_value_parent = str(id_value_parent)
+        query_string = (
+            "MATCH (n:" + type + ") - [:" + relationship + "] -> (:" + type_parent + " {" + id_type_parent + ": '" + id_value_parent + "'}) "
+            "RETURN COLLECT (n." + id_type + ") AS list"
+        )
+
+        try:
+            records, summary, keys = self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+            filter_to_list = next(iter(records)).data()['list']
+
+            return filter_to_list
+
         except:
             return None
 
@@ -866,30 +890,37 @@ class Database:
     
     def add_result_blueprint_node(self, project_id, dataset_list, blueprint_ids, datamodel_ids):
         """Create Result-blueprint node. Avoids duplicates."""
-        try:
+        # try:
             
-            result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
-            self.set_result_blueprint_property(result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
-            
-            # copy nodes into used node versions and connect them to result
-            for file_name in dataset_list:
-                used_dataset_id = self.__add_node(self.__used_dataset_type, self.__used_dataset_id)
-                self.__set_used_dataset_property(used_dataset_id, file_name)
-                self.__connect_used_dataset_to_result_blueprint(used_dataset_id, result_blueprint_id)
+        result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+        self.set_result_blueprint_property(result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
+        
+        # copy nodes into used node versions and connect them to result
+        for file_name in dataset_list:
+            used_dataset_id = self.__add_node(self.__used_dataset_type, self.__used_dataset_id)
+            self.__set_used_dataset_property(used_dataset_id, file_name)
+            self.__connect_used_dataset_to_result_blueprint(used_dataset_id, result_blueprint_id)
 
-            for id in blueprint_ids:
-                used_blueprint_id = self.__copy_node(self.__blueprint_type, self.__blueprint_id, id, self.__used_blueprint_type, self.__used_blueprint_id)
-                self.__connect_used_blueprint_to_result_blueprint(used_blueprint_id, result_blueprint_id)
+        for id in blueprint_ids:
+            used_blueprint_id = self.__copy_node(self.__blueprint_type, self.__blueprint_id, id, self.__used_blueprint_type, self.__used_blueprint_id)
+            self.__connect_used_blueprint_to_result_blueprint(used_blueprint_id, result_blueprint_id)
 
-            for id in datamodel_ids:
-                used_data_model_id = self.__copy_node(self.__data_model_type, self.__data_model_id, id, self.__used_data_model_type, self.__used_data_model_id)
-                self.__connect_used_data_model_to_result_blueprint(used_data_model_id, result_blueprint_id)
+        for id in datamodel_ids:
+            used_data_model_id = self.__copy_node(self.__data_model_type, self.__data_model_id, id, self.__used_data_model_type, self.__used_data_model_id)
 
-            self.__connect_result_blueprint_to_project(result_blueprint_id, project_id)
+            datamodel_dataset_ids = self.__lookup_node_neighbours(self.__data_model_type, self.__data_model_id, id, self.__dataset_type, self.__dataset_id, self.__connect_dataset_data_model) 
+            if datamodel_dataset_ids != None:
+                for datamodel_dataset_id in datamodel_dataset_ids:
+                    new_used_dataset_id = self.__copy_node(self.__dataset_type, self.__dataset_id, datamodel_dataset_id, self.__used_dataset_type, self.__used_dataset_id)
+                    self.__connect_used_dataset_to_used_data_model(new_used_dataset_id, used_data_model_id)
 
-            return result_blueprint_id
-        except:
-            return None
+            self.__connect_used_data_model_to_result_blueprint(used_data_model_id, result_blueprint_id)
+
+        self.__connect_result_blueprint_to_project(result_blueprint_id, project_id)
+
+        return result_blueprint_id
+        # except:
+        #     return None
         
 
     def set_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint, new_data):
