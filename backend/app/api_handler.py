@@ -3,14 +3,18 @@ from dotenv import load_dotenv
 import openai
 from openai import OpenAI
 import utils
+from enum import Enum
 
 load_dotenv()
 OPENAI_KEY = os.getenv("OPENAI_KEY")
-PRIMARY_MODEL = "gpt-4o"
-BACKUP_MODEL = "gpt-4o-mini" # This has higher token limit
-
 
 class ApiHandler():
+    # Enum for the models available
+    class Models(Enum):
+        PRIMARY_MODEL = "gpt-4o"
+        BACKUP_MODEL = "gpt-4o-mini" # This has higher token limit
+
+
     def __init__(self):
         self.__client = OpenAI(api_key=OPENAI_KEY)
 
@@ -38,9 +42,9 @@ class ApiHandler():
             return result
         
         except openai.RateLimitError:
-            if (model == PRIMARY_MODEL):
+            if (model == self.Models.PRIMARY_MODEL):
                 print("Rate limit reached. Trying backup model.")
-                return self.analyze_pdf(pdf_path, BACKUP_MODEL)
+                return self.analyze_pdf(pdf_path, self.Models.BACKUP_MODEL)
             else:
                 print("Rate limit reached (backup model used). Exiting.")
                 return None
@@ -49,9 +53,10 @@ class ApiHandler():
 
 
 def main():
-    apiHandler = ApiHandler()
-    result = apiHandler.analyze_pdf("PTK_102+2024.pdf", PRIMARY_MODEL)
-    print(result)
+    #apiHandler = ApiHandler()
+    #result = apiHandler.analyze_pdf("PTK_102+2024.pdf", apiHandler.Models.PRIMARY_MODEL)
+    #print(result)
+    pass
 
 if __name__ == "__main__":
     main()
