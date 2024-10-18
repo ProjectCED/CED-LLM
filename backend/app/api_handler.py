@@ -12,18 +12,15 @@ BACKUP_MODEL = "gpt-4o-mini" # This has higher token limit
 
 class ApiHandler():
     def __init__(self):
-        pass
+        self.__client = OpenAI(api_key=OPENAI_KEY)
 
-    # Test version for sending only first page to save on tokens during testing
-    def analyze_pdf_first_page(pdf_path, model) -> str:
-        first_page = utils.extract_first_page_from_pdf(pdf_path)
-
-        client = OpenAI(api_key=OPENAI_KEY)
+    def analyze_pdf(self, pdf_path, model) -> str:
+        first_page = utils.extract_text_from_pdf(pdf_path)
 
         instructions = "Analyze the themes and key points of the text."
 
         try:
-            response = client.chat.completions.create(
+            response = self.__client.chat.completions.create(
                 model=model,
                 messages=[
                     {
@@ -40,10 +37,10 @@ class ApiHandler():
             result = response.choices[0].message.content.strip()
             return result
         
-        except openai._exceptions.RateLimitError:
+        except openai.RateLimitError:
             if (model == PRIMARY_MODEL):
                 print("Rate limit reached. Trying backup model.")
-                ApiHandler.analyze_pdf_first_page(pdf_path, BACKUP_MODEL)
+                return self.analyze_pdf(pdf_path, BACKUP_MODEL)
             else:
                 print("Rate limit reached (backup model used). Exiting.")
                 return None
@@ -52,7 +49,8 @@ class ApiHandler():
 
 
 def main():
-    result = ApiHandler.analyze_pdf_first_page("PTK_102+2024.pdf", PRIMARY_MODEL)
+    apiHandler = ApiHandler()
+    result = apiHandler.analyze_pdf("PTK_102+2024.pdf", PRIMARY_MODEL)
     print(result)
 
 if __name__ == "__main__":
