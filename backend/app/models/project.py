@@ -36,6 +36,9 @@ class Project:
             self.add_result(result)
 
     def add_result(self, result: Result):
+        if self.__project_id is None:
+            raise ValueError("Project must be saved before adding results")
+        self.__results.append(result)
         self.__database.connect_result_blueprint_to_project(result.__result_id, self.__project_id)
 
 
