@@ -46,6 +46,8 @@ class NodeProperties:
         # Blueprint
         # example <FOO> = "foo"
         NAME = "name"
+        DESCRIPTION = "description"
+        QUESTIONS = "questions"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -73,6 +75,7 @@ class NodeProperties:
     class ResultBlueprint(Enum):
         # Result
         # example <FOO> = "foo"
+        FILENAME = "filename"
         RESULT = "result"
         DATETIME = "datetime"
 
@@ -579,7 +582,7 @@ class Database:
         return self.__connect_with_relationship(self.__dataset_type, self.__dataset_id, dataset_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_dataset_project)
 
 
-    def __connect_result_blueprint_to_project(self, result_id_value, project_id_value):
+    def connect_result_blueprint_to_project(self, result_id_value, project_id_value):
         """Connect Result to Project"""
         return self.__connect_with_relationship(self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_result_project)
     
@@ -600,7 +603,7 @@ class Database:
         return self.__connect_with_relationship(self.__used_data_model_type, self.__used_data_model_id, used_data_model_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_data_model_result_blueprint)
 
 
-    def __connect_used_blueprint_to_result_blueprint(self, used_blueprint_id_value, result_id_value):
+    def connect_used_blueprint_to_result_blueprint(self, used_blueprint_id_value, result_id_value):
         """Connect UsedBlueprint to ResultBlueprint"""
         return self.__connect_with_relationship(self.__used_blueprint_type, self.__used_blueprint_id, used_blueprint_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_blueprint_result_blueprint)
 
@@ -887,9 +890,9 @@ class Database:
     #     except:
     #         return None
     
-    
+    """
     def add_result_blueprint_node(self, project_id, dataset_list, blueprint_ids, datamodel_ids):
-        """Create Result-blueprint node. Avoids duplicates."""
+        ""Create Result-blueprint node. Avoids duplicates.""
         # try:
             
         result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
@@ -921,7 +924,10 @@ class Database:
         return result_blueprint_id
         # except:
         #     return None
-        
+        """
+    
+    def add_result_blueprint_node(self):
+        return self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
 
     def set_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint, new_data):
         """Set Result-blueprint property. Creates/overwrites current data.""" 
