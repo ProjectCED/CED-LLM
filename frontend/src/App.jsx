@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import './App.css';  
+import StartPage from './StartPage';
+import Classification from './Classification';
+import FileDownload from './FileDownload';
+import ClassificationSelection from './ClassificationSelection';
+import Projects from './Projects';
+import Blueprints from './Blueprints';
+import Header from './Header';
+import DefaultClassification from './DefaultClassification';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        {/* Starting view */}
+        <Route path="/" element={<StartPage />} />
+
+        {/* Views that have Header */}
+        <Route path="/app/*" element={<MainLayout />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+// MainLayout is responsible for ensuring that the Header is visible on all subpages.
+function MainLayout() {
+  return (
+    <>
+      <Header /> 
+      <Routes>
+        <Route path="classification/*" element={<Classification />}> 
+          <Route path="file-download" element={<FileDownload />} /> 
+          <Route path="classification-selection" element={<ClassificationSelection />} /> 
+          <Route path="default-classification" element={<DefaultClassification />} />
+        </Route>
+        <Route path="projects" element={<Projects />} />
+        <Route path="blueprints" element={<Blueprints />} />
+      </Routes>
+
+    </>
+  );
+}
+
+export default App;
