@@ -87,7 +87,10 @@ class Database:
     """
     def __init__(self) -> None:
         """Start up database driver.
-        Setup types(labels), identifier names and relationship types according to database design v4.
+        Setup (according to database design v4):
+          - types(labels)
+          - identifier names
+          - relationship types
         """
 
         self.__driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
@@ -1476,14 +1479,32 @@ class Database:
     
 
     def lookup_used_dataset_nodes_used_data_model(self, parent_id_value):
-        """Return list of Used Dataset"""
+        """
+        Lookup Used Datasets relating to used data model
+        and return list of them in a [[ID, file_name]] combo.
+
+        Args:
+            parent_id_value (string): Value for the id
+
+        Returns:
+            list of [string, string] or None: A list of found nodes with ID and file_name combination. None otherwise
+        """
         parent_info = {"node_type": self.__used_data_model_type, "id_type": self.__used_data_model_id, "id_value": parent_id_value}
         return self.__lookup_nodes(self.__used_dataset_type, self.__dataset_id, self.__dataset_property, parent_info)
     
     
     ### Used datamodel
     def lookup_used_data_model_nodes_result_blueprint(self, parent_id_value):
-        """Return list of Used data model"""
+        """
+        Lookup Used data models relating to ResultBlueprint
+        and return list of them in a [[ID, NAME]] combo.
+
+        Args:
+            parent_id_value (string): Value for the id
+
+        Returns:
+            list of [string, string] or None: A list of found nodes with ID and NAME combination. None otherwise
+        """
         parent_info = {"node_type": self.__result_blueprint_type, "id_type": self.__result_blueprint_id, "id_value": parent_id_value}
         return self.__lookup_nodes(self.__used_data_model_type, self.__used_data_model_id, NodeProperties.DataModel.NAME.value, parent_info)
 
