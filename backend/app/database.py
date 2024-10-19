@@ -298,8 +298,7 @@ class Database:
         try:
             # gives out [[ ]]
             double_list = next(iter(records)).data()['list']
-            single_list = [item for sublist in double_list for item in sublist]
-            return single_list
+            return double_list
         except:
             return None
         
@@ -733,7 +732,13 @@ class Database:
     def lookup_dataset_property(self, id_value):
         """Return data of specific property from Dataset""" 
         return self.__lookup_node_property(self.__dataset_type, self.__dataset_id, id_value, self.__dataset_property)
-    
+
+
+    def lookup_dataset_nodes_data_model(self, parent_id_value):
+        """Return list of Dataset"""
+        parent_info = {'node_type': self.__data_model_type, 'id_type': self.__data_model_id, 'id_value': parent_id_value}
+        return self.__lookup_nodes(self.__dataset_type, self.__dataset_id, self.__dataset_property, parent_info)
+
 
     def remove_dataset_property(self, id_value):
         """Remove data of specific property from Dataset"""
@@ -860,6 +865,20 @@ class Database:
     def __set_used_dataset_property(self, id_value, new_data):
         """Set Used Dataset property. Creates/overwrites current data.""" 
         return self.__set_node_property(self.__used_dataset_type, self.__used_dataset_id, id_value, self.__dataset_property, new_data)
+    
+
+    def lookup_used_dataset_nodes_used_data_model(self, parent_id_value):
+        """Return list of Used Dataset"""
+        parent_info = {"node_type": self.__used_data_model_type, "id_type": self.__used_data_model_id, "id_value": parent_id_value}
+        return self.__lookup_nodes(self.__used_dataset_type, self.__dataset_id, self.__dataset_property, parent_info)
+    
+    
+    ### Used datamodel
+    def lookup_used_data_model_nodes_result_blueprint(self, parent_id_value):
+        """Return list of Used data model"""
+        parent_info = {"node_type": self.__result_blueprint_type, "id_type": self.__result_blueprint_id, "id_value": parent_id_value}
+        return self.__lookup_nodes(self.__used_data_model_type, self.__used_data_model_id, NodeProperties.DataModel.NAME.value, parent_info)
+
 
     ### Result Blueprint
 
