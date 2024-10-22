@@ -1,0 +1,51 @@
+/* Main container for centering content both horizontally and vertically */
+.ai-selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+/* Header text styling */
+.ai-selection-container h2 {
+  color:#13293D;
+  font-size: 50px;
+  margin-bottom: 20px;
+}
+
+/* Container for AI options */
+.ai-options {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap; 
+  justify-content: center; 
+}
+
+/* Styling for each AI option button */
+.ai-option {
+  background-color: grey;
+  color: #e8f1f2;
+  border: none;
+  padding: 20px 70px;
+  font-size: 25px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex: 1 1 auto; 
+  min-width: 250px; 
+  max-width: 100%; 
+}
+
+/* Styling for the selected AI option button */
+.ai-option.selected {
+  background-color: #28a745;
+  color: #e8f1f2;
+}
+
+/* Styling for AI option button hover state */
+.ai-option:hover {
+  background-color: gray;
+  color: #e8f1f2;
+}
