@@ -50,7 +50,7 @@ p {
 
 /* Styles for selection buttons when hovered */
 .selection-button:hover {
-  background-color: grey;
+  background-color: rgb(95, 94, 94);
 }
 
 /* Styles for the selected button (turn green when clicked) */

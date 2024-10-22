@@ -38,14 +38,14 @@
   max-width: 100%; 
 }
 
-/* Styling for the selected AI option button */
-.ai-option.selected {
-  background-color: #28a745;
+/* Styling for AI option button hover state */
+.ai-option:hover {
+  background-color: rgb(95, 94, 94);
   color: #e8f1f2;
 }
 
-/* Styling for AI option button hover state */
-.ai-option:hover {
-  background-color: gray;
+/* Styling for the selected AI option button */
+.ai-option.selected {
+  background-color: #28a745;
   color: #e8f1f2;
 }
