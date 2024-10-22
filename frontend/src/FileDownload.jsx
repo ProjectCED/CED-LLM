@@ -1,36 +1,27 @@
 import React, { useState } from 'react';
 import './FileDownload.css';  
-import { useNavigate } from 'react-router-dom';
 
-const FileDownload = () => {
+const FileDownload = ({ onFileUpload, onTextChange }) => {
   
   console.log('FileDownload component loaded');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [copiedText, setCopiedText] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
-
-  const navigate = useNavigate()
   
   // Handle file selection from input field
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+    console.log("Files selected:", files);
+    onFileUpload(files);  // Send the selected files to the MultiStepForm component
   };
 
   // Handle changes to the text input area
   const handleTextChange = (event) => {
-    setCopiedText(event.target.value);
-  };
-
-  // Handle navigation or validation
-  const handleContinue = () => {
-    console.log("Navigating to classification-selection");
-    // Check if there's at least one file or text input
-    if (selectedFiles.length > 0 || copiedText.trim().length > 0) { // or any other condition
-      navigate('/app/classification/classification-selection');
-    } else {
-      alert('Please select at least one file!');
-    }
+    const text = event.target.value; // Get the value from the event
+    setCopiedText(text);
+    console.log("Text entered:", text);
+    onTextChange(text);  // Send the entered text to the MultiStepForm component
   };
 
    // Remove a specific file from the selected files list
@@ -46,6 +37,8 @@ const FileDownload = () => {
     setIsDragOver(false); 
     const files = Array.from(event.dataTransfer.files);
     setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+    console.log("Files dropped:", files);
+    onFileUpload(files);  // Update the files in MultiStepForm
   };
 
   // Handle drag-over event (when a file is being dragged over the drop zone)
@@ -110,9 +103,6 @@ const FileDownload = () => {
         </div>
       </div>
 
-      <button onClick={handleContinue} className="continue-button">
-        Continue
-      </button>
     </div>
   );
 };

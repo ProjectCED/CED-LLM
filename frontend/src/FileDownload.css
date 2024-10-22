@@ -4,44 +4,89 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    height: 100vh;
-    background-color: #13293D;
     color: #e8f1f2;
     font-family: Arial, sans-serif;
-    margin-top: 200px;
-}
-
-/* Styling for the h2 header inside the container */
-.container h2 {
-    font-size: 50px;
-    margin-bottom: 20px;
-    color: #E8F1F2;
+    width: 100%; 
+    box-sizing: border-box;
+    padding: 20px; 
 }
 
 /* Wrapper for the file upload and text input sections */
 .upload-wrapper {
     display: flex;
+    flex-wrap: wrap; 
     justify-content: space-between;
+    align-items: flex-start;
     width: 100%;
-    max-width: 1500px;
+    max-width: 1500px; 
     margin-bottom: 30px;
+    gap: 20px; 
+    box-sizing: border-box;
 }
 
 /* File upload section styling */
 .file-upload {
-    width: 45%;
-    background-color: #e8f1f2;
-    border: 2px dashed #e8f1f2;
+    flex: 1; 
+    min-width: 300px; 
+    max-width: 45%; 
+    background-color: #dae1e2;
+    border: 2px solid #e8f1f2;
     padding: 20px;
     border-radius: 12px;
     text-align: center;
     transition: background-color 0.3s, border-color 0.3s;
+    box-sizing: border-box; 
 }
 
 /* Styling when a file is dragged over the file upload area */
 .file-upload.drag-over {
     background-color: #d1e8ff;
     border-color: #0D6EFD;
+}
+
+/* Text upload section styling */
+.text-upload {
+    flex: 1; 
+    min-width: 300px; 
+    max-width: 45%; 
+    background-color: #dae1e2;
+    border-radius: 12px;
+    box-sizing: border-box; 
+    display: flex;
+    flex-direction: column;
+    height: auto;
+}
+
+/* Text area (for inputting text) styling */
+textarea {
+    width: 100%;
+    height: 100%; 
+    border-radius: 12px;
+    padding: 10px;
+    border: 2px solid #1B98E0;
+    background-color: #dae1e2;
+    font-size: 25px;
+    resize: none;
+    box-sizing: border-box; 
+    flex-grow: 1; 
+    margin: 0;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .upload-wrapper {
+        flex-direction: column; /* Stack file and text upload boxes vertically */
+        align-items: center; /* Center the content */
+    }
+
+    .file-upload, .text-upload {
+        max-width: 100%; /* Ensure the boxes take up the full width */
+        min-width: auto; /* Remove the minimum width */
+    }
+
+    textarea {
+        height: 150px; /* Fix textarea height on smaller screens */
+    }
 }
 
 /* Label styling for the file input */
@@ -58,24 +103,7 @@ label {
 .drag-drop-text {
     margin-top: 10px;
     font-size: 25px; 
-    color:  #13293D;  
-}
-
-/* Text upload section styling */
-.text-upload {
-    width: 45%;
-}
-
-/* Text area (for inputting text) styling */
-textarea {
-    width: 100%;
-    height: 150px;
-    border-radius: 12px;
-    padding: 10px;
-    border: 2px solid #1B98E0;
-    background-color: #e8f1f2;
-    font-size: 25px;
-    resize: none;
+    color: #13293D;  
 }
 
 /* List styling for displaying selected files */
@@ -107,21 +135,4 @@ textarea {
 /* Change color on hover for the remove file icon */
 .remove-file:hover {
     color: #ff4d4d;
-}
-
-/* Button styling for the continue button */
-.continue-button {
-    background-color: #1B98E0;
-    color: #e8f1f2;
-    border: none;
-    padding: 20px 40px;
-    font-size: 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-/* Change background color on hover for the continue button */
-.continue-button:hover {
-    background-color: #0D6EFD;
 }
