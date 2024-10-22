@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'; 
 import './ClassificationSelection.css';
 
 const ClassificationSelection = ({ onSelectClassification }) => {
@@ -10,6 +10,7 @@ const ClassificationSelection = ({ onSelectClassification }) => {
     onSelectClassification(classification); // Pass the selected classification back to MultiStepForm
   };
 
+  
   return (
     <div className="classification-selection">
       <p>
