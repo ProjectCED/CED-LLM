@@ -247,7 +247,7 @@ class Database(metaclass=DatabaseMeta):
         
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j add_node() query failed: " + e )
+            raise RuntimeError( "Neo4j add_node() query failed: " + error_string )
             
 
     def __set_node_property(self, type, id_type, id_value, property_name, new_data):
@@ -289,7 +289,7 @@ class Database(metaclass=DatabaseMeta):
         
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j set_property_value() query failed: " + e )
+            raise RuntimeError( "Neo4j set_property_value() query failed: " + error_string )
     
 
     def __lookup_whole_node(self, type, id_type, id_value):
@@ -322,7 +322,7 @@ class Database(metaclass=DatabaseMeta):
             return next(iter(records)).data()
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j lookup_whole_node() query failed: " + e )
+            raise RuntimeError( "Neo4j lookup_whole_node() query failed: " + error_string )
 
 
     def __lookup_node_property(self, type, id_type, id_value, property_name):
@@ -362,7 +362,7 @@ class Database(metaclass=DatabaseMeta):
         
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j lookup_node_property query failed: " + e )
+            raise RuntimeError( "Neo4j lookup_node_property query failed: " + error_string )
 
 
     def __lookup_nodes(self, type, id_type, property_name, parent_info = None):
@@ -415,7 +415,7 @@ class Database(metaclass=DatabaseMeta):
         
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j lookup_nodes() query failed: " + e )
+            raise RuntimeError( "Neo4j lookup_nodes() query failed: " + error_string )
         
         
     def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
@@ -481,7 +481,7 @@ class Database(metaclass=DatabaseMeta):
 
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j delete_node_with_connections() query failed: " + e )
+            raise RuntimeError( "Neo4j delete_node_with_connections() query failed: " + error_string )
 
 
     def __delete_node(self, type, id_type, id_value):
@@ -521,7 +521,7 @@ class Database(metaclass=DatabaseMeta):
 
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j delete_node() query failed: " + e )
+            raise RuntimeError( "Neo4j delete_node() query failed: " + error_string )
     
 
     def __remove_property(self, type, id_type, id_value, property_name):
@@ -562,7 +562,7 @@ class Database(metaclass=DatabaseMeta):
 
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j remove_property() query failed: " + e )
+            raise RuntimeError( "Neo4j remove_property() query failed: " + error_string )
     
 
     def __connect_with_relationship(self, type_a, id_type_a, id_value_a, type_b, id_type_b, id_value_b, relationship_type):
@@ -614,7 +614,7 @@ class Database(metaclass=DatabaseMeta):
 
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j connect_with_relationship() query failed: " + e )
+            raise RuntimeError( "Neo4j connect_with_relationship() query failed: " + error_string )
 
    
     def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new = None):
@@ -665,7 +665,7 @@ class Database(metaclass=DatabaseMeta):
         
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j copy_node() query failed: " + e )
+            raise RuntimeError( "Neo4j copy_node() query failed: " + error_string )
 
 
     def __lookup_node_neighbours(self, type_parent, id_type_parent, id_value_parent, type, id_type, relationship):
@@ -711,7 +711,7 @@ class Database(metaclass=DatabaseMeta):
 
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j lookup_node_neighbours() query failed: " + e )
+            raise RuntimeError( "Neo4j lookup_node_neighbours() query failed: " + error_string )
 
     
     # def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
@@ -750,7 +750,7 @@ class Database(metaclass=DatabaseMeta):
     #         return next(iter(records)).data()[property_name]
     #     except Exception as e:
     #         error_string = str(e)
-    #         return RuntimeError( "Neo4j lookup_connected_node_property() query failed: " + e )
+    #         raise RuntimeError( "Neo4j lookup_connected_node_property() query failed: " + e )
     
     def __does_property_exist(self, type, id_type, id_value, property_name):
         """
@@ -790,7 +790,7 @@ class Database(metaclass=DatabaseMeta):
             
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j does_property_exist() query failed: " + e )
+            raise RuntimeError( "Neo4j does_property_exist() query failed: " + error_string )
         
     def __does_node_exist(self, type, id_type, id_value):
         """
@@ -827,7 +827,7 @@ class Database(metaclass=DatabaseMeta):
             
         except Exception as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j does_node_exist() query failed: " + e )
+            raise RuntimeError( "Neo4j does_node_exist() query failed: " + error_string )
 
 
     
@@ -2008,7 +2008,7 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             string: string containing ID value for the created node.
         """
-            
+
         result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
 
         self.set_result_blueprint_property(result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
