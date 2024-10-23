@@ -101,15 +101,6 @@ class Database(metaclass=DatabaseMeta):
 
     Enforced to be Singleton class.
     """
-    _instance = None
-    # def __new__(cls, *args, **kwargs):
-    #     if not cls._instance:
-    #         cls._instance = super(Database, cls).__new__(cls)
-    #     return cls._instance
-
-
-
-
     def __init__(self) -> None:
         """Start up database driver.
         Setup (according to database design v4):
