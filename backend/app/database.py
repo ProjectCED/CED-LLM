@@ -1,5 +1,5 @@
 from neo4j import GraphDatabase
-#from noe4j.exceptions import Neo4jError # this should work, but doesn't
+#from neo4j.exceptions import Neo4jError #using normal Exception
 from dotenv import load_dotenv
 from enum import Enum
 from datetime import datetime
