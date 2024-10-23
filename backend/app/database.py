@@ -1890,6 +1890,25 @@ class Database:
 
     
     ### Used datamodel
+    def lookup_used_data_model_property(self, id_value, property_name: NodeProperties.DataModel):
+        """
+        Return data of specific property from UsedDataModel
+
+        Args:
+            id_value (string): Value for the id
+            property_name (string): property name to return it's value
+
+        Raises:
+            RuntimeError: If database query error.   
+
+        Returns:
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
+        """ 
+        return self.__lookup_node_property(self.__used_data_model_type, self.__used_data_model_id, id_value, property_name.value)
+    
+
     def lookup_used_data_model_nodes_result_blueprint(self, parent_id_value):
         """
         Lookup Used data models relating to ResultBlueprint
@@ -1908,6 +1927,26 @@ class Database:
         """
         parent_info = {"node_type": self.__result_blueprint_type, "id_type": self.__result_blueprint_id, "id_value": parent_id_value}
         return self.__lookup_nodes(self.__used_data_model_type, self.__used_data_model_id, NodeProperties.DataModel.NAME.value, parent_info)
+
+
+    ### Used Analyze Model
+    def lookup_used_analyze_model_property(self, id_value, property_name: NodeProperties.AnalyzeModel):
+        """
+        Return data of specific property from UsedAnalyzeModel
+        
+        Args:
+            id_value (string): Value for the id
+            property_name (string): property name to return it's value
+
+        Raises:
+            RuntimeError: If database query error.   
+
+        Returns:
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
+        """ 
+        return self.__lookup_node_property(self.__used_analyze_model_type, self.__used_analyze_model_id, id_value, property_name.value)
 
 
     ### Result Blueprint
