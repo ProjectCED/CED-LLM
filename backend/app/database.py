@@ -81,11 +81,35 @@ class NodeProperties:
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
 
+class DatabaseMeta(type):
+    """
+    A metaclass for creating singleton classes.
+    """
 
-class Database:
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]    
+
+
+class Database(metaclass=DatabaseMeta):
     """
     Manages database query's from backend to Neo4j database.
+
+    Enforced to be Singleton class.
     """
+    _instance = None
+    # def __new__(cls, *args, **kwargs):
+    #     if not cls._instance:
+    #         cls._instance = super(Database, cls).__new__(cls)
+    #     return cls._instance
+
+
+
+
     def __init__(self) -> None:
         """Start up database driver.
         Setup (according to database design v4):
