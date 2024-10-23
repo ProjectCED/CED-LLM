@@ -1608,7 +1608,7 @@ class Database:
         return self.__set_node_property(self.__blueprint_type, self.__blueprint_id, id_value, property_name.value, new_data)
     
         
-    def remove_blueprint_property(self, id_value, property_name: NodeProperties.DataModel):
+    def remove_blueprint_property(self, id_value, property_name: NodeProperties.Blueprint):
         """
         Removes specific Blueprint property data (and property)
         
@@ -1811,6 +1811,24 @@ class Database:
 
 
     ### Used dataset
+    def lookup_used_dataset_property(self, id_value):
+        """
+        Return data of specific property from UsedDataset
+        
+        Args:
+            id_value (string): Value for the id
+            property_name (string): property name to return it's value
+
+        Raises:
+            RuntimeError: If database query error.   
+
+        Returns:
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
+        """ 
+        return self.__lookup_node_property(self.__used_dataset_type, self.__used_dataset_id, id_value, self.__dataset_property)
+
     def __set_used_dataset_property(self, id_value, new_data):
         """
         Create/modify Used Dataset property data with new data.
@@ -1849,7 +1867,27 @@ class Database:
         """
         parent_info = {"node_type": self.__used_data_model_type, "id_type": self.__used_data_model_id, "id_value": parent_id_value}
         return self.__lookup_nodes(self.__used_dataset_type, self.__dataset_id, self.__dataset_property, parent_info)
-    
+
+
+    ### Used Blueprint
+    def lookup_used_blueprint_property(self, id_value, property_name: NodeProperties.Blueprint):
+        """
+        Return data of specific property from UsedBlueprint
+        
+        Args:
+            id_value (string): Value for the id
+            property_name (string): property name to return it's value
+
+        Raises:
+            RuntimeError: If database query error.   
+
+        Returns:
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
+        """ 
+        return self.__lookup_node_property(self.__used_blueprint_type, self.__used_blueprint_id, id_value, property_name.value)
+
     
     ### Used datamodel
     def lookup_used_data_model_nodes_result_blueprint(self, parent_id_value):
