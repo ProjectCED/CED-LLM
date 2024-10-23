@@ -1,10 +1,11 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Blueprint
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)  # Allows connections between domains
+main = Blueprint('main', __name__)
 
-@app.route('/api/data', methods=['GET'])
+CORS(main)  # Allows connections between domains
+
+@main.route('/api/data', methods=['GET'])
 def get_data():
     data = {
         "message": "Hello from the Flask backend!"
@@ -12,4 +13,4 @@ def get_data():
     return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    main.run(debug=True)
