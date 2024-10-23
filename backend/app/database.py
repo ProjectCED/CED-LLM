@@ -226,7 +226,7 @@ class Database:
         
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j add_node() query failed: " + e )
             
 
     def __set_node_property(self, type, id_type, id_value, property_name, new_data):
@@ -263,7 +263,7 @@ class Database:
         
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j set_property_value() query failed: " + e )
     
 
     def __lookup_whole_node(self, type, id_type, id_value):
@@ -293,7 +293,7 @@ class Database:
             return next(iter(records)).data()
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j lookup_whole_node() query failed: " + e )
 
 
     def __lookup_node_property(self, type, id_type, id_value, property_name):
@@ -328,7 +328,7 @@ class Database:
         
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j lookup_node_property query failed: " + e )
 
 
     def __lookup_nodes(self, type, id_type, property_name, parent_info = None):
@@ -376,7 +376,7 @@ class Database:
         
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j lookup_nodes() query failed: " + e )
         
         
     def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
@@ -436,7 +436,7 @@ class Database:
 
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j delete_node_with_connections() query failed: " + e )
 
 
     def __delete_node(self, type, id_type, id_value):
@@ -471,7 +471,7 @@ class Database:
 
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j delete_node() query failed: " + e )
     
 
     def __remove_property(self, type, id_type, id_value, property_name):
@@ -507,7 +507,7 @@ class Database:
 
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j remove_property() query failed: " + e )
     
 
     def __connect_with_relationship(self, type_a, id_type_a, id_value_a, type_b, id_type_b, id_value_b, relationship_type):
@@ -554,7 +554,7 @@ class Database:
 
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j connect_with_relationship() query failed: " + e )
 
    
     def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new = None):
@@ -602,7 +602,7 @@ class Database:
         
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j copy_node() query failed: " + e )
 
 
     def __lookup_node_neighbours(self, type_parent, id_type_parent, id_value_parent, type, id_type, relationship):
@@ -640,7 +640,7 @@ class Database:
 
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j lookup_node_neighbours() query failed: " + e )
 
     
     def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
@@ -674,7 +674,7 @@ class Database:
             return next(iter(records)).data()[property_name]
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j lookup_connected_node_property() query failed: " + e )
     
     def __does_property_exist(self, type, id_type, id_value, property_name):
         """
@@ -709,7 +709,7 @@ class Database:
             
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j does_property_exist() query failed: " + e )
         
     def __does_node_exist(self, type, id_type, id_value):
         """
@@ -741,7 +741,7 @@ class Database:
             
         except Neo4jError as e:
             error_string = str(e)
-            return RuntimeError( "Neo4j query failed: " + e )
+            return RuntimeError( "Neo4j does_node_exist() query failed: " + e )
 
 
     
