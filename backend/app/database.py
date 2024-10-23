@@ -1,4 +1,4 @@
-from neo4j import GraphDatabase
+from neo4j import GraphDatabase, Neo4jError
 from dotenv import load_dotenv
 from enum import Enum
 from datetime import datetime
@@ -203,7 +203,7 @@ class Database:
         """
         # check if node already exists
         if self.__does_node_exist(type, id_type, id_value):
-            return False
+            return None
 
         if id_value == None:
             query_string = (
@@ -211,7 +211,7 @@ class Database:
                 "RETURN n." + id_type + " AS " + id_type
             )
         else:
-            #id_value = str(id_value)
+            id_value = str(id_value)
             query_string = (
                 "MERGE (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
                 "RETURN n." + id_type + " AS " + id_type
@@ -223,8 +223,10 @@ class Database:
                 database_= self.__name,
             )
             return next(iter(records)).data()[id_type]
-        except:
-            return None
+        
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
             
 
     def __set_node_property(self, type, id_type, id_value, property_name, new_data):
@@ -257,10 +259,11 @@ class Database:
                 old_data = new_data,
                 database_= self.__name,
             )
-        except:
-            return False
-
-        return True
+            return True
+        
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
     
 
     def __lookup_whole_node(self, type, id_type, id_value):
@@ -288,8 +291,9 @@ class Database:
 
         try:
             return next(iter(records)).data()
-        except:
-            return None
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
 
 
     def __lookup_node_property(self, type, id_type, id_value, property_name):
@@ -311,15 +315,20 @@ class Database:
             "RETURN n." + property_name + " AS " + property_name
         )
 
-        records, summary, keys = self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        
         try:
-            return next(iter(records)).data()[property_name]
-        except:
-            return None
+            records, summary, keys = self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+            
+            try:
+                return next(iter(records)).data()[property_name]
+            except:
+                return None
+        
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
 
 
     def __lookup_nodes(self, type, id_type, property_name, parent_info = None):
@@ -352,17 +361,22 @@ class Database:
                 "RETURN COLLECT ([n." + id_type + ", n." + property_name + "]) AS list"
             )
 
-        records, summary, keys = self.__driver.execute_query(
-            query_string,
-            database_= self.__name,
-        )
-        
         try:
-            # gives out [[ ]]
-            double_list = next(iter(records)).data()['list']
-            return double_list
-        except:
-            return None
+            records, summary, keys = self.__driver.execute_query(
+                query_string,
+                database_= self.__name,
+            )
+        
+            try:
+                # gives out [[ ]]
+                double_list = next(iter(records)).data()['list']
+                return double_list
+            except:
+                return None
+        
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
         
         
     def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
@@ -392,7 +406,7 @@ class Database:
                 "WITH DISTINCT d "
                 "DETACH DELETE d"
             )
-        elif isinstance(exclude_relationships,list):
+        elif isinstance(exclude_relationships,list) and all(isinstance(item,str) for item in list):
             exclude_relationships = "','".join(exclude_relationships)
             query_string = (
                 "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
@@ -410,18 +424,20 @@ class Database:
                 "DETACH DELETE d"
             )
         else:
-            #return "ERROR: exclude_relationships was something else than None, string or list of string"
-            return False
+            return TypeError( "Invalid exclude_relationships type: " + type(exclude_relationships) )
         
         try:
             self.__driver.execute_query(
                 query_string,
                 database_= self.__name,
             )
-        except:
-            return False
 
-        return True
+            return True
+
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
+
 
     def __delete_node(self, type, id_type, id_value):
         """
@@ -450,10 +466,12 @@ class Database:
                 query_string,
                 database_= self.__name,
             )
-        except:
-            return False
 
-        return True
+            return True
+
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
     
 
     def __remove_property(self, type, id_type, id_value, property_name):
@@ -484,10 +502,12 @@ class Database:
                 query_string,
                 database_= self.__name,
             )
-        except:
-            return False
 
-        return True
+            return True
+
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
     
 
     def __connect_with_relationship(self, type_a, id_type_a, id_value_a, type_b, id_type_b, id_value_b, relationship_type):
@@ -529,11 +549,14 @@ class Database:
                 query_string,
                 database_= self.__name,
             )
-        except:
-            return False
 
-        return True
-    
+            return True
+
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
+
+   
     def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new = None):
         """return id of new node when copy succeeded, None if failed
         new id value is optional
@@ -576,8 +599,10 @@ class Database:
                 database_= self.__name,
             )
             return next(iter(records)).data()[id_type]
-        except:
-            return None
+        
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
 
 
     def __lookup_node_neighbours(self, type_parent, id_type_parent, id_value_parent, type, id_type, relationship):
@@ -613,8 +638,9 @@ class Database:
 
             return filter_to_list
 
-        except:
-            return None
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
 
     
     def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
@@ -646,8 +672,9 @@ class Database:
                 database_= self.__name,
             )
             return next(iter(records)).data()[property_name]
-        except:
-            return None
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
     
     def __does_property_exist(self, type, id_type, id_value, property_name):
         """
@@ -679,8 +706,10 @@ class Database:
                 return False
             else:
                 return True
-        except:
-            return False
+            
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
         
     def __does_node_exist(self, type, id_type, id_value):
         """
@@ -709,8 +738,10 @@ class Database:
                 return False
             else:
                 return True
-        except:
-            return False
+            
+        except Neo4jError as e:
+            error_string = str(e)
+            return RuntimeError( "Neo4j query failed: " + e )
 
 
     
@@ -1549,9 +1580,9 @@ class Database:
         Returns:
             string or None: ID value for the created node. None otherwise.
         """
-        # try:
             
         result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+
         self.set_result_blueprint_property(result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
         
         # copy nodes into used node versions and connect them to result
@@ -1578,8 +1609,6 @@ class Database:
         self.__connect_result_blueprint_to_project(result_blueprint_id, project_id)
 
         return result_blueprint_id
-        # except:
-        #     return None
         
 
     def set_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint, new_data):
