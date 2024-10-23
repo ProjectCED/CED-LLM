@@ -1,4 +1,5 @@
-from neo4j import GraphDatabase, Neo4jError
+from neo4j import GraphDatabase
+#from noe4j.exceptions import Neo4jError # this should work, but doesn't
 from dotenv import load_dotenv
 from enum import Enum
 from datetime import datetime
@@ -229,7 +230,7 @@ class Database:
             )
             return next(iter(records)).data()[id_type]
         
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j add_node() query failed: " + e )
             
@@ -271,7 +272,7 @@ class Database:
             )
             return True
         
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j set_property_value() query failed: " + e )
     
@@ -304,7 +305,7 @@ class Database:
 
         try:
             return next(iter(records)).data()
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j lookup_whole_node() query failed: " + e )
 
@@ -344,7 +345,7 @@ class Database:
             except:
                 return None
         
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j lookup_node_property query failed: " + e )
 
@@ -397,7 +398,7 @@ class Database:
             except:
                 return None
         
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j lookup_nodes() query failed: " + e )
         
@@ -463,7 +464,7 @@ class Database:
 
             return True
 
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j delete_node_with_connections() query failed: " + e )
 
@@ -503,7 +504,7 @@ class Database:
 
             return True
 
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j delete_node() query failed: " + e )
     
@@ -544,7 +545,7 @@ class Database:
 
             return True
 
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j remove_property() query failed: " + e )
     
@@ -596,7 +597,7 @@ class Database:
 
             return True
 
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j connect_with_relationship() query failed: " + e )
 
@@ -647,7 +648,7 @@ class Database:
             )
             return next(iter(records)).data()[id_type]
         
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j copy_node() query failed: " + e )
 
@@ -693,7 +694,7 @@ class Database:
             except:
                 return None
 
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j lookup_node_neighbours() query failed: " + e )
 
@@ -732,7 +733,7 @@ class Database:
     #             database_= self.__name,
     #         )
     #         return next(iter(records)).data()[property_name]
-    #     except Neo4jError as e:
+    #     except Exception as e:
     #         error_string = str(e)
     #         return RuntimeError( "Neo4j lookup_connected_node_property() query failed: " + e )
     
@@ -772,7 +773,7 @@ class Database:
             else:
                 return True
             
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j does_property_exist() query failed: " + e )
         
@@ -809,7 +810,7 @@ class Database:
             else:
                 return True
             
-        except Neo4jError as e:
+        except Exception as e:
             error_string = str(e)
             return RuntimeError( "Neo4j does_node_exist() query failed: " + e )
 
