@@ -198,8 +198,13 @@ class Database:
             id_type (string): Node property for id usage
             id_value (string, optional): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
         """
         # check if node already exists
         if self.__does_node_exist(type, id_type, id_value):
@@ -240,8 +245,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """
         # check if node exists
         if not self.__does_node_exist(type, id_type, id_value):
@@ -275,8 +285,11 @@ class Database:
             id_type (string): Node id(property)
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.            
+
         Returns:
-            unkown: whole node data or None otherwise.
+            Any: whole node data or None otherwise.
         """
         id_value = str(id_value)
         query_string = (
@@ -306,8 +319,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """
         id_value = str(id_value)
         query_string = (
@@ -346,8 +364,13 @@ class Database:
                 - 'id_type' (string): Node id(property)
                 - 'id_value' (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [ID, Any] or None: A list of found nodes with ID and wanted property combination. None otherwise
+            list[string, Any] or None:
+                - [ID, property_name value] A list of found nodes with ID and wanted property combination.
+                - None if nothing was found.
         """
 
         if parent_info == None:
@@ -387,10 +410,16 @@ class Database:
             type (string): Node label
             id_type (string): Node id(property)
             id_value (string): Value for the id
-            exclude_relationships (string or list of string, optional): Relationships to exclude from deletion
+            exclude_relationships (string or list[string], optional): Relationships to exclude from deletion
+
+        Raises:
+            RuntimeError: If database query error.
+            TypeError: If exclude_relationships is wrong type.
 
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node exists.
         """
         # check if node exists
         if not self.__does_node_exist(type, id_type, id_value):
@@ -448,8 +477,13 @@ class Database:
             id_type (string): Node id(property)
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """
         # check if node exists
         if not self.__does_node_exist(type, id_type, id_value):
@@ -484,8 +518,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """
         # check if property exists
         if not self.__does_property_exist(type, id_type, id_value, property_name):
@@ -525,8 +564,13 @@ class Database:
 
             relationship_type (string): relationship type to connect with
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         # check if node a exists
         if not self.__does_node_exist(type_a, id_type_a, id_value_a):
@@ -571,8 +615,11 @@ class Database:
             id_type_new (string): Node id(property) for new one
             id_value_new (string, optional): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            any: if found, single node property data or None otherwise.
+            string: string containing ID value for the created node. 
         """
         id_value = str(id_value)
         if id_value_new == None:
@@ -620,8 +667,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            list of string: List of ID values.
+            list[string] or None:
+                - list[string] of ID values.
+                - None if nothing was found.
         """
         id_value_parent = str(id_value_parent)
         query_string = (
@@ -634,47 +686,55 @@ class Database:
                 query_string,
                 database_= self.__name,
             )
-            filter_to_list = next(iter(records)).data()['list']
-
-            return filter_to_list
+            try:
+                filter_to_list = next(iter(records)).data()['list']
+                return filter_to_list
+            
+            except:
+                return None
 
         except Neo4jError as e:
             error_string = str(e)
             return RuntimeError( "Neo4j lookup_node_neighbours() query failed: " + e )
 
     
-    def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
-        """
-        TODO: only returns top result (single result)
+    # def __lookup_connected_node_property(self, type_a, id_type_a, id_value_a, relationship_type, property_name):
+    #     """
+    #     TODO: only returns top result (single result)
 
-        Lookup individual property value from a neighboring node that is connected by certain relationship.
-        (:)<-[rel]-(b:). return b.<property_name>
+    #     Lookup individual property value from a neighboring node that is connected by certain relationship.
+    #     (:)<-[rel]-(b:). return b.<property_name>
 
-        Args:
-            type_a (string): Node label
-            id_type_a (string): Node id(property)
-            id_value_a (string): Value for the id
-            relationship_type (string): relationship type
-            property_name (string): property name to return it's value
+    #     Args:
+    #         type_a (string): Node label
+    #         id_type_a (string): Node id(property)
+    #         id_value_a (string): Value for the id
+    #         relationship_type (string): relationship type
+    #         property_name (string): property name to return it's value
 
-        Returns:
-            any: if found, single node property data or None otherwise.
-        """
-        id_value_a = str(id_value_a)
-        query_string = (
-            "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) <- [:" + relationship_type + "] - (b) "
-            "RETURN b." + property_name + " AS " + property_name
-        )
+    #     Raises:
+    #         RuntimeError: If database query error.
+
+    #     Returns:
+    #         Any or None:
+    #             - Any single node property data
+    #             - None if nothing was found.
+    #     """
+    #     id_value_a = str(id_value_a)
+    #     query_string = (
+    #         "MATCH (a:" + type_a + " {" + id_type_a + ": '" + id_value_a + "'}) <- [:" + relationship_type + "] - (b) "
+    #         "RETURN b." + property_name + " AS " + property_name
+    #     )
         
-        try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
-            return next(iter(records)).data()[property_name]
-        except Neo4jError as e:
-            error_string = str(e)
-            return RuntimeError( "Neo4j lookup_connected_node_property() query failed: " + e )
+    #     try:
+    #         records, summary, keys = self.__driver.execute_query(
+    #             query_string,
+    #             database_= self.__name,
+    #         )
+    #         return next(iter(records)).data()[property_name]
+    #     except Neo4jError as e:
+    #         error_string = str(e)
+    #         return RuntimeError( "Neo4j lookup_connected_node_property() query failed: " + e )
     
     def __does_property_exist(self, type, id_type, id_value, property_name):
         """
@@ -686,8 +746,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to check
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if found, False otherwise
+            bool:
+                - True if property was found.
+                - False if not found.
         """
         id_value = str(id_value)
         query_string = (
@@ -720,8 +785,13 @@ class Database:
             id_type (string): Node id(property)
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if found, False otherwise
+            bool:
+                - True if node was found.
+                - False if not found.
         """
         id_value = str(id_value)
         query_string = (
@@ -754,8 +824,13 @@ class Database:
             dataset_id_value (string): Value for the Dataset id
             data_model_id_value (string): Value for the DataModel id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__dataset_type, self.__dataset_id, dataset_id_value, self.__data_model_type, self.__data_model_id, data_model_id_value, self.__connect_dataset_data_model)
     
@@ -768,8 +843,13 @@ class Database:
             dataset_id_value (string): Value for the Dataset id
             analyze_model_id_value (string): Value for the AnalyzeModel id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__dataset_type, self.__dataset_id, dataset_id_value, self.__analyze_model_type, self.__analyze_model_id, analyze_model_id_value, self.__connect_dataset_analyze_model)
     
@@ -788,8 +868,13 @@ class Database:
             dataset_id_value (string): Value for the Dataset id
             project_id_value (string): Value for the Project id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__dataset_type, self.__dataset_id, dataset_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_dataset_project)
 
@@ -802,8 +887,13 @@ class Database:
             result_id_value (string): Value for the ResultBlueprint id
             project_id_value (string): Value for the Project id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__project_type, self.__project_id, project_id_value, self.__connect_result_project)
     
@@ -816,8 +906,13 @@ class Database:
             used_dataset_id_value (string): Value for the UsedDataset id
             result_id_value (string): Value for the ResultBlueprint id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_dataset_result_blueprint)
 
@@ -836,8 +931,13 @@ class Database:
             used_data_model_id_value (string): Value for the UsedDataModel id
             result_id_value (string): Value for the ResultBlueprint id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__used_data_model_type, self.__used_data_model_id, used_data_model_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_data_model_result_blueprint)
 
@@ -850,8 +950,13 @@ class Database:
             used_blueprint_id_value (string): Value for the UsedBlueprint id
             result_id_value (string): Value for the ResultBlueprint id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__used_blueprint_type, self.__used_blueprint_id, used_blueprint_id_value, self.__result_blueprint_type, self.__result_blueprint_id, result_id_value, self.__connect_used_blueprint_result_blueprint)
 
@@ -864,8 +969,13 @@ class Database:
             used_dataset_id_value (string): Value for the UsedDataset id
             used_data_model_id_value (string): Value for the UsedDataModel id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value, self.__used_data_model_type, self.__used_data_model_id, used_data_model_id_value, self.__connect_used_dataset_used_data_model)
     
@@ -877,8 +987,13 @@ class Database:
             used_dataset_id_value (string): Value for the UsedDataset id
             used_analyze_model_id_value (string): Value for the UsedAnalyzeModel id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True if query succeeded, False otherwise
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value, self.__used_analyze_model_type, self.__used_analyze_model_id, used_analyze_model_id_value, self.__connect_used_dataset_used_analyze_model)
 
@@ -888,8 +1003,13 @@ class Database:
         """
         Create a global settings node.
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
         """
         return self.__add_node(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value)
 
@@ -902,8 +1022,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name.value, new_data)
     
@@ -915,8 +1040,13 @@ class Database:
         Args:
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """ 
         return self.__remove_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name.value)
 
@@ -928,8 +1058,13 @@ class Database:
         Args:
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value, property_name.value)
     
@@ -938,8 +1073,13 @@ class Database:
         """
         Delete global settings node
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """ 
         return self.__delete_node(self.__global_settings_type, self.__global_settings_id, self.__global_settings_id_value)
     
@@ -964,8 +1104,13 @@ class Database:
         Args:
             id_type (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.        
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.       
         """
         return self.__add_node(self.__user_settings_type, self.__user_settings_id, id_value)
 
@@ -979,8 +1124,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value, new_data)
     
@@ -993,8 +1143,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """ 
         return self.__remove_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value)
 
@@ -1007,8 +1162,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__user_settings_type, self.__user_settings_id, id_value, property_name.value)
     
@@ -1017,8 +1177,13 @@ class Database:
         """
         Lookup user settings and return list of them in a [[ID, NAME]] combo.
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and NAME combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         return self.__lookup_nodes(self.__user_settings_type, self.__user_settings_id, NodeProperties.UserSettings.NAME.value)
     
@@ -1030,8 +1195,13 @@ class Database:
         Args:
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """ 
         return self.__delete_node(self.__user_settings_type, self.__user_settings_id, id_value)
     
@@ -1053,8 +1223,13 @@ class Database:
         """
         Create a Project node.
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
         """        
         return self.__add_node(self.__project_type, self.__project_id)
 
@@ -1068,8 +1243,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__project_type, self.__project_id, id_value, property_name.value, new_data)
     
@@ -1082,8 +1262,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """ 
         return self.__remove_property(self.__project_type, self.__project_id, id_value, property_name.value)
 
@@ -1096,8 +1281,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__project_type, self.__project_id, id_value, property_name.value)
     
@@ -1106,8 +1296,13 @@ class Database:
         """
         Lookup Projects and return list of them in a [[ID, NAME]] combo.
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and NAME combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         return self.__lookup_nodes(self.__project_type, self.__project_id, NodeProperties.Project.NAME.value)
     
@@ -1119,8 +1314,13 @@ class Database:
         Args:
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """ 
         return self.__delete_node_with_connections(self.__project_type, self.__project_id, id_value, self.__project_exclusion)
     
@@ -1143,8 +1343,13 @@ class Database:
         """
         Create a Dataset node.
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.        
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.    
         """        
         return self.__add_node(self.__dataset_type, self.__dataset_id)
 
@@ -1157,8 +1362,14 @@ class Database:
             id_value (string): Value for the id
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.""" 
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
+        """ 
         return self.__set_node_property(self.__dataset_type, self.__dataset_id, id_value, self.__dataset_property, new_data)
     
         
@@ -1170,8 +1381,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__dataset_type, self.__dataset_id, id_value, self.__dataset_property)
 
@@ -1180,8 +1396,13 @@ class Database:
         """
         Lookup Datasets and return list of them in a [[ID, file_name]] combo.
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and file_name combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         parent_info = {'node_type': self.__data_model_type, 'id_type': self.__data_model_id, 'id_value': parent_id_value}
         return self.__lookup_nodes(self.__dataset_type, self.__dataset_id, self.__dataset_property, parent_info)
@@ -1209,8 +1430,13 @@ class Database:
         Args:
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """
         return self.__delete_node(self.__dataset_type, self.__dataset_id, id_value)
     
@@ -1232,8 +1458,13 @@ class Database:
         """
         Create a DataModel node.
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
         """
         return self.__add_node(self.__data_model_type, self.__data_model_id)
 
@@ -1247,8 +1478,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__data_model_type, self.__data_model_id, id_value, property_name.value, new_data)
     
@@ -1261,8 +1497,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """ 
         return self.__remove_property(self.__data_model_type, self.__data_model_id, id_value, property_name.value)
 
@@ -1275,8 +1516,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__data_model_type, self.__data_model_id, id_value, property_name.value)
     
@@ -1284,8 +1530,13 @@ class Database:
         """
         Lookup DataModels and return list of them in a [[ID, NAME]] combo.
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and NAME combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         return self.__lookup_nodes(self.__data_model_type, self.__data_model_id, NodeProperties.DataModel.NAME.value)
     
@@ -1297,8 +1548,13 @@ class Database:
         Args:
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """ 
         return self.__delete_node_with_connections(self.__data_model_type, self.__data_model_id, id_value)
     
@@ -1320,8 +1576,13 @@ class Database:
         """
         Create a Blueprint node.
         
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
         """
         return self.__add_node(self.__blueprint_type, self.__blueprint_id)
 
@@ -1335,8 +1596,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__blueprint_type, self.__blueprint_id, id_value, property_name.value, new_data)
     
@@ -1349,8 +1615,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """ 
         return self.__remove_property(self.__blueprint_type, self.__blueprint_id, id_value, property_name.value)
 
@@ -1363,8 +1634,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__blueprint_type, self.__blueprint_id, id_value, property_name.value)
     
@@ -1373,8 +1649,13 @@ class Database:
         """
         Lookup Blueprints and return list of them in a [[ID, NAME]] combo.
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and NAME combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, NodeProperties.Blueprint.NAME.value)
     
@@ -1386,8 +1667,13 @@ class Database:
         Args:
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """ 
         return self.__delete_node_with_connections(self.__blueprint_type, self.__blueprint_id, id_value)
     
@@ -1409,8 +1695,13 @@ class Database:
         """
         Create a AnalyzeModel node.
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
         """
         return self.__add_node(self.__analyze_model_type, self.__analyze_model_id)
 
@@ -1424,8 +1715,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name.value, new_data)
     
@@ -1438,8 +1734,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """ 
         return self.__remove_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name.value)
 
@@ -1452,8 +1753,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__analyze_model_type, self.__analyze_model_id, id_value, property_name.value)
     
@@ -1462,8 +1768,13 @@ class Database:
         """
         Lookup AnalyzeModels and return list of them in a [[ID, NAME]] combo.
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and NAME combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         return self.__lookup_nodes(self.__analyze_model_type, self.__analyze_model_id, NodeProperties.AnalyzeModel.NAME.value)
 
@@ -1475,8 +1786,13 @@ class Database:
         Args:
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """ 
         return self.__delete_node_with_connections(self.__analyze_model_type, self.__analyze_model_id, id_value)
     
@@ -1503,8 +1819,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__used_dataset_type, self.__used_dataset_id, id_value, self.__dataset_property, new_data)
     
@@ -1517,8 +1838,13 @@ class Database:
         Args:
             parent_id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and file_name combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         parent_info = {"node_type": self.__used_data_model_type, "id_type": self.__used_data_model_id, "id_value": parent_id_value}
         return self.__lookup_nodes(self.__used_dataset_type, self.__dataset_id, self.__dataset_property, parent_info)
@@ -1533,8 +1859,13 @@ class Database:
         Args:
             parent_id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, string] or None: A list of found nodes with ID and NAME combination. None otherwise
+            list[string, string] or None:
+                - list[string, string] A list of found nodes with ID and NAME combination.
+                - None if nothing was found.
         """
         parent_info = {"node_type": self.__result_blueprint_type, "id_type": self.__result_blueprint_id, "id_value": parent_id_value}
         return self.__lookup_nodes(self.__used_data_model_type, self.__used_data_model_id, NodeProperties.DataModel.NAME.value, parent_info)
@@ -1542,6 +1873,7 @@ class Database:
 
     ### Result Blueprint
 
+    # possibly useful when adding second result type
     # if datasets for result are present in database when pressing analyse
     # def add_result_blueprint_node(self, dataset_ids, blueprint_ids, datamodel_ids):
     #     """Create Result-blueprint node. Avoids duplicates."""
@@ -1577,8 +1909,11 @@ class Database:
             blueprint_ids (list of strings): list of blueprint ids
             datamodel_ids (list of strings): list of data model ids
         
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            string or None: ID value for the created node. None otherwise.
+            string: string containing ID value for the created node.
         """
             
         result_blueprint_id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
@@ -1586,26 +1921,28 @@ class Database:
         self.set_result_blueprint_property(result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
         
         # copy nodes into used node versions and connect them to result
+        # datasets
         for file_name in dataset_list:
             used_dataset_id = self.__add_node(self.__used_dataset_type, self.__used_dataset_id)
             self.__set_used_dataset_property(used_dataset_id, file_name)
             self.__connect_used_dataset_to_result_blueprint(used_dataset_id, result_blueprint_id)
 
+        # blueprints
         for id in blueprint_ids:
             used_blueprint_id = self.__copy_node(self.__blueprint_type, self.__blueprint_id, id, self.__used_blueprint_type, self.__used_blueprint_id)
             self.__connect_used_blueprint_to_result_blueprint(used_blueprint_id, result_blueprint_id)
 
+        # datamodels and it's datasets
         for id in datamodel_ids:
             used_data_model_id = self.__copy_node(self.__data_model_type, self.__data_model_id, id, self.__used_data_model_type, self.__used_data_model_id)
-
             datamodel_dataset_ids = self.__lookup_node_neighbours(self.__data_model_type, self.__data_model_id, id, self.__dataset_type, self.__dataset_id, self.__connect_dataset_data_model) 
             if datamodel_dataset_ids != None:
                 for datamodel_dataset_id in datamodel_dataset_ids:
                     new_used_dataset_id = self.__copy_node(self.__dataset_type, self.__dataset_id, datamodel_dataset_id, self.__used_dataset_type, self.__used_dataset_id)
                     self.__connect_used_dataset_to_used_data_model(new_used_dataset_id, used_data_model_id)
-
             self.__connect_used_data_model_to_result_blueprint(used_data_model_id, result_blueprint_id)
 
+        # result -> project
         self.__connect_result_blueprint_to_project(result_blueprint_id, project_id)
 
         return result_blueprint_id
@@ -1620,8 +1957,13 @@ class Database:
             property_name (string): property name to create/modify
             new_data (Any): value for the property
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
         """ 
         return self.__set_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value, new_data)
 
@@ -1634,8 +1976,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name for removing
 
+        Raises:
+            RuntimeError: If database query error.
+
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
         """ 
         return self.__remove_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value)
 
@@ -1648,8 +1995,13 @@ class Database:
             id_value (string): Value for the id
             property_name (string): property name to return it's value
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            any or None: if found, single node property data or None otherwise.
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__result_blueprint_type, self.__result_blueprint_id, id_value, property_name.value)
     
@@ -1660,8 +2012,13 @@ class Database:
         Args:
             project_id (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.   
+
         Returns:
-            list of [string, DATETIME.ISO] or None: A list of found nodes with ID and DATETIME combination. None otherwise
+            list[string, DATETIME.ISO] or None:
+                - list[string, DATETIME.ISO] A list of found nodes with ID and DATETIME combination.
+                - None if nothing was found.
         """ 
         project_info = { "node_type" : self.__project_type, "id_type" : self.__project_id, "id_value" : project_id }
         return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME.value, project_info)
@@ -1673,8 +2030,13 @@ class Database:
         Args:
             id_value (string): Value for the id
 
+        Raises:
+            RuntimeError: If database query error.
+            
         Returns:
-            bool: True when query succeeded, False otherwise.
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
         """ 
         return self.__delete_node_with_connections(self.__result_blueprint_type, self.__result_blueprint_id, id_value)
     
