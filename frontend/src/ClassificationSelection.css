@@ -1,0 +1,54 @@
+/* Styles for the main classification selection container */
+.classification-selection {
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    background-color: #13293D;
+    margin-top: 150px;
+  }
+  
+  
+  /* Styles for the heading within the classification selection */
+  .classification-selection h2 {
+    color: #e8f1f2;
+    font-size: 50px;
+    margin-bottom: 50px;
+  }
+  
+  /* Styles for paragraphs within the classification selection */
+  p {
+    color: #e8f1f2;
+    font-size: 20px;
+    margin-bottom: 20px;
+    max-width: 950px; /* Set maximum width for paragraphs */
+    
+  }
+  
+  /* Styles for the container holding the selection buttons */
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+   /* Styles for the individual selection buttons */
+  .selection-button {
+    background-color: #1B98E0;
+    color: #e8f1f2;
+    border: none;
+    padding: 20px 40px;
+    font-size: 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  /* Styles for selection buttons when hovered */
+  .selection-button:hover {
+    background-color: #0D6EFD;
+  }

@@ -69,4 +69,22 @@ dependencies:
   - zlib=1.2.13=h8cc25b3_1
   - zstandard=0.22.0=py312h3469f8a_0
   - zstd=1.5.5=hd43e919_2
-prefix: C:\Users\lauri\miniconda3
+  - pip:
+      - blinker==1.8.2
+      - click==8.1.7
+      - colorama==0.4.6
+      - flask==3.0.3
+      - flask-jwt-extended==4.6.0
+      - iniconfig==2.0.0
+      - itsdangerous==2.2.0
+      - jinja2==3.1.4
+      - markupsafe==2.1.5
+      - neo4j==5.24.0
+      - packaging==24.1
+      - pluggy==1.5.0
+      - pyjwt==2.9.0
+      - pytest==8.3.3
+      - python-dotenv==1.0.1
+      - pytz==2024.2
+      - werkzeug==3.0.4
+prefix: C:\Users\roope\anaconda3\envs\ced-backend

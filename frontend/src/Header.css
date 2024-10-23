@@ -1,0 +1,32 @@
+/* Styles for the navigation bar, including padding. */
+nav {
+    padding: 10px; 
+  }
+  
+  /* Styles for the unordered list, removing bullet points and centering items. */
+  nav ul {
+    list-style-type: none; 
+    display: flex; 
+    justify-content: center; 
+    padding: 0; 
+    margin: 0; 
+  }
+  
+  /* Styles for list items, adding margin for spacing. */
+  nav li {
+    margin-right: 80px; 
+  }
+  
+  /* Styles for navigation links, including color, text decoration, font size, and padding. */
+  nav a {
+    color: #1B98E0; 
+    text-decoration: none; 
+    font-size: 40px; 
+    padding: 5px 20px; 
+  }
+  
+  /* Styles for the active link, applying an underline and adjusting its position. */
+  nav a.active {
+    text-decoration: underline;
+    text-underline-offset: 10px;
+  }
