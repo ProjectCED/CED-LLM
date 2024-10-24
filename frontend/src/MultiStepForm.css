@@ -1,0 +1,99 @@
+/* Container for the entire multi-step form */
+.multi-step-form {
+    max-width: 1500px; 
+    margin: 0 auto; 
+    padding: 20px; 
+    background-color: #13293D; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    height: 100vh;
+  }
+  
+  /* Styling for each step box in the form */
+  .step {
+    border: 1px solid #1B98E0;
+    border-radius: 8px; 
+    padding: 15px; 
+    margin-bottom: 20px; 
+    background-color: #E8F1F2;
+  }
+  
+  /* Styling for the title of each step */
+  .step-title {
+    margin: 0px 0px 10px; 
+    font-size: 1.5em; 
+    color: #13293D; 
+    text-align: left;
+  }
+  
+  /* Layout for the step content */
+  .step-content {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+  }
+  
+  /* Styling for the next button in each step */
+  .next-button {
+    margin-top: 15px; 
+    padding: 15px 30px; 
+    border: none; 
+    font-size: 20px;
+    border-radius: 8px;
+    background-color: #1B98E0; 
+    color: #e8f1f2; 
+    cursor: pointer; 
+    margin-top: 20px;
+    display: inline-block;
+  }
+  
+  /* Change button color when hovered */
+  button:hover {
+    background-color: #117DB9;
+  }
+  
+  /* Styling for the file list container */
+  .file-list {
+    padding: 0px 0px 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  
+  /* Styling for each file name in the file list */
+  .file-item {
+    font-size: 15px; 
+    color: #e8f1f2; 
+  }
+  
+  /* Summary box for displaying selected files or text */
+  .step-summary {
+    background-color: grey; 
+    padding: 0px 20px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-size: 25px;
+    color: #e8f1f2; 
+    text-align: left; 
+    border-radius: 5px; 
+    width: fit-content; 
+    
+  }
+  
+  /* Ensures all p and div elements inside .step-summary have the specified text color */
+  .step-summary p, .step-summary div {
+    color: #e8f1f2 !important; 
+  }  
+  
+  /* Styling for the final Analyze button */
+  .analyze-button {
+    margin-top: 15px; 
+    padding: 15px 30px; 
+    border: none; 
+    font-size: 20px;
+    border-radius: 8px;
+    background-color: #1B98E0; 
+    color: #e8f1f2; 
+    cursor: pointer; 
+    margin-top: 20px;
+    display: inline-block;
+  }

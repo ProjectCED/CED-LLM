@@ -8,6 +8,11 @@ const Projects = () => {
       <div className="results-box">
         Results from analysis here
       </div>
+
+      <div className="button-container-projects">
+        <button className="download-button">Download result as pdf</button>
+        <button className="blueprint-button">Save as blueprint</button>
+      </div>
     </div>
   );
 };

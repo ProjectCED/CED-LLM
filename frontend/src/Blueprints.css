@@ -1,0 +1,226 @@
+/* General styles for the blueprints container */
+.blueprints-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #13293D;
+    min-height: 100vh;
+    color: #E8F1F2;
+    position: relative; 
+}
+
+/* Style for the "Add new blueprint" button */
+.add-button {
+    background-color: #1B98E0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-button:hover {
+    background-color: #117DB9;
+    transform: translateY(-2px);
+}
+
+/* Modal background overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; 
+}
+
+
+/* Close button in the modal */
+.modal-close-button {
+    background-color: #1B98E0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    float: right;
+}
+
+.modal-close-button:hover {
+    background-color: #117DB9;
+}
+
+/* Styles for each blueprint card */
+.blueprint-card {
+    background-color: #E8F1F2;
+    color: #13293D;
+    border: 1px solid #1B98E0;
+    border-radius: 8px;
+    width: 800px;
+    margin-bottom: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.blueprint-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Header section of the blueprint card */
+.blueprint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+/* Styles for the "Edit" and "Close" buttons */
+.edit-button {
+    background-color: #1B98E0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+    background-color: #117DB9;
+}
+
+/* Styling for simple text (paragraphs) */
+.blueprint-body p {
+    font-size: 20px;
+    color: #13293D;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* Container for the input field and add question button */
+.input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Input field for typing a question */
+input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #13293D;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+/* Button to add a question */
+.add-question-button {
+    background-color: #1B98E0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-question-button:hover {
+    background-color: #117DB9;
+    transform: translateY(-2px);
+}
+
+/* Container for showing the user-entered question */
+.question-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.question-container ul {
+    list-style: none; 
+    padding: 0; 
+}
+
+/* Styling for each question list item */
+.question-item {
+    background-color: gray; 
+    font-size: 20px; 
+    padding: 5px; 
+    margin-bottom: 5px; 
+    border-radius: 5px; 
+    color: #e8f1f2; 
+    display: flex; 
+    justify-content: space-between; 
+}
+
+/* Remove button for each question (shown as an "X") */
+.remove-button {
+    color: #e8f1f2; 
+    cursor: pointer; 
+    font-size: 20px; 
+}
+
+.remove-button:hover {
+    color: #d9534f;
+}
+
+
+/* Container for blueprint actions (delete and save buttons) */
+.blueprint-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.delete-button, .save-button {
+    background-color: #1B98E0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-left: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-button:hover, .save-button:hover {
+    background-color: #117DB9;
+}
+
+/* Success message styling */
+.success-message {
+    background-color: green; 
+    color: white; 
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    border-radius: 5px; 
+    animation: fadeIn 0.5s, fadeOut 0.5s 2.5s; 
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }

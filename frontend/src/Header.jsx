@@ -8,11 +8,8 @@ const Header = () => {
           <ul>
             <li>
             <NavLink 
-              to="/app/classification/file-download" // Path to the Classification page
-              className={({ isActive, isPending }) => 
-                // Check if the link is active or if the pathname starts with /app/classification
-                isActive || window.location.pathname.startsWith('/app/classification') ? 'active' : ''
-              }
+              to="/app/classification" 
+              className={({ isActive }) => isActive ? 'active' : ''}
             >
               Classification
             </NavLink>

@@ -3,12 +3,9 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import './App.css';  
 import StartPage from './StartPage';
 import Classification from './Classification';
-import FileDownload from './FileDownload';
-import ClassificationSelection from './ClassificationSelection';
 import Projects from './Projects';
 import Blueprints from './Blueprints';
 import Header from './Header';
-import DefaultClassification from './DefaultClassification';
 
 function App() {
   return (
@@ -30,11 +27,7 @@ function MainLayout() {
     <>
       <Header /> 
       <Routes>
-        <Route path="classification/*" element={<Classification />}> 
-          <Route path="file-download" element={<FileDownload />} /> 
-          <Route path="classification-selection" element={<ClassificationSelection />} /> 
-          <Route path="default-classification" element={<DefaultClassification />} />
-        </Route>
+        <Route path="classification" element={<Classification />} />
         <Route path="projects" element={<Projects />} />
         <Route path="blueprints" element={<Blueprints />} />
       </Routes>
