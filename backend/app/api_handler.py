@@ -3,13 +3,12 @@ from dotenv import load_dotenv
 import openai
 from openai import OpenAI
 import utils
-from enum import Enum
+
+PRIMARY_MODEL = "gpt-4o"
+BACKUP_MODEL = "gpt-4o-mini" # This has higher token limit
 
 class ApiHandler():
-    # Enum for the models available
-    class Models(Enum):
-        PRIMARY_MODEL = "gpt-4o"
-        BACKUP_MODEL = "gpt-4o-mini" # This has higher token limit
+
 
     def __init__(self):
         load_dotenv()
@@ -41,8 +40,8 @@ class ApiHandler():
         
         # If the rate limit is reached, try the backup model, if the backup model also fails, return None
         except openai.RateLimitError:
-            if (model == self.Models.PRIMARY_MODEL):
-                return self.analyze_pdf(text, self.Models.BACKUP_MODEL)
+            if (model == PRIMARY_MODEL):
+                return self.analyze_text(text, BACKUP_MODEL)
             else:
                 return None
             
@@ -55,7 +54,7 @@ class ApiHandler():
 
 def main():
     #apiHandler = ApiHandler()
-    #result = apiHandler.analyze_pdf("PTK_102+2024.pdf", apiHandler.Models.PRIMARY_MODEL)
+    #result = apiHandler.analyze_file("PTK_102+2024.pdf", PRIMARY_MODEL)
     #print(result)
     pass
 
