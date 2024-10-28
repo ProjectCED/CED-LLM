@@ -97,3 +97,10 @@
     margin-top: 20px;
     display: inline-block;
   }
+
+  /* Analyze button disabled state */
+.analyze-button:disabled {
+  background-color: #c0c0c0; 
+  color: #666666; 
+  cursor: not-allowed; 
+}

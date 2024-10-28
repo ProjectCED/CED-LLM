@@ -28,13 +28,12 @@ const MultiStepForm = () => {
     setCopiedText(text);
   };
 
-  // Show Analyze button when all steps are done
-  const showAnalyzeButton = currentStep === 4;
-
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = () => {
     navigate('/app/projects');
   };
+
+  const allStepsCompleted = stepCompleted > 3;
   
   // Function to go to the next step with validation
   const nextStep = () => {
@@ -62,11 +61,9 @@ const MultiStepForm = () => {
       }
     }
 
-    // Move to the next step if all validations are passed
-    if (currentStep < 4) {
-      setStepCompleted(currentStep); // Mark this step as completed
-      setCurrentStep(currentStep + 1);
-    }
+    const newStep = currentStep + 1;
+    setCurrentStep(newStep);
+    setStepCompleted(Math.max(stepCompleted, newStep));
   };
 
   // Function to update selected classification in step 2
@@ -158,14 +155,16 @@ const MultiStepForm = () => {
         )}
       </div>
 
-      {/* Show Analyze button after all steps */}
-      {showAnalyzeButton && (
-        <div className="analyze-section">
-          <button className="analyze-button" onClick={handleAnalyze}>
-            Analyze
-          </button>
-        </div>
-      )}
+      {/* Show Analyze button disabled until all steps are completed */}
+      <div className="analyze-section">
+        <button 
+          className="analyze-button" 
+          onClick={handleAnalyze} 
+          disabled={!allStepsCompleted}
+        >
+          Analyze
+        </button>
+      </div>
     </div>
   );
 };
