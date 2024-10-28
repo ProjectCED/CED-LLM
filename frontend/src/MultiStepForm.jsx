@@ -13,6 +13,7 @@ const MultiStepForm = () => {
   const [copiedText, setCopiedText] = useState(''); 
   const [selectedClassification, setSelectedClassification] = useState(null); 
   const [selectedAI, setSelectedAI] = useState(null); 
+  const [selectedBlueprint, setSelectedBlueprint] = useState(null);
   const [stepCompleted, setStepCompleted] = useState(0); 
   
   const navigate = useNavigate(); // Hook for navigation
@@ -78,12 +79,17 @@ const MultiStepForm = () => {
     setSelectedAI(ai);
   };
 
+  // Function to update selected blueprint in step 2
+  const handleBlueprintSelection = (blueprint) => {
+    setSelectedBlueprint(blueprint);
+  };
+
   return (
     <div className="multi-step-form">
       {/* Step 1: File Download */}
       <div className="step">
         <h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
-          1. File Download
+          1. File Upload
         </h2>
         {currentStep === 1 && (
           <div className="step-content">
@@ -119,6 +125,7 @@ const MultiStepForm = () => {
           <div className="step-content">
             <ClassificationSelection
               onSelectClassification={handleClassificationSelection} // Pass handler to update classification
+              onSelectBlueprint={handleBlueprintSelection}
             />
             <button className="next-button" onClick={nextStep}>Next</button>
           </div>
@@ -126,9 +133,9 @@ const MultiStepForm = () => {
         {stepCompleted >= 2 && (
           <div className="step-summary">
             <p>{selectedClassification}</p>
+            {selectedBlueprint && <p>{selectedBlueprint}</p>} {/* Show selected blueprint */}
           </div>
         )}
-        
       </div>
 
       {/* Step 3: AI selection */}
@@ -159,7 +166,6 @@ const MultiStepForm = () => {
           </button>
         </div>
       )}
-
     </div>
   );
 };

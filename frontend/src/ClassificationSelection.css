@@ -58,3 +58,20 @@ p {
 background-color: #28a745;
 color: white;
 }
+
+.dropdown-container {
+  margin-top: 10px;
+}
+
+/* Style for labels inside the dropdown container */
+.dropdown-container label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Styles for the dropdown select element */
+.dropdown-container select {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+}

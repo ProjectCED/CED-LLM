@@ -1,13 +1,28 @@
 import React, { useState } from 'react'; 
 import './ClassificationSelection.css';
+import BlueprintDropdown from './BlueprintDropdown';
 
-const ClassificationSelection = ({ onSelectClassification }) => {
+const ClassificationSelection = ({ onSelectClassification, onSelectBlueprint }) => {
   const [selectedClassification, setSelectedClassification] = useState(null); // Track which button is selected
+  const [selectedBlueprint, setSelectedBlueprint] = useState('');
+
+   // Sample blueprints array to populate the dropdown
+  const blueprints = [
+    'Blueprint 1',
+    'Blueprint 2',
+    'Blueprint 3', 
+  ];
 
   // Function to handle the button click and update the selected classification
   const handleButtonClick = (classification)=> {
     setSelectedClassification(classification);
     onSelectClassification(classification); // Pass the selected classification back to MultiStepForm
+  };
+
+  // Function to handle selection of a blueprint from the dropdown
+  const handleBlueprintSelect = (blueprint) => {
+    setSelectedBlueprint(blueprint);
+    onSelectBlueprint(blueprint);
   };
 
   
@@ -25,24 +40,33 @@ const ClassificationSelection = ({ onSelectClassification }) => {
 
       <div className="button-container">
         <button
-          className={`selection-button ${selectedClassification === 'default' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('default')}
+          className={`selection-button ${selectedClassification === 'Default Classification' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Default Classification')}
         >
           Default classification
         </button>
         <button
-          className={`selection-button ${selectedClassification === 'saved' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('saved')}
+          className={`selection-button ${selectedClassification === 'Saved Classification' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Saved Classification')}
         >
           Saved model classification
         </button>
         <button
-          className={`selection-button ${selectedClassification === 'create' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('create')}
+          className={`selection-button ${selectedClassification === 'Created Classification' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Created Classification')}
         >
           Create classification
         </button>
       </div>
+
+       {/* Conditionally render the BlueprintDropdown if Saved Classification is selected */}
+      {selectedClassification === 'Saved Classification' && (
+        <BlueprintDropdown
+          blueprints={blueprints}
+          selectedBlueprint={selectedBlueprint}
+          onSelectBlueprint={handleBlueprintSelect}
+        />
+      )}
     </div>
   );
 };
