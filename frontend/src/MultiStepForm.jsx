@@ -15,6 +15,7 @@ const MultiStepForm = () => {
   const [selectedAI, setSelectedAI] = useState(null); 
   const [selectedBlueprint, setSelectedBlueprint] = useState(null);
   const [stepCompleted, setStepCompleted] = useState(0); 
+  const [isEditing, setIsEditing] = useState(false);
   
   const navigate = useNavigate(); // Hook for navigation
 
@@ -40,7 +41,7 @@ const MultiStepForm = () => {
     // Validation for step 1: Check if files or text are provided
     if (currentStep === 1) {
       if (selectedFiles.length === 0 && copiedText.trim() === '') {
-        alert('Please upload at least one file or enter some text.');
+        alert('Please upload one file or enter some text.');
         return;
       }
     }
@@ -81,17 +82,42 @@ const MultiStepForm = () => {
     setSelectedBlueprint(blueprint);
   };
 
+  const handleEditClick = (step) => {
+    // Prevent editing another step if currently in editing mode
+    if (isEditing) {
+      alert('Please save or cancel the current editing step before editing another step.');
+      return;
+    }
+
+    setCurrentStep(step);
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false); // Close the edit mode
+    setCurrentStep(4);
+  };
+
   return (
     <div className="multi-step-form">
       {/* Step 1: File Download */}
       <div className="step">
-        <h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
-          1. File Upload
-        </h2>
+      <div className="step-header">
+          <h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
+            1. File Download
+          </h2>
+          {allStepsCompleted && currentStep !== 1 && (
+            <button className="edit-button" onClick={() => handleEditClick(1)}>Edit</button>
+          )}
+        </div>
         {currentStep === 1 && (
           <div className="step-content">
             <FileDownload onFileUpload={handleFileUpload} onTextChange={handleTextChange} />
-            <button className="next-button" onClick={nextStep}>Next</button>
+            {isEditing ? (
+              <button className="save-button" onClick={handleSaveClick}>Save</button>
+            ) : (
+              <button className="next-button" onClick={nextStep}>Next</button>
+            )}
           </div>
         )}
         {stepCompleted >= 1 && selectedFiles.length > 0 &&(
@@ -115,16 +141,26 @@ const MultiStepForm = () => {
 
       {/* Step 2: Classification Selection */}
       <div className="step">
-        <h2 className={`step-title ${currentStep === 2 ? 'active' : ''}`}>
-          2. Classification Selection
-        </h2>
+      <div className="step-header">
+          <h2 className={`step-title ${currentStep === 2 ? 'active' : ''}`}>
+            2. Classification Selection
+          </h2>
+          {allStepsCompleted && currentStep !== 2 && (
+            <button className="edit-button" onClick={() => handleEditClick(2)}>Edit</button>
+          )}
+        </div>
         {currentStep === 2 && (
           <div className="step-content">
             <ClassificationSelection
+              selectedClassification={selectedClassification}
               onSelectClassification={handleClassificationSelection} // Pass handler to update classification
               onSelectBlueprint={handleBlueprintSelection}
             />
-            <button className="next-button" onClick={nextStep}>Next</button>
+            {isEditing ? (
+              <button className="save-button" onClick={handleSaveClick}>Save</button>
+            ) : (
+              <button className="next-button" onClick={nextStep}>Next</button>
+            )}
           </div>
         )}
         {stepCompleted >= 2 && (
@@ -137,15 +173,22 @@ const MultiStepForm = () => {
 
       {/* Step 3: AI selection */}
       <div className="step">
-        <h2 className={`step-title ${currentStep === 3 ? 'active' : ''}`}>
-          3. AI selection
-        </h2>
+      <div className="step-header">
+          <h2 className={`step-title ${currentStep === 3 ? 'active' : ''}`}>
+            3. AI Selection
+          </h2>
+          {allStepsCompleted && currentStep !== 3 && (
+            <button className="edit-button" onClick={() => handleEditClick(3)}>Edit</button>
+          )}
+        </div>
         {currentStep === 3 && (
           <div className="step-content">
-            <AISelection
-              onSelectAI={handleAISelection} // Pass handler to update AI selection
-            />
-            <button className="next-button" onClick={nextStep}>Next</button>
+            <AISelection selectedAI={selectedAI} onSelectAI={handleAISelection} />
+            {isEditing ? (
+              <button className="save-button" onClick={handleSaveClick}>Save</button>
+            ) : (
+              <button className="next-button" onClick={nextStep}>Next</button>
+            )}
           </div>
         )}
         {stepCompleted >= 3 && (
