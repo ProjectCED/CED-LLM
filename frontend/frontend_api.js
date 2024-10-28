@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 function App() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState('');
 
-  useEffect(() => {
-    // Call backend API
-    fetch('http://localhost:5000/api/data')
+  const handleAnalyze = () => {
+    // Send POST-request to backend
+    fetch('http://localhost:5000/analyze', {
+      method: 'POST',
+    })
       .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+      .then((data) => setData(data.result))
+      .catch((error) => console.error('Error analyzing file:', error));
+  };
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Calling Flask API from React</h1>
-        {data ? <p>{data.message}</p> : <p>Loading...</p>}
+        <h1>Anaylize File</h1>
+        <button onClick={handleAnalyze}>Analyze</button>
+        {data && <p>{data}</p>}
       </header>
     </div>
   );
