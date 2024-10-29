@@ -1888,6 +1888,21 @@ class Database(metaclass=DatabaseMeta):
 
 
     ### Used Blueprint
+    def add_used_blueprint_node(self, id_value):
+        """
+        Copies blueprint node into used-variant.
+
+        Args:
+            id_value (string): Value for the "active" blueprint id
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            string: string containing ID value for the used-variant node. 
+        """
+        return self.__copy_node(self.__blueprint_type, id_value, self.__used_blueprint_type)
+
     def lookup_used_blueprint_property(self, id_value, property_name: NodeProperties.Blueprint):
         """
         Return data of specific property from UsedBlueprint
