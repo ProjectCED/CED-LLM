@@ -9,7 +9,7 @@ lorem_ipsum_questions = [
 ]
 
 class DatabaseDummy:
-    '''Create pre-filled dummy database
+    '''Creates pre-filled dummy database
     
     Warning. This will first clear the database.
     '''
