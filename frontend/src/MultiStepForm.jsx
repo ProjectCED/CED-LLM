@@ -104,7 +104,7 @@ const MultiStepForm = () => {
       <div className="step">
       <div className="step-header">
           <h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
-            1. File Download
+            1. File Upload
           </h2>
           {allStepsCompleted && currentStep !== 1 && (
             <button className="edit-button" onClick={() => handleEditClick(1)}>Edit</button>
@@ -183,7 +183,9 @@ const MultiStepForm = () => {
         </div>
         {currentStep === 3 && (
           <div className="step-content">
-            <AISelection selectedAI={selectedAI} onSelectAI={handleAISelection} />
+            <AISelection
+              onSelectAI={handleAISelection} // Pass handler to update AI selection
+            />
             {isEditing ? (
               <button className="save-button" onClick={handleSaveClick}>Save</button>
             ) : (
