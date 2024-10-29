@@ -71,7 +71,7 @@ const FileDownload = ({ onFileUpload, onTextChange }) => {
 
   return (
     <div className="container">
-      <h2>Download file or copy paste text for analysis</h2>
+      <h2>Upload a file or copy and paste text for analysis. You can clear your selection by pressing the Reset Selections button.</h2>
       <div className="upload-wrapper">
         
         {/* File upload section */}
