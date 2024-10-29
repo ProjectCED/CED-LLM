@@ -1,5 +1,13 @@
 from app.database import Database, NodeProperties
 
+lorem_ipsum_questions = [
+    'Lorem Ipsum dolor sit amet, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat?',
+    'Lorem Ipsum sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, vel iusto odio dignissim qui blandit praesent luptatum zzril?',
+    'Lorem Ipsum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, enim ad minim veniam?',
+    'Lorem Ipsum ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat?',
+    'Lorem Ipsum Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur?',
+]
+
 class DatabaseDummy:
     '''Create pre-filled dummy database'''
     def __init__(self):
@@ -45,30 +53,37 @@ class DatabaseDummy:
             (
                 'Eduskunta ',
                 'A collaborative framework designed to enhance educational dialogue and decision-making through structured discussions and feedback.',
+                [],
                 ),
             (
                 'Brainstorm Blueprint',
                 'A creative framework that uses guided questions to spark innovative ideas and foster collaborative thinking.',
+                lorem_ipsum_questions,
                 ),
             (
                 'Thought Explorer',
                 'A stimulating guide that encourages deep reflection and discovery through targeted questions and open-ended inquiries.',
+                lorem_ipsum_questions,
                 ),
             (
                 'Inquiry Adventure',
                 'An engaging toolkit designed to inspire curiosity and exploration through a series of thought-provoking questions.',
+                lorem_ipsum_questions,
                 ),
             (
                 'Dialogue Design',
                 'A structured approach that fosters meaningful conversations by providing a framework of insightful questions and prompts.',
+                lorem_ipsum_questions,
                 ),
             (
                 'Idea Igniter',
                 'A creative catalyst that sparks inspiration and generates innovative ideas through targeted prompts and questions.',
+                lorem_ipsum_questions,
                 ),
             (
                 'Question Quest',
                 'A playful exploration that drives discovery and insight through a series of engaging and thought-provoking questions.',
+                lorem_ipsum_questions,
                 ),
         ]
         self.__blueprints(__blueprints)
@@ -180,6 +195,8 @@ class DatabaseDummy:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.NAME, blueprint[0])
             if not blueprint[1] == None:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION, blueprint[1])
+            if not blueprint[2] == None:
+                self.db.set_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS, blueprint[2])
             # add more here
 
 
