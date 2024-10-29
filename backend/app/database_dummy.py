@@ -201,7 +201,7 @@ class DatabaseDummy:
                     # result -> project
                     self.db.connect_result_blueprint_to_project(result_id, project_id)
                     # used blueprint -> result
-                    used_blue_id = self.db.add_used_blueprint_node(blueprint_id)
+                    used_blue_id = self.db.copy_to_used_blueprint_node(blueprint_id)
                     self.db.connect_used_blueprint_to_result_blueprint(used_blue_id, result_id)
                     # properties
                     if not result[2] == None:

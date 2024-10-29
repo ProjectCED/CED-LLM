@@ -1888,7 +1888,7 @@ class Database(metaclass=DatabaseMeta):
 
 
     ### Used Blueprint
-    def add_used_blueprint_node(self, id_value):
+    def copy_to_used_blueprint_node(self, id_value):
         """
         Copies blueprint node into used-variant.
 
