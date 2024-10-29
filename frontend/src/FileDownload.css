@@ -72,6 +72,23 @@ textarea {
     margin: 0;
 }
 
+/* Reset button styling */
+.reset-button {
+    background-color: gray; /* Default color */
+    color: #e8f1f2;
+    font-size: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s; 
+}
+
+/* Change color on hover */
+.reset-button:hover {
+    background-color: rgb(95, 94, 94) 
+}
+
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
     .upload-wrapper {

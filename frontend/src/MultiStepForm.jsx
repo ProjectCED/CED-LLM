@@ -21,12 +21,22 @@ const MultiStepForm = () => {
 
   // Update selected files state
   const handleFileUpload = (files) => {
-    setSelectedFiles(files);
+    if (files.length > 0) {
+      setSelectedFiles(files);
+      setCopiedText('');
+    } else {
+      setSelectedFiles([]);
+    }
   };
 
   // Update copied text state
   const handleTextChange = (text) => {
-    setCopiedText(text);
+    if (text.trim() !== '') {
+      setCopiedText(text);
+      setSelectedFiles([]);
+    } else {
+      setCopiedText('');
+    }
   };
 
   // Handle analyze button click, navigate to the projects page
@@ -116,21 +126,35 @@ const MultiStepForm = () => {
     setCurrentStep(4);
   };
 
+  const resetSelections = () => {
+    setSelectedFiles([]); 
+    setCopiedText(''); 
+    setSelectedClassification(null);
+    setSelectedAI(null);
+    setSelectedBlueprint(null);
+  };
+
   return (
     <div className="multi-step-form">
-      {/* Step 1: File Upload */}
+      {/* Step 1: File upload or copy-paste text */}
       <div className="step">
-      <div className="step-header">
+        <div className="step-header">
           <h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
-            1. File Upload
+            1. File Upload or Copy Paste Text
           </h2>
           {allStepsCompleted && currentStep !== 1 && (
-            <button className="edit-button" onClick={() => handleEditClick(1)}>Edit</button>
+            <button className="edit-button" onClick={() => handleEditClick(1)}>
+              Edit
+            </button>
           )}
         </div>
         {currentStep === 1 && (
           <div className="step-content">
-            <FileDownload onFileUpload={handleFileUpload} onTextChange={handleTextChange} />
+            <FileDownload 
+              onFileUpload={handleFileUpload}
+              onTextChange={handleTextChange}
+              isEditing={isEditing} // Pass isEditing prop to FileDownload
+            />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
             ) : (
@@ -138,7 +162,7 @@ const MultiStepForm = () => {
             )}
           </div>
         )}
-        {stepCompleted >= 1 && selectedFiles.length > 0 &&(
+        {stepCompleted >= 1 && selectedFiles.length > 0 && (
           <div className="step-summary">
             <p>Selected Files:</p>
             <div className="file-list">
@@ -159,20 +183,23 @@ const MultiStepForm = () => {
 
       {/* Step 2: Classification Selection */}
       <div className="step">
-      <div className="step-header">
+        <div className="step-header">
           <h2 className={`step-title ${currentStep === 2 ? 'active' : ''}`}>
             2. Classification Selection
           </h2>
           {allStepsCompleted && currentStep !== 2 && (
-            <button className="edit-button" onClick={() => handleEditClick(2)}>Edit</button>
+            <button className="edit-button" onClick={() => handleEditClick(2)}>
+              Edit
+            </button>
           )}
         </div>
         {currentStep === 2 && (
           <div className="step-content">
             <ClassificationSelection
               selectedClassification={selectedClassification}
-              onSelectClassification={handleClassificationSelection} // Pass handler to update classification
+              onSelectClassification={handleClassificationSelection} 
               onSelectBlueprint={handleBlueprintSelection}
+              isLocked={isEditing} // Pass isLocked prop to ClassificationSelection
             />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
@@ -184,24 +211,26 @@ const MultiStepForm = () => {
         {stepCompleted >= 2 && (
           <div className="step-summary">
             <p>{selectedClassification}</p>
-            {selectedBlueprint && <p>{selectedBlueprint}</p>} {/* Show selected blueprint */}
+            {selectedBlueprint && <p>{selectedBlueprint}</p>}
           </div>
         )}
       </div>
 
       {/* Step 3: AI selection */}
       <div className="step">
-      <div className="step-header">
+        <div className="step-header">
           <h2 className={`step-title ${currentStep === 3 ? 'active' : ''}`}>
             3. AI Selection
           </h2>
           {allStepsCompleted && currentStep !== 3 && (
-            <button className="edit-button" onClick={() => handleEditClick(3)}>Edit</button>
+            <button className="edit-button" onClick={() => handleEditClick(3)}>
+              Edit
+            </button>
           )}
         </div>
         {currentStep === 3 && (
           <div className="step-content">
-           <AISelection selectedAI={selectedAI} onSelectAI={handleAISelection} />
+            <AISelection selectedAI={selectedAI} onSelectAI={handleAISelection} isLocked={isEditing} />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
             ) : (
