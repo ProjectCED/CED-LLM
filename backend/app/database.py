@@ -2010,15 +2010,14 @@ class Database(metaclass=DatabaseMeta):
     #         return None
     
     '''
-    def add_result_blueprint_node(self, project_id, dataset_list, blueprint_ids, datamodel_ids):
+    def add_result_blueprint_node(self, project_id, blueprint_ids = None, dataset_list = None):
         """
         Create Result-blueprint node.
         
         Args:
             project_id (string): Parent project node id
-            dataset_list (list of string): dataset file names
-            blueprint_ids (list of strings): list of blueprint ids
-            datamodel_ids (list of strings): list of data model ids
+            blueprint_ids (list of strings, optional): list of blueprint ids
+            dataset_list (list of string, optional): dataset file names, will create Dataset-nodes
         
         Raises:
             RuntimeError: If database query error.
@@ -2042,16 +2041,6 @@ class Database(metaclass=DatabaseMeta):
         for id in blueprint_ids:
             used_blueprint_id = self.__copy_node(self.__blueprint_type, self.__blueprint_id, id, self.__used_blueprint_type, self.__used_blueprint_id)
             self.__connect_used_blueprint_to_result_blueprint(used_blueprint_id, result_blueprint_id)
-
-        # datamodels and it's datasets
-        for id in datamodel_ids:
-            used_data_model_id = self.__copy_node(self.__data_model_type, self.__data_model_id, id, self.__used_data_model_type, self.__used_data_model_id)
-            datamodel_dataset_ids = self.__lookup_node_neighbours(self.__data_model_type, self.__data_model_id, id, self.__dataset_type, self.__dataset_id, self.__connect_dataset_data_model) 
-            if datamodel_dataset_ids != None:
-                for datamodel_dataset_id in datamodel_dataset_ids:
-                    new_used_dataset_id = self.__copy_node(self.__dataset_type, self.__dataset_id, datamodel_dataset_id, self.__used_dataset_type, self.__used_dataset_id)
-                    self.__connect_used_dataset_to_used_data_model(new_used_dataset_id, used_data_model_id)
-            self.__connect_used_data_model_to_result_blueprint(used_data_model_id, result_blueprint_id)
 
         # result -> project
         self.__connect_result_blueprint_to_project(result_blueprint_id, project_id)
