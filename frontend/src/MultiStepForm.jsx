@@ -16,6 +16,7 @@ const MultiStepForm = () => {
   const [selectedBlueprint, setSelectedBlueprint] = useState(null);
   const [stepCompleted, setStepCompleted] = useState(0); 
   const [isEditing, setIsEditing] = useState(false);
+  const [customClassificationText, setCustomClassificationText] = useState('');
   
   const navigate = useNavigate(); // Hook for navigation
 
@@ -95,6 +96,10 @@ const MultiStepForm = () => {
   // Function to update selected blueprint in step 2
   const handleBlueprintSelection = (blueprint) => {
     setSelectedBlueprint(blueprint);
+  };
+
+  const handleCustomTextChange = (text) => {
+    setCustomClassificationText(text);
   };
 
   const handleEditClick = (step) => {
@@ -200,6 +205,7 @@ const MultiStepForm = () => {
               onSelectClassification={handleClassificationSelection} 
               onSelectBlueprint={handleBlueprintSelection}
               isLocked={isEditing} // Pass isLocked prop to ClassificationSelection
+              onCustomTextChange={handleCustomTextChange}
             />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
@@ -212,6 +218,7 @@ const MultiStepForm = () => {
           <div className="step-summary">
             <p>{selectedClassification}</p>
             {selectedBlueprint && <p>{selectedBlueprint}</p>}
+            {customClassificationText && <p>{customClassificationText}</p>}
           </div>
         )}
       </div>

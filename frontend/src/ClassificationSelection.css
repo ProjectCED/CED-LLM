@@ -11,17 +11,8 @@
 /* Styles for the heading within the classification selection */
 .classification-selection h2 {
   color: #13293D;
-  font-size: 50px;
-  margin-bottom: 50px;
-}
-
-/* Styles for paragraphs within the classification selection */
-p {
-  color: #13293D;
   font-size: 20px;
-  margin-bottom: 20px;
-  max-width: 950px;
-  
+  margin-bottom: 50px;
 }
 
 /* Styles for the container holding the selection buttons */
@@ -75,3 +66,9 @@ color: white;
   padding: 8px;
   font-size: 16px;
 }
+
+.custom-text-input {
+  margin-top: 30px; /* Adjust this value for more or less space above */
+  width: 80%;
+}
+

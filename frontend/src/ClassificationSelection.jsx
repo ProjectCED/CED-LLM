@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './ClassificationSelection.css';
 import BlueprintDropdown from './BlueprintDropdown';
 
-const ClassificationSelection = ({ selectedClassification, onSelectClassification, onSelectBlueprint }) => {
-  // Local state to keep track of the currently selected classification 
-  // and selected blueprint 
+const ClassificationSelection = ({ selectedClassification, onSelectClassification, onSelectBlueprint, onCustomTextChange }) => {
+  // Local state to keep track of the currently selected classification,
+  // selected blueprint and custom input text
   const [localSelectedClassification, setLocalSelectedClassification] = useState(selectedClassification || '');
   const [selectedBlueprint, setSelectedBlueprint] = useState('');
+  const [customText, setCustomText] = useState('');
 
   // Update localSelectedClassification if selectedClassification prop changes
   useEffect(() => {
@@ -26,6 +27,12 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
     setSelectedBlueprint('');
     onSelectBlueprint(''); 
   }
+
+  if (classification !== 'Created Classification') {
+    setCustomText('');
+    onCustomTextChange(''); 
+  }
+
   };
 
   // Handles blueprint selection in the BlueprintDropdown component
@@ -34,8 +41,23 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
     onSelectBlueprint(blueprint);
   };
 
+  const handleCustomTextChange = (event) => {
+    const text = event.target.value;
+    setCustomText(text);
+    onCustomTextChange(text); // Pass the text back to the parent component
+  };
+
   return (
     <div className="classification-selection">
+      <h2>
+        Next, choose how you would like your dataset to be classified. If you're analyzing
+        this type of data for the first time, it's recommended to try the default
+        classification. If you're satisfied with the results, you can save the classification as a
+        blueprint and use it next time, for example, on a larger dataset of the same topic.
+      </h2>
+      <h2>
+        Alternatively, you can now use previously saved blueprints or define directly how you want the data to be classified.
+      </h2>
       <div className="button-container">
         <button
           className={`selection-button ${localSelectedClassification === 'Default Classification' ? 'selected' : ''}`}
@@ -64,6 +86,17 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
           selectedBlueprint={selectedBlueprint}
           onSelectBlueprint={handleBlueprintSelect}
         />
+      )}
+
+      {localSelectedClassification === 'Created Classification' && (
+        <div className="custom-text-input">
+          <input
+            type="text"
+            placeholder="Enter custom classification"
+            value={customText}
+            onChange={handleCustomTextChange}
+          />
+        </div>
       )}
     </div>
   );
