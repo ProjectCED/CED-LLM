@@ -52,6 +52,11 @@ const MultiStepForm = () => {
         alert('Please select a classification option.');
         return;
       }
+      // Check if "Saved Classification" requires a blueprint selection
+      if (selectedClassification === 'Saved Classification' && !selectedBlueprint) {
+        alert('Please select a saved blueprint.');
+        return;
+      }
     }
 
     // Validation for step 3: Ensure an AI option is selected
@@ -94,13 +99,26 @@ const MultiStepForm = () => {
   };
 
   const handleSaveClick = () => {
+    // Validation for step 2: Ensure a classification option is selected
+    if (currentStep === 2) {
+      if (!selectedClassification) {
+        alert('Please select a classification option.');
+        return;
+      }
+      // Check if "Saved Classification" requires a blueprint selection
+      if (selectedClassification === 'Saved Classification' && !selectedBlueprint) {
+        alert('Please select a a saved blueprint.');
+        return;
+      }
+    }
+
     setIsEditing(false); // Close the edit mode
     setCurrentStep(4);
   };
 
   return (
     <div className="multi-step-form">
-      {/* Step 1: File Download */}
+      {/* Step 1: File Upload */}
       <div className="step">
       <div className="step-header">
           <h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
@@ -183,9 +201,7 @@ const MultiStepForm = () => {
         </div>
         {currentStep === 3 && (
           <div className="step-content">
-            <AISelection
-              onSelectAI={handleAISelection} // Pass handler to update AI selection
-            />
+           <AISelection selectedAI={selectedAI} onSelectAI={handleAISelection} />
             {isEditing ? (
               <button className="save-button" onClick={handleSaveClick}>Save</button>
             ) : (
