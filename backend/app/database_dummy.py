@@ -185,19 +185,31 @@ class DatabaseDummy:
     def __result_blueprint(self, results):
         '''Result-Blueprint'''
         nodes = self.db.lookup_project_nodes()
+        blueprints = self.db.lookup_blueprint_nodes()
         for result in results:
-            id = self.db.add_result_blueprint_node()
+            result_id = self.db.add_result_blueprint_node()
+
+            # search blueprint id
+            blueprint_id = None
+            for blue_id, blue_name in blueprints:
+                if blue_name == result[1]:
+                    blueprint_id = blue_id
+
             # connect results to specific projects
             for project_id, project_name in nodes:
                 if project_name == result[0]:
-                    self.db.connect_result_blueprint_to_project(id, project_id)
+                    # result -> project
+                    self.db.connect_result_blueprint_to_project(result_id, project_id)
+                    # used blueprint -> result
+                    used_blue_id = self.db.add_used_blueprint_node(blueprint_id)
+                    self.db.connect_used_blueprint_to_result_blueprint(used_blue_id, result_id)
                     # properties
                     if not result[2] == None:
-                        self.db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.DATETIME, result[2])
+                        self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.DATETIME, result[2])
                     if not result[3] == None:
-                        self.db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.RESULT, result[3])
+                        self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.RESULT, result[3])
                     if not result[4] == None:
-                        self.db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.FILENAME, result[4])
+                        self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.FILENAME, result[4])
 
 
                     
