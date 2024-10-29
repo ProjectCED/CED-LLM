@@ -9,12 +9,15 @@ lorem_ipsum_questions = [
 ]
 
 class DatabaseDummy:
-    '''Create pre-filled dummy database'''
+    '''Create pre-filled dummy database
+    
+    Warning. This will first clear the database.
+    '''
     def __init__(self):
         '''
         When editing:
         - be sure to have all names unique for this example to work
-        - When adding new example properties to tuples, need to add code line for it further down.
+        - When adding new example properties to tuples, need to also add code line for it further down.
         '''
         self.db = Database()
 
@@ -22,11 +25,15 @@ class DatabaseDummy:
         self.__clear()
 
         ### global settings
+        #example:
+        # font and size
+        # __global = ('verdana', '10')
         __global = ()
         self.__global(__global)
 
         ### user settings
-        # [(name, email)]
+        # [(name,
+        #   email)]
         __users = [
             (
                 'John Smith',
@@ -48,7 +55,8 @@ class DatabaseDummy:
         self.__users(__users)
 
         ### blueprints
-        # [(name, description)]
+        # [(name,
+        #   description)]
         __blueprints = [
             (
                 'Eduskunta ',
@@ -112,7 +120,11 @@ class DatabaseDummy:
         ### Result-Blueprint
         # references __project names
         # references __blueprint names
-        # [(project-name, blueprint-name, datetime.iso(), result, filename)]
+        # [(project-name,
+        #   blueprint-name,
+        #   datetime.iso(),
+        #   result,
+        #   filename)]
         __result_blueprints = [
             (
                 __projects[1][0],
@@ -176,7 +188,7 @@ class DatabaseDummy:
         '''Global settings'''
         self.db.add_global_settings_node()
         # example
-        #self.db.set_global_settings_property(NodeProperties.GlobalSettings.NEWDATA, tuple[0])
+        #self.db.set_global_settings_property(NodeProperties.GlobalSettings.FONT, tuple[0])
 
     def __users(self, users):
         '''User Settings'''
