@@ -1901,7 +1901,7 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             string: string containing ID value for the used-variant node. 
         """
-        return self.__copy_node(self.__blueprint_type, id_value, self.__used_blueprint_type)
+        return self.__copy_node(self.__blueprint_type, self.__blueprint_id, id_value, self.__used_blueprint_type, self.__used_blueprint_id)
 
     def lookup_used_blueprint_property(self, id_value, property_name: NodeProperties.Blueprint):
         """

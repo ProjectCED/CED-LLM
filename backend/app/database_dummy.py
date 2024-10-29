@@ -1,4 +1,4 @@
-from database import Database, NodeProperties
+from app.database import Database, NodeProperties
 
 class DatabaseDummy:
     '''Create pre-filled dummy database'''
@@ -93,7 +93,7 @@ class DatabaseDummy:
         # references __project names
         # references __blueprint names
         # [(project-name, blueprint-name, datetime.iso(), result, filename)]
-        __result_blueprint = [
+        __result_blueprints = [
             (
                 __projects[1][0],
                 __blueprints[1][0],
@@ -144,7 +144,7 @@ class DatabaseDummy:
                 'compliance_assessment_report_2024.txt',
                 ),
         ]
-        __result_blueprint(__result_blueprint)
+        self.__result_blueprint(__result_blueprints)
 
 
 
