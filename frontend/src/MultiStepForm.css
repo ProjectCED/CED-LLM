@@ -42,7 +42,7 @@
   }
   
   /* Styling for the next button in each step */
-  .next-button {
+  .next-button, .multiform-save-button {
     margin-top: 15px; 
     padding: 15px 30px; 
     border: none; 

@@ -132,7 +132,7 @@ const MultiStepForm = () => {
           <div className="step-content">
             <FileDownload onFileUpload={handleFileUpload} onTextChange={handleTextChange} />
             {isEditing ? (
-              <button className="save-button" onClick={handleSaveClick}>Save</button>
+              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
             ) : (
               <button className="next-button" onClick={nextStep}>Next</button>
             )}
@@ -175,7 +175,7 @@ const MultiStepForm = () => {
               onSelectBlueprint={handleBlueprintSelection}
             />
             {isEditing ? (
-              <button className="save-button" onClick={handleSaveClick}>Save</button>
+              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
             ) : (
               <button className="next-button" onClick={nextStep}>Next</button>
             )}
@@ -203,7 +203,7 @@ const MultiStepForm = () => {
           <div className="step-content">
            <AISelection selectedAI={selectedAI} onSelectAI={handleAISelection} />
             {isEditing ? (
-              <button className="save-button" onClick={handleSaveClick}>Save</button>
+              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
             ) : (
               <button className="next-button" onClick={nextStep}>Next</button>
             )}
