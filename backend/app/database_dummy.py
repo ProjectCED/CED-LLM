@@ -3,14 +3,19 @@ from app.database import Database, NodeProperties
 class DatabaseDummy:
     '''Create pre-filled dummy database'''
     def __init__(self):
-        '''When editing, be sure to have all names unique for this example to work'''
+        '''
+        When editing:
+        - be sure to have all names unique for this example to work
+        - When adding new example properties to tuples, need to add code line for it further down.
+        '''
         self.db = Database()
 
         ### clear all
         self.__clear()
 
         ### global settings
-        self.__global()
+        __global = ()
+        self.__global(__global)
 
         ### user settings
         # [(name, email)]
@@ -152,9 +157,11 @@ class DatabaseDummy:
         '''Clear database'''
         self.db.debug_clear_all()
 
-    def __global(self):
+    def __global(self, tuple):
         '''Global settings'''
         self.db.add_global_settings_node()
+        # example
+        #self.db.set_global_settings_property(NodeProperties.GlobalSettings.NEWDATA, tuple[0])
 
     def __users(self, users):
         '''User Settings'''
@@ -163,6 +170,7 @@ class DatabaseDummy:
             id = self.db.add_user_settings_node(user[1])
             if not user[0] == None:
                 self.db.set_user_settings_property(id, NodeProperties.UserSettings.NAME, user[0])
+            # add more here
 
     def __blueprints(self, blueprints):
         '''Blueprints'''
@@ -172,6 +180,7 @@ class DatabaseDummy:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.NAME, blueprint[0])
             if not blueprint[1] == None:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION, blueprint[1])
+            # add more here
 
 
     def __projects(self, projects):
@@ -180,6 +189,7 @@ class DatabaseDummy:
             id = self.db.add_project_node()
             if not project[0] == None:
                 self.db.set_project_property(id, NodeProperties.Project.NAME, project[0])
+            # add more here
 
 
     def __result_blueprint(self, results):
@@ -210,6 +220,7 @@ class DatabaseDummy:
                         self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.RESULT, result[3])
                     if not result[4] == None:
                         self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.FILENAME, result[4])
+                    # add more here
 
 
                     
