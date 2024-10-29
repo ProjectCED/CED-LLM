@@ -15,7 +15,14 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   const handleButtonClick = (classification) => {
     setLocalSelectedClassification(classification);
     onSelectClassification(classification);
-  };
+  
+
+  // Tyhjennetään selectedBlueprint, jos classification vaihtuu
+  if (classification !== 'Saved Classification') {
+    setSelectedBlueprint('');
+    onSelectBlueprint(''); // Päivitä myös ulkopuolinen tila, jos sitä käytetään
+  }
+};
 
   const handleBlueprintSelect = (blueprint) => {
     setSelectedBlueprint(blueprint);
@@ -45,8 +52,10 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
         </button>
       </div>
 
+      {/* Näytetään BlueprintDropdown vain, jos valinta on "Saved Classification" */}
       {localSelectedClassification === 'Saved Classification' && (
         <BlueprintDropdown
+          key={localSelectedClassification} // Varmista komponentin päivittyminen
           blueprints={blueprints}
           selectedBlueprint={selectedBlueprint}
           onSelectBlueprint={handleBlueprintSelect}
