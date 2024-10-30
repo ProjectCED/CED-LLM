@@ -76,7 +76,7 @@ class DatabaseDummy:
             (
                 'Eduskunta ',
                 'A collaborative framework designed to enhance educational dialogue and decision-making through structured discussions and feedback.',
-                [],
+                None,
                 ),
             (
                 'Brainstorm Blueprint',
