@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 
 class NodeProperties:
-    """All allowed property names for each node type.
+    """All allowed property names for each node label.
 
     Add more properties here when needed, but check Database class init for reserved names for identifier usage before adding new property names.
     """
@@ -37,7 +37,7 @@ class NodeProperties:
         # Data model
         # example FOO = "foo"
         NAME = "name"
-        NODE_TYPES = "node_types"
+        NODE_LABELS = "node_labes"
         RELATIONSHIP_TYPES = "relationship_types"
 
         TEST_PASS = "test_pass"
@@ -107,7 +107,7 @@ class Database(metaclass=DatabaseMeta):
     def __init__(self) -> None:
         """Start up database driver.
         Setup (according to database design v4):
-          - types(labels)
+          - labels
           - identifier names
           - relationship types
         """
@@ -623,7 +623,7 @@ class Database(metaclass=DatabaseMeta):
     def __copy_node(self, type, id_type, id_value, node_type_new, id_type_new, id_value_new = None):
         """return id of new node when copy succeeded, None if failed
         new id value is optional
-        Copy node into a new node type.
+        Copy node into a new node label.
 
         Args:
             type (string): Node label
@@ -757,7 +757,7 @@ class Database(metaclass=DatabaseMeta):
     
     def __does_property_exist(self, type, id_type, id_value, property_name):
         """
-        Check if node with specific node type and property value exists
+        Check if node with specific node label and property value exists
 
         Args:
             type (string): Node label
@@ -797,7 +797,7 @@ class Database(metaclass=DatabaseMeta):
         
     def __does_node_exist(self, type, id_type, id_value):
         """
-        Check if node exists with specific node type and id value
+        Check if node exists with specific node label and id value
 
         Args:
             type (string): Node label
