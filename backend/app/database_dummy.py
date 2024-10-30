@@ -194,6 +194,10 @@ class DatabaseDummy:
         ]
         self.__result_blueprint(__result_blueprints)
 
+        ### Data models
+        # [(name,
+        #   node_labels,
+        #   node_relationships)]
         __datamodels = [
             (
                 'Eduskunta',
