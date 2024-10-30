@@ -71,7 +71,8 @@ class DatabaseDummy:
 
         ### blueprints
         # [(name,
-        #   description)]
+        #   description,
+        #   questions)]
         __blueprints = [
             (
                 'Eduskunta ',
