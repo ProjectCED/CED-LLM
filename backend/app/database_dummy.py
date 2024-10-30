@@ -1,11 +1,26 @@
 from app.database import Database, NodeProperties
 
-lorem_ipsum_questions = [
+blueprint_questions = [
     'Lorem Ipsum dolor sit amet, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat?',
     'Lorem Ipsum sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, vel iusto odio dignissim qui blandit praesent luptatum zzril?',
     'Lorem Ipsum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, enim ad minim veniam?',
     'Lorem Ipsum ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat?',
     'Lorem Ipsum Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur?',
+]
+
+classification_node_labels = [
+    'AuraTangle',
+    'LinkageMist',
+    'GlyphShade',
+    'BloomEmber',
+    'PathwayTwist',
+]
+
+classification_node_relationships = [
+    'ECHOES_WITH',
+    'FLOWS_TOWARD',
+    'LOOPS_INTO',
+    'LINKS_THROUGH',
 ]
 
 class DatabaseDummy:
@@ -66,32 +81,32 @@ class DatabaseDummy:
             (
                 'Brainstorm Blueprint',
                 'A creative framework that uses guided questions to spark innovative ideas and foster collaborative thinking.',
-                lorem_ipsum_questions,
+                blueprint_questions,
                 ),
             (
                 'Thought Explorer',
                 'A stimulating guide that encourages deep reflection and discovery through targeted questions and open-ended inquiries.',
-                lorem_ipsum_questions,
+                blueprint_questions,
                 ),
             (
                 'Inquiry Adventure',
                 'An engaging toolkit designed to inspire curiosity and exploration through a series of thought-provoking questions.',
-                lorem_ipsum_questions,
+                blueprint_questions,
                 ),
             (
                 'Dialogue Design',
                 'A structured approach that fosters meaningful conversations by providing a framework of insightful questions and prompts.',
-                lorem_ipsum_questions,
+                blueprint_questions,
                 ),
             (
                 'Idea Igniter',
                 'A creative catalyst that sparks inspiration and generates innovative ideas through targeted prompts and questions.',
-                lorem_ipsum_questions,
+                blueprint_questions,
                 ),
             (
                 'Question Quest',
                 'A playful exploration that drives discovery and insight through a series of engaging and thought-provoking questions.',
-                lorem_ipsum_questions,
+                blueprint_questions,
                 ),
         ]
         self.__blueprints(__blueprints)
@@ -178,6 +193,35 @@ class DatabaseDummy:
         ]
         self.__result_blueprint(__result_blueprints)
 
+        __datamodels = [
+            (
+                'Eduskunta',
+                None,
+                None,
+                ),
+            (
+                'Wayfinder Realm',
+                classification_node_labels,
+                classification_node_relationships,
+                ),
+            (
+                'SoftTag Grove',
+                classification_node_labels,
+                classification_node_relationships,
+                ),
+            (
+                'Ramble Field',
+                classification_node_labels,
+                classification_node_relationships,
+                ),
+            (
+                'Freespace Catalog',
+                classification_node_labels,
+                classification_node_relationships,
+                ),
+        ]
+        self.__datamodels(__datamodels)
+                
 
 
     def __clear(self):
@@ -211,6 +255,17 @@ class DatabaseDummy:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS, blueprint[2])
             # add more here
 
+    def __datamodels(self, datamodels):
+        '''Datamodels'''
+        for datamodel in datamodels:
+            id = self.db.add_data_model_node()
+            if not datamodel[0] == None:
+                self.db.set_data_model_property(id, NodeProperties.DataModel.NAME, datamodel[0])
+            if not datamodel[1] == None:
+                self.db.set_data_model_property(id, NodeProperties.DataModel.NODE_LABELS, datamodel[1])
+            if not datamodel[2] == None:
+                self.db.set_data_model_property(id, NodeProperties.DataModel.RELATIONSHIP_TYPES, datamodel[2])
+            # add more here
 
     def __projects(self, projects):
         '''Projects'''
