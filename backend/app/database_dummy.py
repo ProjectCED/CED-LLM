@@ -1,5 +1,6 @@
 from app.database import Database, NodeProperties
 
+# just for show questions, don't use these
 blueprint_questions = [
     'Lorem Ipsum dolor sit amet, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat?',
     'Lorem Ipsum sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, vel iusto odio dignissim qui blandit praesent luptatum zzril?',
@@ -8,15 +9,15 @@ blueprint_questions = [
     'Lorem Ipsum Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur?',
 ]
 
-classification_node_labels = [
+# Just for show data model, don't use these
+data_model_node_labels = [
     'AuraTangle',
     'LinkageMist',
     'GlyphShade',
     'BloomEmber',
     'PathwayTwist',
 ]
-
-classification_node_relationships = [
+data_model_node_relationships = [
     'ECHOES_WITH',
     'FLOWS_TOWARD',
     'LOOPS_INTO',
@@ -206,23 +207,23 @@ class DatabaseDummy:
                 ),
             (
                 'Wayfinder Realm',
-                classification_node_labels,
-                classification_node_relationships,
+                data_model_node_labels,
+                data_model_node_relationships,
                 ),
             (
                 'SoftTag Grove',
-                classification_node_labels,
-                classification_node_relationships,
+                data_model_node_labels,
+                data_model_node_relationships,
                 ),
             (
                 'Ramble Field',
-                classification_node_labels,
-                classification_node_relationships,
+                data_model_node_labels,
+                data_model_node_relationships,
                 ),
             (
                 'Freespace Catalog',
-                classification_node_labels,
-                classification_node_relationships,
+                data_model_node_labels,
+                data_model_node_relationships,
                 ),
         ]
         self.__datamodels(__datamodels)
@@ -244,6 +245,7 @@ class DatabaseDummy:
         for user in users:
             # Create nodes with email
             id = self.db.add_user_settings_node(user[1])
+
             if not user[0] == None:
                 self.db.set_user_settings_property(id, NodeProperties.UserSettings.NAME, user[0])
             # add more here
@@ -252,10 +254,13 @@ class DatabaseDummy:
         '''Blueprints'''
         for blueprint in blueprints:
             id = self.db.add_blueprint_node()
+
             if not blueprint[0] == None:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.NAME, blueprint[0])
+
             if not blueprint[1] == None:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION, blueprint[1])
+
             if not blueprint[2] == None:
                 self.db.set_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS, blueprint[2])
             # add more here
@@ -266,8 +271,10 @@ class DatabaseDummy:
             id = self.db.add_data_model_node()
             if not datamodel[0] == None:
                 self.db.set_data_model_property(id, NodeProperties.DataModel.NAME, datamodel[0])
+
             if not datamodel[1] == None:
                 self.db.set_data_model_property(id, NodeProperties.DataModel.NODE_LABELS, datamodel[1])
+
             if not datamodel[2] == None:
                 self.db.set_data_model_property(id, NodeProperties.DataModel.RELATIONSHIP_TYPES, datamodel[2])
             # add more here
@@ -276,6 +283,7 @@ class DatabaseDummy:
         '''Projects'''
         for project in projects:
             id = self.db.add_project_node()
+
             if not project[0] == None:
                 self.db.set_project_property(id, NodeProperties.Project.NAME, project[0])
             # add more here
@@ -283,7 +291,7 @@ class DatabaseDummy:
 
     def __result_blueprint(self, results):
         '''Result-Blueprint'''
-        nodes = self.db.lookup_project_nodes()
+        projects = self.db.lookup_project_nodes()
         blueprints = self.db.lookup_blueprint_nodes()
         for result in results:
             result_id = self.db.add_result_blueprint_node()
@@ -295,18 +303,21 @@ class DatabaseDummy:
                     blueprint_id = blue_id
 
             # connect results to specific projects
-            for project_id, project_name in nodes:
+            for project_id, project_name in projects:
                 if project_name == result[0]:
                     # result -> project
                     self.db.connect_result_blueprint_to_project(result_id, project_id)
                     # used blueprint -> result
                     used_blue_id = self.db.copy_to_used_blueprint_node(blueprint_id)
                     self.db.connect_used_blueprint_to_result_blueprint(used_blue_id, result_id)
+
                     # properties
                     if not result[2] == None:
                         self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.DATETIME, result[2])
+
                     if not result[3] == None:
                         self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.RESULT, result[3])
+
                     if not result[4] == None:
                         self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.FILENAME, result[4])
                     # add more here
