@@ -9,12 +9,13 @@ const Projects = () => {
 
   const analyzeFile = async () => {
     if (state === undefined || state === null) {
+      const storedResult = localStorage.getItem('result');
+      if (storedResult !== null) {
+        setResult(storedResult);
+        setLoading(false);
+      }
       return;
     }
-    else if (!state.hasOwnProperty('filename')) {
-      return;
-    }
-
     const filename = state['filename'];
 
     const response = await fetch('http://127.0.0.1:5000/test_analyze', {
@@ -24,7 +25,7 @@ const Projects = () => {
 
     let data = await response.json();
     data = JSON.stringify(data, null, 0).replace(/\\n/g, '<br />')
-
+    localStorage.setItem('result', data);
     setResult(data);
     setLoading(false);
   }
