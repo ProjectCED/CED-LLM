@@ -17,16 +17,21 @@ def analyze():
 
     return jsonify(results)
 
-@main.route('/test_analyze', methods=['POST'])
-def test_analyze():
+@main.route('/upload_file', methods=['POST'])
+def upload_file():
     file = request.files.get('file')
-    filepath = file.filename
-    file.save(filepath)
+    file.save(file.filename)
 
-    results = apiHandler.test_file_read(filepath)
+    return jsonify({'filename': f"{file.filename}"})
 
-    if os.path.exists(filepath):
-        os.remove(filepath)
+@main.route('/test_analyze', methods=['GET'])
+def test_analyze():
+    filename = request.headers.get('filename')
+
+    results = apiHandler.test_file_read(filename)
+
+    if os.path.exists(filename):
+        os.remove(filename)
 
     return jsonify(results)
 
