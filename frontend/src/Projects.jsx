@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Projects.css';
 import { useLocation } from 'react-router-dom';
 
 const Projects = () => {
   const { state } = useLocation();
+  const [ result, setResult ] = useState(null);
+  const [ loading, setLoading ] = useState(true);
 
   const analyzeFile = async () => {
     if (state === undefined || state === null) {
@@ -20,15 +22,27 @@ const Projects = () => {
       body: filename,
     });
 
-    const data = await response.json();
+    let data = await response.json();
+    data = JSON.stringify(data, null, 0).replace(/\\n/g, '<br />')
 
-    return data;
+    setResult(data);
+    setLoading(false);
   }
 
-  analyzeFile();
+  useEffect(() => {
+    analyzeFile();
+  }, []);
+
   return (
     <div className="projects-container">
-      <h1>Hello World from Projects!</h1>
+      <h2>Analysis Results</h2>
+      {loading ? (
+        <p>Analyzing...</p>
+      ) : (
+        <div
+          style={{ whiteSpace: 'pre-wrap', textAlign: 'justify'}}
+          dangerouslySetInnerHTML={{ __html: result }}/>
+      )}
     </div>
   );
 };
