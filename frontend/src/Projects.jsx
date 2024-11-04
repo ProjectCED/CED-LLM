@@ -24,7 +24,7 @@ const Projects = () => {
     });
 
     let data = await response.json();
-    data = JSON.stringify(data, null, 0).replace(/\\n/g, '<br />')
+    data = data.replace(/\\n/g, '<br />')
     localStorage.setItem('result', data);
     setResult(data);
     setLoading(false);
