@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Form, useNavigate } from 'react-router-dom';
 import FileDownload from './FileDownload'; // Step 1 component
 import ClassificationSelection from './ClassificationSelection'; // Step 2 component
 import AISelection from './AISelection'; // Step 3 component
@@ -32,6 +32,12 @@ const MultiStepForm = () => {
 
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = () => {
+    const formdata = new FormData();
+    formdata.append('file', selectedFiles[0]);
+    fetch('http://127.0.0.1:5000/test_analyze', {
+      method: 'POST',
+      body: formdata
+    });
     navigate('/app/projects');
   };
   
