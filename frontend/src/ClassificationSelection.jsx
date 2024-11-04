@@ -59,8 +59,8 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
       </h2>
       <div className="button-container">
         <button
-          className={`selection-button ${localSelectedClassification === 'Default Blueprint' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('Default Blueprint')}
+          className={`selection-button ${localSelectedClassification === 'AI-generated Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('AI-generated Blueprint')}
         >
           AI-generated Blueprint
         </button>
