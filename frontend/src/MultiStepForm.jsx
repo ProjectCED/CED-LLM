@@ -68,6 +68,12 @@ const MultiStepForm = () => {
         alert('Please select a saved blueprint.');
         return;
       }
+
+      // Check if "Created Blueprint" requires custom blueprint text input
+      if (selectedClassification === 'Created Blueprint' && customClassificationText.trim() === '') {
+        alert('Please enter a blueprint for "Created Blueprint".');
+        return;
+      }
     }
 
     // Validation for step 3: Ensure an AI option is selected
@@ -123,6 +129,11 @@ const MultiStepForm = () => {
       // Check if "Saved Blueprint" requires a blueprint selection
       if (selectedClassification === 'Saved Blueprint' && !selectedBlueprint) {
         alert('Please select a a saved blueprint.');
+        return;
+      }
+      // Check if "Created Blueprint" requires custom blueprint text input
+      if (selectedClassification === 'Created Blueprint' && customClassificationText.trim() === '') {
+        alert('Please enter a blueprint for "Created Blueprint".');
         return;
       }
     }
