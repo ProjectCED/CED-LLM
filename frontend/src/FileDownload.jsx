@@ -1,63 +1,82 @@
 import React, { useState } from 'react';
-import './FileDownload.css';  
+import './FileDownload.css';
 
 const FileDownload = ({ onFileUpload, onTextChange }) => {
-  
-  console.log('FileDownload component loaded');
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  console.log('FileDownload component loaded'); 
+
+  const [selectedFile, setSelectedFile] = useState(null);
   const [copiedText, setCopiedText] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
-  
-  // Handle file selection from input field
+  const [isLocked, setIsLocked] = useState(false);
+
+  // Handle changes in the file input
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-    console.log("Files selected:", files);
-    onFileUpload(files);  // Send the selected files to the MultiStepForm component
+    const file = event.target.files[0]; 
+    if (file) {
+      setSelectedFile(file);            
+      setCopiedText('');                
+      setIsLocked(true);               
+      console.log("File selected:", file);
+      onFileUpload([file]);
+    }
   };
 
-  // Handle changes to the text input area
+  // Handle changes in the text area
   const handleTextChange = (event) => {
-    const text = event.target.value; // Get the value from the event
+    const text = event.target.value;
     setCopiedText(text);
+    setSelectedFile(null);
+
+    // Lock fields if text is not empty
+    if (text.trim() !== '') {
+      setIsLocked(true);
+    }
     console.log("Text entered:", text);
-    onTextChange(text);  // Send the entered text to the MultiStepForm component
+    onTextChange(text);
   };
 
-   // Remove a specific file from the selected files list
-  const removeFile = (fileToRemove) => {
-    setSelectedFiles((prevFiles) =>
-      prevFiles.filter((file) => file !== fileToRemove)
-    );
-  };
-
-  // Handle file drop (drag and drop functionality
+  // Handle files dropped onto the drop zone
   const handleDrop = (event) => {
     event.preventDefault();
-    setIsDragOver(false); 
-    const files = Array.from(event.dataTransfer.files);
-    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-    console.log("Files dropped:", files);
-    onFileUpload(files);  // Update the files in MultiStepForm
+    setIsDragOver(false);
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setCopiedText('');
+      setIsLocked(true);
+      console.log("File dropped:", file);
+      onFileUpload([file]);
+    }
   };
 
-  // Handle drag-over event (when a file is being dragged over the drop zone)
+  // Handle drag-over state (called repeatedly when file is dragged over)
   const handleDragOver = (event) => {
     event.preventDefault();
-    setIsDragOver(true); 
+    setIsDragOver(true);
   };
 
-  // Handle drag-leave event (when a file is dragged out of the drop zone)
+  // Handle the end of drag-over state (called when the file is no longer dragged over)
   const handleDragLeave = () => {
-    setIsDragOver(false); 
+    setIsDragOver(false);
+  };
+
+  // Reset the selected file and text inputs
+  const resetSelections = () => {
+    setSelectedFile(null);
+    setCopiedText('');
+    onFileUpload([]);
+    onTextChange('');
+    setIsLocked(false);
   };
 
   return (
     <div className="container">
-      <h2>Download file(s) or copy paste text for analysis</h2>
+      <h2>Upload a file or copy and paste text for analysis. You can clear your selection by pressing the Reset Selections button.</h2>
       <div className="upload-wrapper">
-        <div 
-          className={`file-upload ${isDragOver ? 'drag-over' : ''}`} 
+        
+        {/* File upload section */}
+        <div
+          className={`file-upload ${isDragOver ? 'drag-over' : ''}`}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onDragLeave={handleDragLeave}
@@ -67,42 +86,40 @@ const FileDownload = ({ onFileUpload, onTextChange }) => {
             onChange={handleFileChange}
             style={{ display: 'none' }}
             id="file-input"
-            multiple 
+            disabled={isLocked}
           />
           <label htmlFor="file-input">
-            BROWSE FILES
+            BROWSE FILE
           </label>
-          <p className="drag-drop-text">OR DRAG & DROP HERE</p> 
-          {selectedFiles.length > 0 && (
+          <p className="drag-drop-text">OR DRAG & DROP HERE</p>
+          {/* Display selected file name */}
+          {selectedFile && (
             <div className="file-info">
               <ul>
-                {selectedFiles.map((file, index) => (
-                  <li key={index}>
-                    <span className="file-name">{file.name}</span> 
-                    <span
-                      className="remove-file"
-                      onClick={() => removeFile(file)}
-                      title="Remove file"
-                    >
-                      &#10005; 
-                    </span>
-                  </li>
-                ))}
+                <li>
+                  <span className="file-name">{selectedFile.name}</span>
+                </li>
               </ul>
             </div>
           )}
         </div>
 
+        {/* Text upload section */}
         <div className="text-upload">
           <textarea
             placeholder="Copy paste text here"
             rows="4"
             value={copiedText}
             onChange={handleTextChange}
+            disabled={isLocked && copiedText.trim() === ''}
           />
         </div>
       </div>
 
+      {/* Button to reset both file and text inputs */}
+      <button className="reset-button" onClick={resetSelections}>
+        Reset Selections
+      </button>
     </div>
   );
 };

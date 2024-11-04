@@ -54,7 +54,10 @@ const Blueprints = () => {
 
   // Delete a blueprint by filtering it out of the blueprints array
   const handleDeleteClick = (id) => {
-    setBlueprints(blueprints.filter(bp => bp.id !== id));
+    const confirmDelete = window.confirm('Are you sure you want to delete this blueprint?');
+    if (confirmDelete) {
+      setBlueprints(blueprints.filter(bp => bp.id !== id));
+    }
   };
 
   // Update the 'question' property for the blueprint when the input changes

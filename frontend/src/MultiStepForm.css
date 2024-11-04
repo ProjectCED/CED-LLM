@@ -6,7 +6,7 @@
     background-color: #13293D; 
     border-radius: 8px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    height: 100vh;
+    min-height: 100vh;
   }
   
   /* Styling for each step box in the form */
@@ -17,11 +17,19 @@
     margin-bottom: 20px; 
     background-color: #E8F1F2;
   }
+
+  /* Layout for the header in each step box */
+  .step-header {
+   display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    line-height: 1;
+}
   
   /* Styling for the title of each step */
   .step-title {
     margin: 0px 0px 10px; 
-    font-size: 1.5em; 
+    font-size: 28px; 
     color: #13293D; 
     text-align: left;
   }
@@ -34,7 +42,7 @@
   }
   
   /* Styling for the next button in each step */
-  .next-button {
+  .next-button, .multiform-save-button {
     margin-top: 15px; 
     padding: 15px 30px; 
     border: none; 
@@ -97,3 +105,10 @@
     margin-top: 20px;
     display: inline-block;
   }
+
+  /* Analyze button disabled state */
+.analyze-button:disabled {
+  background-color: #c0c0c0; 
+  color: #666666; 
+  cursor: not-allowed; 
+}
