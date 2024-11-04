@@ -20,18 +20,23 @@ def analyze():
 @main.route('/upload_file', methods=['POST'])
 def upload_file():
     file = request.files.get('file')
-    file.save(file.filename)
+    filename = file.filename
+    file.save(filename)
 
-    return jsonify({'filename': f"{file.filename}"})
+    return jsonify({'filename': f"{filename}"})
 
-@main.route('/test_analyze', methods=['GET'])
+@main.route('/test_analyze', methods=['POST'])
 def test_analyze():
-    filename = request.headers.get('filename')
-
+    filename = request.data.decode('utf-8')
     results = apiHandler.test_file_read(filename)
 
-    if os.path.exists(filename):
+    try:
         os.remove(filename)
+    except FileNotFoundError:
+        pass
+    except PermissionError:
+        pass
+    
 
     return jsonify(results)
 
