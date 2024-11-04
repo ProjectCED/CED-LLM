@@ -41,15 +41,16 @@ const MultiStepForm = () => {
   };
 
   // Handle analyze button click, navigate to the projects page
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     const formdata = new FormData();
     formdata.append('file', selectedFiles[0]);
-    fetch('http://127.0.0.1:5000/test_analyze', {
+    const response = await fetch('http://127.0.0.1:5000/upload_file', {
       method: 'POST',
-      body: formdata
+      body: formdata,
     });
-    navigate('/app/projects');
-  };
+    const data = await response.json();
+    navigate('/app/projects', { state : data});
+  }
 
   const allStepsCompleted = stepCompleted > 3;
   
