@@ -51,7 +51,7 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
     <div className="classification-selection">
       <h2>
         Next, choose how you would like your dataset to be classified. If you're analyzing
-        this type of data for the first time, it's recommended to try the AI-generated blueprint. If you're satisfied with the results, you can save the classification as a
+        this type of data for the first time, it's recommended to try the Automatic blueprint. If you're satisfied with the results, you can save the classification as a
         blueprint and use it next time, for example, on a larger dataset of the same topic.
       </h2>
       <h2>
@@ -59,10 +59,10 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
       </h2>
       <div className="button-container">
         <button
-          className={`selection-button ${localSelectedClassification === 'AI-generated Blueprint' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('AI-generated Blueprint')}
+          className={`selection-button ${localSelectedClassification === 'Automatic Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Automatic Blueprint')}
         >
-          AI-generated Blueprint
+          Automatic Blueprint
         </button>
         <button
           className={`selection-button ${localSelectedClassification === 'Saved Blueprint' ? 'selected' : ''}`}
