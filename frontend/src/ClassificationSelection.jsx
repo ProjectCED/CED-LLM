@@ -23,12 +23,12 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
     onSelectClassification(classification);
   
     // If classification is not 'Saved Classification', clears selected blueprint
-  if (classification !== 'Saved Classification') {
+  if (classification !== 'Saved Blueprint') {
     setSelectedBlueprint('');
     onSelectBlueprint(''); 
   }
 
-  if (classification !== 'Created Classification') {
+  if (classification !== 'Created Blueprint') {
     setCustomText('');
     onCustomTextChange(''); 
   }
@@ -51,8 +51,7 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
     <div className="classification-selection">
       <h2>
         Next, choose how you would like your dataset to be classified. If you're analyzing
-        this type of data for the first time, it's recommended to try the default
-        classification. If you're satisfied with the results, you can save the classification as a
+        this type of data for the first time, it's recommended to try the Automatic blueprint. If you're satisfied with the results, you can save the classification as a
         blueprint and use it next time, for example, on a larger dataset of the same topic.
       </h2>
       <h2>
@@ -60,26 +59,26 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
       </h2>
       <div className="button-container">
         <button
-          className={`selection-button ${localSelectedClassification === 'Default Classification' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('Default Classification')}
+          className={`selection-button ${localSelectedClassification === 'Automatic Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Automatic Blueprint')}
         >
-          Default classification
+          Automatic Blueprint
         </button>
         <button
-          className={`selection-button ${localSelectedClassification === 'Saved Classification' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('Saved Classification')}
+          className={`selection-button ${localSelectedClassification === 'Saved Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Saved Blueprint')}
         >
-          Saved model classification
+          Saved Blueprint
         </button>
         <button
-          className={`selection-button ${localSelectedClassification === 'Created Classification' ? 'selected' : ''}`}
-          onClick={() => handleButtonClick('Created Classification')}
+          className={`selection-button ${localSelectedClassification === 'Created Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Created Blueprint')}
         >
-          Create classification
+          Create Blueprint
         </button>
       </div>
 
-      {localSelectedClassification === 'Saved Classification' && (
+      {localSelectedClassification === 'Saved Blueprint' && (
         <BlueprintDropdown
           key={localSelectedClassification} 
           blueprints={blueprints}
@@ -88,11 +87,11 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
         />
       )}
 
-      {localSelectedClassification === 'Created Classification' && (
+      {localSelectedClassification === 'Created Blueprint' && (
         <div className="custom-text-input">
           <input
             type="text"
-            placeholder="Enter custom classification"
+            placeholder="Enter custom blueprint"
             value={customText}
             onChange={handleCustomTextChange}
           />

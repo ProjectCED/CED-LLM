@@ -70,9 +70,15 @@ const MultiStepForm = () => {
         alert('Please select a classification option.');
         return;
       }
-      // Check if "Saved Classification" requires a blueprint selection
-      if (selectedClassification === 'Saved Classification' && !selectedBlueprint) {
+      // Check if "Saved Blueprint" requires a blueprint selection
+      if (selectedClassification === 'Saved Blueprint' && !selectedBlueprint) {
         alert('Please select a saved blueprint.');
+        return;
+      }
+
+      // Check if "Created Blueprint" requires custom blueprint text input
+      if (selectedClassification === 'Created Blueprint' && customClassificationText.trim() === '') {
+        alert('Please enter a blueprint for "Created Blueprint".');
         return;
       }
     }
@@ -127,9 +133,14 @@ const MultiStepForm = () => {
         alert('Please select a classification option.');
         return;
       }
-      // Check if "Saved Classification" requires a blueprint selection
-      if (selectedClassification === 'Saved Classification' && !selectedBlueprint) {
+      // Check if "Saved Blueprint" requires a blueprint selection
+      if (selectedClassification === 'Saved Blueprint' && !selectedBlueprint) {
         alert('Please select a a saved blueprint.');
+        return;
+      }
+      // Check if "Created Blueprint" requires custom blueprint text input
+      if (selectedClassification === 'Created Blueprint' && customClassificationText.trim() === '') {
+        alert('Please enter a blueprint for "Created Blueprint".');
         return;
       }
     }
@@ -193,11 +204,11 @@ const MultiStepForm = () => {
         )}
       </div>
 
-      {/* Step 2: Classification Selection */}
+      {/* Step 2: Blueprint Selection */}
       <div className="step">
         <div className="step-header">
           <h2 className={`step-title ${currentStep === 2 ? 'active' : ''}`}>
-            2. Classification Selection
+            2. Blueprint Selection
           </h2>
           {allStepsCompleted && currentStep !== 2 && (
             <button className="edit-button" onClick={() => handleEditClick(2)}>
