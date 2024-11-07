@@ -2,20 +2,18 @@ import os
 from dotenv import load_dotenv
 import openai
 from openai import OpenAI
-import utils
+import app.utils as utils
 
 PRIMARY_MODEL = "gpt-4o"
 BACKUP_MODEL = "gpt-4o-mini" # This has higher token limit
 
 class ApiHandler():
-
-
     def __init__(self):
         load_dotenv()
         OPENAI_KEY = os.getenv("OPENAI_KEY")
         self.__client = OpenAI(api_key=OPENAI_KEY)
 
-    def analyze_text(self, text, model) -> str:
+    def analyze_text(self, text, model=PRIMARY_MODEL) -> str:
         # TODO: Create separate file for instructions in both Finnish and English
         instructions = "Analyze the themes and key points of the text."
 
@@ -45,11 +43,17 @@ class ApiHandler():
             else:
                 return None
             
-    def analyze_file(self, filepath, model) -> str:
+    def analyze_file(self, filepath, model=PRIMARY_MODEL) -> str:
         text = utils.extract_text_from_file(filepath)
         if text is None:
             return None
         return self.analyze_text(text, model)
+    
+    def test_file_read(self, filepath: str) -> str:
+        text = utils.extract_text_from_file(filepath)
+        if text is None:
+            return None
+        return text
         
 
 def main():

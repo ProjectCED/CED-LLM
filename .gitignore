@@ -24,6 +24,8 @@ dist-ssr
 *.sw?
 **/__pycache__/
 
-#Environment variables
+# Environment variables
 .env
 
+# Temporary files for server
+tmp/

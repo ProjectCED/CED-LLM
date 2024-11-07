@@ -6,6 +6,7 @@
   justify-content: flex-start;
   min-height: 100vh;
   background-color: #13293D;
+  color: white;
   padding: 20px;
   position: relative; 
 }

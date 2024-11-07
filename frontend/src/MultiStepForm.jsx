@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Form, useNavigate } from 'react-router-dom';
 import FileDownload from './FileDownload'; // Step 1 component
 import ClassificationSelection from './ClassificationSelection'; // Step 2 component
 import AISelection from './AISelection'; // Step 3 component
@@ -41,9 +41,16 @@ const MultiStepForm = () => {
   };
 
   // Handle analyze button click, navigate to the projects page
-  const handleAnalyze = () => {
-    navigate('/app/projects');
-  };
+  const handleAnalyze = async () => {
+    const formdata = new FormData();
+    formdata.append('file', selectedFiles[0]);
+    const response = await fetch('http://127.0.0.1:5000/upload_file', {
+      method: 'POST',
+      body: formdata,
+    });
+    const data = await response.json();
+    navigate('/app/projects', { state : data});
+  }
 
   const allStepsCompleted = stepCompleted > 3;
   
