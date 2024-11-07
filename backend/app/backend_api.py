@@ -25,10 +25,27 @@ def upload_file():
 
     return jsonify({'filename': f"{filename}"})
 
+# For testing file analysis without using OpenAI
 @main.route('/test_analyze', methods=['POST'])
 def test_analyze():
     filename = request.data.decode('utf-8')
     results = apiHandler.test_file_read(filename)
+
+    try:
+        os.remove(filename)
+    except FileNotFoundError:
+        pass
+    except PermissionError:
+        pass
+    
+
+    return jsonify(results)
+
+# For ACTUALLY analyzing files using OpenAI
+@main.route('/analyze_file', methods=['POST'])
+def analyze_file():
+    filename = request.data.decode('utf-8')
+    results = apiHandler.analyze_file(filename)
 
     try:
         os.remove(filename)

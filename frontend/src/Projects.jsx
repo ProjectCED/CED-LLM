@@ -18,6 +18,7 @@ const Projects = () => {
     }
     const filename = state['filename'];
 
+    // Replace 'test_analyze' with 'analyze_file' for actual analysis using OpenAI API
     const response = await fetch('http://127.0.0.1:5000/test_analyze', {
       method: 'POST',
       body: filename,
