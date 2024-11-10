@@ -439,7 +439,7 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             bool:
                 - True when query succeeded.
-                - False if node exists.
+                - False if node doesn't exists.
         """
         # check if node exists
         if not self.__does_node_exist(label, id_type, id_value):
