@@ -137,7 +137,6 @@ class Database(metaclass=DatabaseMeta):
         
         self.__project_type = 'Project'
         self.__project_id = 'id'
-        self.__project_exclusion = ['FAVORITED_IN'] # exclusion relationships for deletion
         
         self.__result_blueprint_type = 'ResultBlueprint'
         self.__result_blueprint_id = 'id'
@@ -423,12 +422,12 @@ class Database(metaclass=DatabaseMeta):
             raise RuntimeError( "Neo4j lookup_nodes() query failed: " + error_string )
         
         
-    def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
+    def __delete_node_with_connections(self, label, id_type, id_value, exclude_relationships = None):
         """
         Delete node and all related nodes with incoming relationships 0..n deep. Possible to exclude relationships.
 
         Args:
-            type (string): Node label
+            label (string): Node label
             id_type (string): Node id(property)
             id_value (string): Value for the id
             exclude_relationships (string or list[string], optional): Relationships to exclude from deletion
@@ -443,7 +442,7 @@ class Database(metaclass=DatabaseMeta):
                 - False if node exists.
         """
         # check if node exists
-        if not self.__does_node_exist(type, id_type, id_value):
+        if not self.__does_node_exist(label, id_type, id_value):
             return False
 
         id_value = str(id_value)
@@ -451,7 +450,7 @@ class Database(metaclass=DatabaseMeta):
         # Supporting: None, string list, single string
         if exclude_relationships == None:
             query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) "
+                "MATCH (n:" + label + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) "
                 "DETACH DELETE n "
                 "WITH DISTINCT d "
                 "DETACH DELETE d"
@@ -459,7 +458,7 @@ class Database(metaclass=DatabaseMeta):
         elif isinstance(exclude_relationships,list) and all(isinstance(item,str) for item in list):
             exclude_relationships = "','".join(exclude_relationships)
             query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
+                "MATCH (n:" + label + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
                 "WHERE NONE ( rel IN r WHERE type(rel) IN ['"+ exclude_relationships + "']) "
                 "DETACH DELETE n "
                 "WITH DISTINCT d "
@@ -467,7 +466,7 @@ class Database(metaclass=DatabaseMeta):
             )
         elif isinstance(exclude_relationships,str):
             query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
+                "MATCH (n:" + label + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
                 "WHERE NONE ( rel IN r WHERE type(rel) = '"+ exclude_relationships + "') "
                 "DETACH DELETE n "
                 "WITH DISTINCT d "
@@ -1379,7 +1378,7 @@ class Database(metaclass=DatabaseMeta):
                 - True when query succeeded.
                 - False when node doesn't exist.
         """ 
-        return self.__delete_node_with_connections(self.__project_type, self.__project_id, id_value, self.__project_exclusion)
+        return self.__delete_node_with_connections(self.__project_type, self.__project_id, id_value)
     
 
     def get_project_id_type(self):
