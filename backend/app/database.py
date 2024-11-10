@@ -448,6 +448,7 @@ class Database(metaclass=DatabaseMeta):
         id_value = str(id_value)
 
         # Supporting: None, string list, single string
+        # TODO: something wrong here if trying to use exclusion
         if exclude_relationships == None:
             query_string = (
                 "MATCH (n:" + label + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) "
