@@ -173,6 +173,8 @@ class Database(metaclass=DatabaseMeta):
         self.__connect_used_blueprint_result_blueprint = 'USED_IN_ANALYSIS'
         self.__connect_used_dataset_used_data_model = 'USED_FOR_TRAINING'
         self.__connect_used_dataset_used_analyze_model = 'USED_FOR_TRAINING'
+        self.__connect_project_user_settings = 'OWNED_BY'
+        self.__connect_blueprint_user_settings = 'OWNED_BY'
 
 
     def debug_clear_all(self):
@@ -1015,6 +1017,42 @@ class Database(metaclass=DatabaseMeta):
                 - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value, self.__used_analyze_model_type, self.__used_analyze_model_id, used_analyze_model_id_value, self.__connect_used_dataset_used_analyze_model)
+    
+
+    def connect_project_to_user_settings(self, project_id_value, user_settings_id_value):
+        """
+        Connect Project to UserSettings
+        Args:
+            project_id_value (string): Value for the Project id
+            user_settings_id_value (string): Value for the user_settings id
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
+        """
+        return self.__connect_with_relationship(self.__project_type, self.__project_id, project_id_value, self.__user_settings_type, self.__user_settings_id, user_settings_id_value, self.__connect_project_user_settings)
+
+
+    def connect_blueprint_to_user_settings(self, blueprint_id_value, user_settings_id_value):
+        """
+        Connect Blueprint to UserSettings
+        Args:
+            blueprint_id_value (string): Value for the Blueprint id
+            user_settings_id_value (string): Value for the user_settings id
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
+        """
+        return self.__connect_with_relationship(self.__blueprint_type, self.__blueprint_id, blueprint_id_value, self.__user_settings_type, self.__user_settings_id, user_settings_id_value, self.__connect_project_user_settings)
 
     
     ### Global settings
