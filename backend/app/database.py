@@ -1052,7 +1052,7 @@ class Database(metaclass=DatabaseMeta):
                 - True when query succeeded.
                 - False when either of the nodes doesn't exist.
         """
-        return self.__connect_with_relationship(self.__blueprint_type, self.__blueprint_id, blueprint_id_value, self.__user_settings_type, self.__user_settings_id, user_settings_id_value, self.__connect_project_user_settings)
+        return self.__connect_with_relationship(self.__blueprint_type, self.__blueprint_id, blueprint_id_value, self.__user_settings_type, self.__user_settings_id, user_settings_id_value, self.__connect_blueprint_user_settings)
 
     
     ### Global settings
