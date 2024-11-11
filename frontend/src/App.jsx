@@ -9,15 +9,17 @@ import Header from './Header';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Starting view */}
-        <Route path="/" element={<StartPage />} />
+    <div className="app-container">
+      <Router>
+        <Routes>
+          {/* Starting view */}
+          <Route path="/" element={<StartPage />} />
 
-        {/* Views that have Header */}
-        <Route path="/app/*" element={<MainLayout />} />
-      </Routes>
-    </Router>
+          {/* Views that have Header */}
+          <Route path="/app/*" element={<MainLayout />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
