@@ -18,3 +18,8 @@
   background-size: cover;
   background-position: center;
 }
+
+/* Adds top padding to ensure content is not hidden under the fixed navbar */
+.main-content {
+  padding-top: 100px; /* Adjust this value if your navbar height changes */
+}
