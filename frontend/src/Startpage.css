@@ -1,6 +1,6 @@
 /* Container styling */
 .start-container {
-    background-color: #13293D; 
+    background-color: transparent; 
     height: 100vh;
     display: flex;
     flex-direction: column;
