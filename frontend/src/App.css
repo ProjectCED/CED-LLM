@@ -19,7 +19,22 @@
   background-position: center;
 }
 
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content-container {
+  display: flex;
+  flex: 1;
+}
+
 /* Adds top padding to ensure content is not hidden under the fixed navbar */
 .main-content {
-  padding-top: 100px; /* Adjust this value if your navbar height changes */
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  padding-top: 100px; 
+  margin-left: 60px;
 }
