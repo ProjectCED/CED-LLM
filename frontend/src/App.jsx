@@ -28,12 +28,13 @@ function MainLayout() {
   return (
     <>
       <Header /> 
-      <Routes>
-        <Route path="classification" element={<Classification />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="blueprints" element={<Blueprints />} />
-      </Routes>
-
+      <div className="main-content">
+        <Routes>
+          <Route path="classification" element={<Classification />} /> 
+          <Route path="projects" element={<Projects />} />
+          <Route path="blueprints" element={<Blueprints />} />
+        </Routes>
+      </div>
     </>
   );
 }
