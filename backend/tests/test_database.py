@@ -8,6 +8,9 @@ def db():
     Fixture that sets up a real database connection for the entire module.
     This connection will be shared across all tests in this module.
 
+    Tests is done by using database() public functions and it's queries,
+    instead of making separate queries from here.
+
     Returns:
         database object
     """
@@ -24,7 +27,11 @@ def clear_database(db):
 
 
 class TestAddNode:
-    """Create node"""
+    """Create node
+    
+    1. create node
+    check returned id-string
+    """
 
     def test_global_settings(self,db):
         result = db.add_global_settings_node()
@@ -53,7 +60,12 @@ class TestAddNode:
 
 
 class TestSetProperty:
-    """Creating property"""
+    """Creating property
+    
+    1. create node
+    2. set property
+    check returned bool
+    """
 
     def test_global_settings(self,db):
         db.add_global_settings_node()
@@ -82,7 +94,13 @@ class TestSetProperty:
 
 
 class TestLookupPropertyFound:
-    """Lookup property that is found"""
+    """Lookup property that is found
+    
+    1. create node
+    2. set property
+    3. lookup property
+    check returned property value
+    """
 
     def test_global_settings(self,db):
         db.add_global_settings_node()
@@ -123,48 +141,51 @@ class TestLookupPropertyFound:
 
 
 class TestLookupPropertyNotFound:
-    """Lookup property that is not found"""
+    """Lookup property that is not found
+    
+    1. create node
+    2. lookup non-existent property
+    check returned property value
+    """
 
     def test_global_settings(self,db):
         db.add_global_settings_node()
-        db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
         result = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_FAIL)
         assert result == None
 
     def test_user_settings(self,db):
         db.add_user_settings_node('alice')
-        db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'Alice')
         result = db.lookup_user_settings_property('alice', NodeProperties.UserSettings.TEST_FAIL)
         assert result == None
 
     def test_project(self,db):
         id = db.add_project_node()
-        db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
         result = db.lookup_project_property(id, NodeProperties.Project.TEST_FAIL)
         assert result == None
 
     def test_blueprint(self,db):
         id = db.add_blueprint_node()
-        db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
         result = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_FAIL)
         assert result == None
 
     def test_result_blueprint(self,db):
         id = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
         result = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_FAIL)
         assert result == None
 
     def test_used_blueprint(self,db):
         id = db.add_blueprint_node()
-        db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
         id_2 = db.copy_to_used_blueprint_node(id)
         result = db.lookup_used_blueprint_property(id_2, NodeProperties.Blueprint.TEST_FAIL)
         assert result == None
 
 
 class TestLookupPropertyNodeNotFound:
-    """Lookup property node not found"""
+    """Lookup property node not found
+    
+    1. lookup property from non-existent node
+    check returned property value
+    """
 
     def test_user_settings(self,db):
         result = db.lookup_user_settings_property('wrong_id', NodeProperties.UserSettings.TEST_FAIL)
@@ -188,7 +209,13 @@ class TestLookupPropertyNodeNotFound:
 
 
 class TestRemovePropertyFound:
-    """Property remove"""
+    """Property remove
+    
+    1. create node
+    2. set property
+    3. remove property
+    check returned bool
+    """
 
     def test_global_settings(self,db):
         db.add_global_settings_node()
@@ -222,41 +249,44 @@ class TestRemovePropertyFound:
 
 
 class TestRemovePropertyNotFound:
-    """Remove property not found"""
+    """Remove property not found
+    
+    1. create node
+    2. remove non-existent property
+    check returned bool
+    """
 
     def test_global_settings(self,db):
         db.add_global_settings_node()
-        db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
-
         result = db.remove_global_settings_property(NodeProperties.GlobalSettings.TEST_FAIL)
         assert result == False
     def test_user_settings(self,db):
         db.add_user_settings_node('alice')
-        db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'Alice')
         result = db.remove_user_settings_property('alice', NodeProperties.UserSettings.TEST_FAIL)
         assert result == False
 
     def test_project(self,db):
         id = db.add_project_node()
-        db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
         result = db.remove_project_property(id, NodeProperties.Project.TEST_FAIL)
         assert result == False
 
     def test_blueprint(self,db):
         id = db.add_blueprint_node()
-        db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
         result = db.remove_blueprint_property(id, NodeProperties.Blueprint.TEST_FAIL)
         assert result == False
 
     def test_result_blueprint(self,db):
         id = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
         result = db.remove_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_FAIL)
         assert result == False
 
 
 class TestRemovePropertyNodeNotFound:
-    """Remove property node not found"""
+    """Remove property node not found
+    
+    1. Remove property from non-existent node
+    check returned bool
+    """
 
     def test_user_settings(self,db):
         result = db.remove_user_settings_property('wrong_id', NodeProperties.UserSettings.TEST_FAIL)
@@ -276,7 +306,12 @@ class TestRemovePropertyNodeNotFound:
 
 
 class TestDeleteNode:
-    """Delete node"""
+    """Delete node
+    
+    1. create node
+    2. delete node
+    check returned bool
+    """
 
     def test_global_settings(self,db):
         db.add_global_settings_node()
@@ -305,7 +340,11 @@ class TestDeleteNode:
 
 
 class TestDeleteNodeNotFound:
-    """Delete node not found"""
+    """Delete node not found
+    
+    1. delete non-existent node
+    check returned bool
+    """
 
     def test_global_settings(self,db):
         result = db.delete_global_settings()
@@ -331,7 +370,12 @@ class TestDeleteNodeNotFound:
 
 
 class TestRelationshipCreation:
-    """Relationships between nodes"""
+    """Relationships between nodes
+    
+    1. create nodes
+    2. connect nodes
+    check returned bool
+    """
 
     def test_blueprint_user_settings(self,db):
         id_1 = db.add_blueprint_node()
@@ -360,7 +404,12 @@ class TestRelationshipCreation:
 
 
 class TestRelationshipCreationBadToGood:
-    """Relationships between bad to good nodes"""
+    """Relationships between bad to good nodes
+    
+    1. only create second node
+    2. connect nodes
+    check returned bool
+    """
 
     def test_blueprint_user_settings(self,db):
         id_2 = db.add_user_settings_node('alice')
@@ -384,7 +433,12 @@ class TestRelationshipCreationBadToGood:
 
 
 class TestRelationshipCreationGoodToBad:
-    """Relationships between good to bad nodes"""
+    """Relationships between good to bad nodes
+    
+    1. only create first node
+    2. connect nodes
+    check returned bool
+    """
 
     def test_blueprint_user_settings(self,db):
         id_1 = db.add_blueprint_node()
@@ -409,7 +463,11 @@ class TestRelationshipCreationGoodToBad:
 
 
 class TestRelationshipCreationBadToBad:
-    """Relationships between bad to bad nodes"""
+    """Relationships between bad to bad nodes
+    
+    1. connect non-existent nodes
+    check returned bool
+    """
 
     def test_blueprint_user_settings(self,db):
         result = db.connect_blueprint_to_user_settings('wrong_id', 'wrong_id')
