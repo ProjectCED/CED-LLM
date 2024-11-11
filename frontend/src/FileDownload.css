@@ -86,10 +86,10 @@ textarea {
 
 /* Reset button styling */
 .reset-button {
-    background-color: gray; /* Default color */
+    background-color: gray; 
     color: #e8f1f2;
     font-size: 20px;
-    padding: 10px 20px;
+    padding: 10px 19px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
