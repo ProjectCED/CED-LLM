@@ -52,7 +52,7 @@ class ApiHandler():
     def test_file_read(self, filepath):
         text = utils.extract_text_from_file(filepath)
         if text is None:
-            return None
+            return '' #return empty if there is none content
         return text
     
     def test_simple_return(self, text):
