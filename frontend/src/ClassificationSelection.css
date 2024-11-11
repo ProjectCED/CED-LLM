@@ -10,7 +10,7 @@
 
 /* Styles for the heading within the classification selection */
 .classification-selection h2 {
-  color: #13293D;
+  color: #E8F1F2;
   font-size: 20px;
   margin-bottom: 50px;
 }
@@ -27,7 +27,7 @@
  /* Styles for the individual selection buttons */
 .selection-button {
   background-color: grey;
-  color: #E8F1F2;;
+  color: #E8F1F2;
   border: none;
   padding: 20px 70px;
   font-size: 25px;

@@ -12,6 +12,13 @@
     padding: 20px; 
 }
 
+/* Styles for the heading within the classification selection */
+.container h2 {
+    color: #E8F1F2;
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
 /* Wrapper for the file upload and text input sections */
 .upload-wrapper {
     display: flex;
@@ -37,6 +44,8 @@
     text-align: center;
     transition: background-color 0.3s, border-color 0.3s;
     box-sizing: border-box; 
+    
+
 }
 
 /* Styling when a file is dragged over the file upload area */
@@ -55,15 +64,17 @@
     box-sizing: border-box; 
     display: flex;
     flex-direction: column;
-    height: auto;
+    height: 160px;
+
 }
 
 /* Text area (for inputting text) styling */
 textarea {
     width: 100%;
     height: 100%; 
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 10px;
+    border-radius: 12px;
     border: 2px solid #1B98E0;
     background-color: #dae1e2;
     font-size: 25px;
