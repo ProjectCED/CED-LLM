@@ -1,34 +1,38 @@
+/* Sidebar container styles */
 .sidebar {
     position: fixed;
-    top: 76px; /* Asetetaan Headerin korkeuden mukaan */
+    top: 78px; 
     left: 0;
     bottom: 0;
-    width: 60px; /* Kapea aloituspalkki */
+    width: 60px; 
     background-color: #44494F;
     color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5px; /* Pienennetään paddingia */
+    padding: 5px; 
     transition: width 0.3s ease;
     z-index: 1000;
   }
   
+  /* Sidebar expanded state */
   .sidebar.expanded {
-    width: 200px; /* Levenee, kun laajennetaan */
+    width: 200px; 
   }
   
+  /* Sidebar toggle button styles */
   .sidebar-toggle {
     background: none;
     border: none;
     color: white;
-    font-size: 1.2rem; /* Pienennetään fonttikokoa, jotta se sopii pienempään palkkiin */
+    font-size: 1.2rem; 
     cursor: pointer;
-    margin-bottom: 10px; /* Vähennetään marginaalia */
-    padding: 5px; /* Pieni padding ikonin ympärille */
-    align-self: center; /* Keskitetään ikoni */
+    margin-bottom: 10px; 
+    padding: 5px; 
+    align-self: center; 
   }
   
+  /* Project list container styles */
   .project-list {
     margin-top: 20px;
     display: flex;
@@ -36,6 +40,7 @@
     gap: 10px;
   }
   
+  /* Styles for individual project list items */
   .project-list a {
     color: white;
     text-decoration: none;
@@ -43,11 +48,12 @@
     border-radius: 4px;
   }
   
+  /* Hover effect for project list items */
   .project-list a:hover {
     background-color: #555;
   }
 
-/* Otsikko "Projects" */
+/* "Projects" section title styles */
 .projects-title {
     color: white;
     margin-bottom: 20px;
@@ -57,7 +63,7 @@
     border-bottom: 1px solid #666;
 }
 
-/* Projektin otsikko */
+/* Styles for each project header (clickable project names) */
 .project-header {
     cursor: pointer;
     padding: 5px;
@@ -66,21 +72,22 @@
     align-items: center;
   }
   
+  /* Hover effect for project headers */
   .project-header:hover {
     background-color: #555;
   }
   
-  /* Projektin tulokset */
+  /* Project result section styles */
   .project-results {
-    margin-left: 15px; /* Indentaatio tuloksille */
     color: #ddd;
   }
   
+  /* Individual project result item styling */
   .project-result {
     padding: 3px 0;
   }
   
-  /* "Create New Project" -painike */
+  /* "Save" button styles */
   .create-project-button {
     background-color: #3498db; 
     color: #fff;
@@ -94,10 +101,12 @@
     
   }
   
+  /* Hover effect for the "Save" button */
   .create-project-button:hover {
     background-color: #005f99;
   }
 
+  /* Styles for the project name input field */
   .project-name-input {
     width: 90%;
     max-width: 160px;
@@ -108,18 +117,19 @@
    
   }
   
+  /* Placeholder text styling inside the input */
   .project-name-input::placeholder {
     color: #aaa;
   }
 
-  /* Container tekstikentälle ja painikkeelle */
+  /* Container for the input field and the "Create New Project" button */
 .input-container {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Pystysuora keskitys */
-    align-items: center; /* Vaakasuora keskitys */
-    gap: 10px; /* Väli kentän ja painikkeen välillä */
-    width: 100%; /* Täyttää sivupalkin leveys */
+    justify-content: center; 
+    align-items: center; 
+    gap: 10px; 
+    width: 100%; 
 }
 
   

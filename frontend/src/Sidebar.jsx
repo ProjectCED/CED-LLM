@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import './Sidebar.css';
 
 function Sidebar() {
+    // State hooks for managing the sidebar's expanded state, list of projects, and the new project name
   const [expanded, setExpanded] = useState(false);
   const [projects, setProjects] = useState([
     { name: 'Project 1', open: false, results: ['Result 1', 'Result 2'] },
@@ -10,11 +12,12 @@ function Sidebar() {
   ]);
   const [newProjectName, setNewProjectName] = useState('');
 
+  // Toggles the expanded/collapsed state of the sidebar
   const toggleSidebar = () => {
     setExpanded(!expanded);
   };
 
-  // Funktio yksittäisen projektin avaamiseen/sulkemiseen
+  // Toggles the state (open/closed) of a specific project based on its index
   const toggleProject = (index) => {
     setProjects(prevProjects =>
       prevProjects.map((project, i) =>
@@ -23,39 +26,40 @@ function Sidebar() {
     );
   };
 
-  // Funktio uuden projektin luomiseen
+  // Adds a new project to the list if the project name is valid (not empty)
   const addProject = () => {
     if (newProjectName.trim()) {
       const newProject = {
         name: newProjectName,
         open: false,
-        results: ['Result 1'] // Voidaan lisätä esim. yksi oletustulos
+        results: [] 
       };
-      setProjects([...projects, newProject]);
-      setNewProjectName(''); // Tyhjennetään tekstikenttä
+      setProjects([...projects, newProject]); // Adds the new project to the list
+      setNewProjectName(''); // Clears the input field after project creation
     } else {
-      alert("Project name cannot be empty");  // Jos nimi on tyhjä
+      alert("Project name cannot be empty");  // Alerts if the project name is empty
     }
   };
 
   return (
     <div className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}>
-      {/* Ikoni painiketta varten */}
+      {/* Sidebar toggle button with conditional icons */}
       <button className="sidebar-toggle" onClick={toggleSidebar}>
-      ☰  
+        {expanded ? <TbLayoutSidebarLeftCollapse size={24} /> : <TbLayoutSidebarLeftExpand size={24} />}
       </button>
       
-      {/* Näytetään vain, jos sidebar on laajennettu */}
+      {/* Only show the content if the sidebar is expanded */}
       {expanded && (
         <div className="project-list">
              <h2 className="projects-title">Projects</h2>
-
+          {/* Map through the projects and display them */}  
           {projects.map((project, index) => (
             <div key={index}>
               <div className="project-header" onClick={() => toggleProject(index)}>
-                {/* Nuoli-ikoni, joka vaihtuu projektin tilan mukaan */}
+                {/* Arrow icon that toggles between open/closed states of each project */}
                 {project.open ? '▴' : '▾'} {project.name}
               </div>
+              {/* Display the results if the project is open */}
               {project.open && (
                 <div className="project-results">
                   {project.results.map((result, i) => (
@@ -69,7 +73,7 @@ function Sidebar() {
           ))}
 
         <div className="input-container">
-            {/* Tekstikenttä projektin nimen syöttämiseksi */}
+            {/* Input field for entering a new project name */}
             <input
                 type="text"
                 value={newProjectName}
@@ -77,7 +81,7 @@ function Sidebar() {
                 placeholder="Enter project name"
                 className="project-name-input"
             />
-            {/* Painike uuden projektin luomiseksi */}
+            {/* Button to save the new project */}
             <button onClick={addProject} className="create-project-button">
                 Save
             </button>
