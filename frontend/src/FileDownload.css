@@ -9,7 +9,7 @@
     font-family: Arial, sans-serif;
     width: 100%; 
     box-sizing: border-box;
-    padding: 20px; 
+    padding: 15px; 
 }
 
 /* Styles for the heading within the classification selection */
@@ -30,6 +30,7 @@
     margin-bottom: 30px;
     gap: 20px; 
     box-sizing: border-box;
+    margin-top: 20px;
 }
 
 /* File upload section styling */
@@ -86,10 +87,10 @@ textarea {
 
 /* Reset button styling */
 .reset-button {
-    background-color: gray; /* Default color */
+    background-color: gray; 
     color: #e8f1f2;
-    font-size: 20px;
-    padding: 10px 20px;
+    font-size: 16px;
+    padding: 10px 19px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
