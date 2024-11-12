@@ -27,6 +27,8 @@
 .content-container {
   display: flex;
   flex: 1;
+  height: calc(100vh - 60px); /* Asettaa korkeuden jäljelle jäävästä tilasta headerin alla */
+  overflow: hidden; /* Rajoittaa skrollauksen vain main-content-alueelle */
 }
 
 /* Adds top padding to ensure content is not hidden under the fixed navbar */
@@ -36,4 +38,5 @@
   overflow-y: auto;
   padding-top: 100px; 
   margin-left: 60px;
+  height: 100%; /* Varmistaa, että main-content vie täyden tilan */
 }
