@@ -1,34 +1,54 @@
+/* Logo text styling */
+.logo-text {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  font-size: 33px;
+  font-weight: bold;
+  color: #dce1d3;
+  font-family: Arial, sans-serif;
+}
+
 /* Container styling */
 .start-container {
-    background-color: transparent; 
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #e8f1f2;
-    font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  color: #dce1d3;
+  font-family: Arial, sans-serif;
+  padding-left: 200px;
+  padding-top: 160px;
   }
   
   /* Text container styling */
   .text-container {
     text-align: left;
-    font-size: 20px;
-    margin-bottom: 20px;
+    font-size: 10px;
+    margin-bottom: 10px;
   }
   
   /* Button styling */
   .get-started-btn {
+    align-items: flex-end;
     background-color: #1B98E0; 
-    color: #e8f1f2;;
-    border: none;
-    padding: 10px 20px;
-    font-size: 40px;
-    border-radius: 20px;
+    color: #dce1d3;
+    padding: 10x 15px;
+    font-size: 16px;
+    border-radius: 50px;
     cursor: pointer;
-    outline: none;
+ 
+  }
+
+  /* Arrow icon styling */
+  .arrow-icon {
+    color: #dce1d3;
+    font-size: 15px;
+    margin-left: 5px; 
+    align-items: center;
   }
   
   .get-started-btn:hover {
-    background-color: #1B98E0; 
+    background-color: #117DB9;
   }
