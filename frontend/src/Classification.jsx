@@ -7,7 +7,7 @@ const Classification = () => {
   return (
     <div className="Classification">
       <p className="classification-heading">
-        CED-LLM offers a streamlined process for classifying text data using AI technology. The interface provides three key steps to guide you through the classification process.
+        CED-LLM offers a streamlined process for classifying text data using AI technology. The interface provides four key steps to guide you through the classification process.
       </p>
       <MultiStepForm />
     </div>
