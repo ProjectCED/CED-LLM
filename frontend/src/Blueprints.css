@@ -112,9 +112,10 @@
 }
 
 /* Container for the input field and add question button */
-.input-container {
+.blueprint-input-container {
     display: flex;
     align-items: center;
+    gap: 10px;
     width: 100%;
     margin-bottom: 10px;
 }
@@ -126,7 +127,7 @@ input[type="text"] {
     border: 1px solid #13293D;
     border-radius: 5px;
     font-size: 16px;
-    margin-right: 10px;
+    
 }
 
 /* Button to add a question */
@@ -135,7 +136,7 @@ input[type="text"] {
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 10px;
+    padding: 7px;
     font-size: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
