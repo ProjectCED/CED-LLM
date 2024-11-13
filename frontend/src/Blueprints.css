@@ -63,7 +63,7 @@
 
 /* Styles for each blueprint card */
 .blueprint-card {
-    background-color: #13293D;
+    background-color: #1a334a;
     color: #E8F1F2;
     border: 2px solid #E8F1F2;
     border-radius: 8px;
@@ -89,7 +89,7 @@
 
 /* Styles for the "Edit" and "Close" buttons */
 .edit-button {
-    background-color: #13293D;
+    background-color: #1a334a;
     color: #E8F1F2;
     border: 1px solid #E8F1F2;
     border-radius: 5px;

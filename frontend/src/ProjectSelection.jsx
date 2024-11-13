@@ -35,7 +35,7 @@ const ProjectSelection = ({ existingProjects, selectedProjectOption, onSelectPro
   return (
     <div className="project-selection">
       {/* Text instructing the user to select a project option */}
-      <p>Select an existing project, create a new one, or choose no project to display results.</p>
+      <p>Select an existing project or create a new one to display results.</p>
       
       <div className="project-button-container">
         {/* Button to select "Existing Project", highlighted if it's the selected option */}
@@ -51,13 +51,6 @@ const ProjectSelection = ({ existingProjects, selectedProjectOption, onSelectPro
           onClick={() => handleOptionSelect('New Project')}
         >
           Create a New Project
-        </button>
-        {/* Button to select "No Project", highlighted if it's the selected option */}
-        <button
-          className={`selection-button ${localSelectedOption === 'No Project' ? 'selected' : ''}`}
-          onClick={() => handleOptionSelect('No Project')}
-        >
-          No Project
         </button>
       </div>
 
