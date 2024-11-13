@@ -197,9 +197,9 @@ input[type="text"] {
 }
 
 .delete-button, .save-button {
-    background-color: #1B98E0;
+    background-color: #1a334a;
+    border: 1px solid #E8F1F2;
     color: white;
-    border: none;
     border-radius: 5px;
     padding: 5px 10px;
     margin-left: 10px;
@@ -208,8 +208,12 @@ input[type="text"] {
     transition: background-color 0.3s ease;
 }
 
-.delete-button:hover, .save-button:hover {
-    background-color: #117DB9;
+.delete-button:hover {
+    background-color: #d9534f;
+}
+
+.save-button:hover {
+    background-color: green;
 }
 
 /* Success message styling */
