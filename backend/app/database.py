@@ -2088,9 +2088,19 @@ class Database(metaclass=DatabaseMeta):
     
     def add_result_blueprint_node(self):
         """
-        Made to be similar to add_project_node()
+        Create Result-blueprint node. Also adding property DATETIME for it.
+        
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists. 
         """
-        return self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+        id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+        self.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
+        return id
 
     def set_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint, new_data):
         """
