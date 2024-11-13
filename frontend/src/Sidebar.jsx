@@ -1,17 +1,20 @@
+// Sidebar.jsx
 import React, { useState } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
-import { FaTrash } from "react-icons/fa";  // Roskakori-ikoni
+import { FaTrash } from "react-icons/fa";  
+import { AiOutlineClose } from "react-icons/ai";  
 import './Sidebar.css';
 
-function Sidebar() {
+function Sidebar({ setOverlayActive }) {
   const [expanded, setExpanded] = useState(false);
   const [projects, setProjects] = useState([
-    { name: 'Project 1', open: false, results: ['Result 1', 'Result 2'] },
-    { name: 'Project 2', open: false, results: ['Result 1'] },
-    { name: 'Project 3', open: false, results: ['Result 1', 'Result 2', 'Result 3'] }
+    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
+    { name: 'Dog show data', open: false, results: ['28042023'] },
+    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
   ]);
   const [newProjectName, setNewProjectName] = useState('');
-  const [hoveredProject, setHoveredProject] = useState(null);  // Seuraa, mikä projekti on hover-tilassa
+  const [hoveredProject, setHoveredProject] = useState(null);
+  const [selectedResult, setSelectedResult] = useState(null);
 
   const toggleSidebar = () => {
     setExpanded(!expanded);
@@ -48,6 +51,16 @@ function Sidebar() {
     }
   };
 
+  const openResultDetails = (projectIndex, result) => {
+    setSelectedResult({ projectIndex, result });
+    setOverlayActive(true); // Aktivoi overlayn
+  };
+
+  const closeResultDetails = () => {
+    setSelectedResult(null);
+    setOverlayActive(false); // Poistaa overlayn
+  };
+
   return (
     <div className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}>
       <button className="sidebar-toggle" onClick={toggleSidebar}>
@@ -65,9 +78,9 @@ function Sidebar() {
                 onMouseLeave={() => setHoveredProject(null)}
               >
                 <div className="project-header" onClick={() => toggleProject(index)}>
-                <span className="project-name">
+                  <span className="project-name">
                     {project.open ? '▴' : '▾'} {project.name}
-                </span>
+                  </span>
                   {hoveredProject === index && (
                     <FaTrash
                       className="delete-icon"
@@ -81,7 +94,11 @@ function Sidebar() {
                 {project.open && (
                   <div className="project-results">
                     {project.results.map((result, i) => (
-                      <div key={i} className="project-result">
+                      <div
+                        key={i}
+                        className={`project-result ${selectedResult?.result === result ? 'selected' : ''}`}
+                        onClick={() => openResultDetails(index, result)}
+                      >
                         {result}
                       </div>
                     ))}
@@ -101,6 +118,15 @@ function Sidebar() {
             />
             <button onClick={addProject} className="create-project-button">Save</button>
           </div>
+
+          {/* Overlay ja result-details ikkuna */}
+          {selectedResult && <div className="overlay" onClick={closeResultDetails}></div>}
+          {selectedResult && (
+            <div className={`result-details ${selectedResult ? 'show' : ''}`}>
+              <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
+              <h2>Analyze result</h2>
+            </div>
+          )}
         </>
       )}
     </div>
@@ -108,3 +134,4 @@ function Sidebar() {
 }
 
 export default Sidebar;
+

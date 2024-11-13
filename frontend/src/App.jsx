@@ -1,5 +1,6 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+// App.jsx
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';  
 import StartPage from './StartPage';
 import Classification from './Classification';
@@ -9,29 +10,30 @@ import Header from './Header';
 import Sidebar from './Sidebar'; 
 
 function App() {
+  const [overlayActive, setOverlayActive] = useState(false);
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${overlayActive ? 'overlay-active' : ''}`}>
       <Router>
         <Routes>
           {/* Starting view */}
           <Route path="/" element={<StartPage />} />
 
           {/* Views that have Header */}
-          <Route path="/app/*" element={<MainLayout />} />
+          <Route path="/app/*" element={<MainLayout setOverlayActive={setOverlayActive} />} />
         </Routes>
       </Router>
     </div>
   );
 }
 
-// MainLayout is responsible for ensuring that the Header is visible on all subpages.
-function MainLayout() {
+function MainLayout({ setOverlayActive }) {
   return (
     <div className="main-layout">
-      <Header />  {/* Header yläosassa */}
+      <Header />
       <div className="content-container">
-        <Sidebar /> {/* Sivupalkki vasemmalla */}
-        <div className="main-content"> {/* Pääsisältö oikealla */}
+        <Sidebar setOverlayActive={setOverlayActive} />
+        <div className="main-content"> {/* Tämä tummentuu, kun overlay on aktiivinen */}
           <Routes>
             <Route path="classification" element={<Classification />} />
             <Route path="projects" element={<Projects />} />
@@ -44,3 +46,4 @@ function MainLayout() {
 }
 
 export default App;
+

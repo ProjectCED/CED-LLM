@@ -40,3 +40,31 @@
   margin-left: 60px;
   height: 100%; /* Varmistaa, että main-content vie täyden tilan */
 }
+
+
+/* Tämä luo tumman kerroksen koko main-contentin päälle */
+.app-container.overlay-active .main-content {
+  position: relative;
+  z-index: 500; /* Varmistaa, että sisältö jää overlayn alle */
+  pointer-events: none; /* Estää klikkaukset */
+  height: 100%;
+}
+
+.app-container.overlay-active .main-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Tummentaa kaiken */
+  pointer-events: none; /* Estää klikkaukset */
+  z-index: 1000; /* Overlay on päällä mutta sisällön alla */
+}
+
+/* Tämä estää sisällön klikkaukset */
+.app-container.overlay-active .main-content.no-clicks {
+  pointer-events: none; /* Estää klikkaukset */
+}
+
+
