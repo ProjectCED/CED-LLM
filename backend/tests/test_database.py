@@ -223,35 +223,50 @@ class TestRemovePropertyFound:
         db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
         result_1 = db.remove_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
         result_2 = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_user_settings(self,db:Database):
         db.add_user_settings_node('alice')
         db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'Alice')
         result_1 = db.remove_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS)
         result_2 = db.lookup_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_project(self,db:Database):
         id = db.add_project_node()
         db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
         result_1 = db.remove_project_property(id, NodeProperties.Project.TEST_PASS)
         result_2 = db.lookup_project_property(id, NodeProperties.Project.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_blueprint(self,db:Database):
         id = db.add_blueprint_node()
         db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
         result_1 = db.remove_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
         result_2 = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_result_blueprint(self,db:Database):
         id = db.add_result_blueprint_node()
         db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
         result_1 = db.remove_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
         result_2 = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
 
 class TestRemovePropertyNotFound:
@@ -325,35 +340,50 @@ class TestDeleteNode:
         db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'foo')
         result_1 = db.delete_global_settings()
         result_2 = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_user_settings(self,db:Database):
         db.add_user_settings_node('alice')
         db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'foo')
         result_1 = db.delete_user_settings('alice')
         result_2 = db.lookup_user_settings_property(id, NodeProperties.UserSettings.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_project(self,db:Database):
         id = db.add_project_node()
         db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
         result_1 = db.delete_project(id)
         result_2 = db.lookup_project_property(id, NodeProperties.Project.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_blueprint(self,db:Database):
         id = db.add_blueprint_node()
         db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
         result_1 = db.delete_blueprint(id)
         result_2 = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
     def test_result_blueprint(self,db:Database):
         id = db.add_result_blueprint_node()
         db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
         result_1 = db.delete_result_blueprint(id)
         result_2 = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
-        assert result_1 == True and result_2 == None
+        assert (
+            result_1 == True 
+            and result_2 == None
+        )
 
 
 class TestDeleteNodeAdvanced:
@@ -400,7 +430,12 @@ class TestDeleteNodeAdvanced:
         result_3 = db.lookup_result_blueprint_property(id_result, NodeProperties.ResultBlueprint.TEST_PASS)
         result_4 = db.lookup_used_blueprint_property(id_used_blueprint, NodeProperties.Blueprint.TEST_PASS)
 
-        assert result_1 == None and result_2 == None and result_3 == None and result_4 == None
+        assert (
+            result_1 == None 
+            and result_2 == None 
+            and result_3 == None 
+            and result_4 == None
+        )
     
     def test_project(self,db:Database):
         """
@@ -438,7 +473,12 @@ class TestDeleteNodeAdvanced:
         result_3 = db.lookup_result_blueprint_property(id_result_2, NodeProperties.ResultBlueprint.TEST_PASS)
         result_4 = db.lookup_used_blueprint_property(id_used_blueprint_2, NodeProperties.Blueprint.TEST_PASS)
 
-        assert result_1 == None and result_2 == None and result_3 == None and result_4 == None
+        assert (
+            result_1 == None 
+            and result_2 == None 
+            and result_3 == None 
+            and result_4 == None
+        )
 
     def test_result_blueprint(self,db:Database):
         """
@@ -625,7 +665,12 @@ class TestNodeLookups:
 
         result = db.lookup_project_nodes()
 
-        assert result[0][0] != None and result[1][0] != None and result[0][1] == 'foo_1' and result[1][1] == 'foo_2'
+        assert (
+            result[0][0] != None 
+            and result[1][0] != None 
+            and result[0][1] == 'foo_1' 
+            and result[1][1] == 'foo_2'
+        )
 
     def test_lookup_blueprint_nodes(self,db:Database):
         id_1 = db.add_blueprint_node()
@@ -635,7 +680,12 @@ class TestNodeLookups:
 
         result = db.lookup_blueprint_nodes()
 
-        assert result[0][0] != None and result[1][0] != None and result[0][1] == 'foo_1' and result[1][1] == 'foo_2'
+        assert (
+            result[0][0] != None 
+            and result[1][0] != None 
+            and result[0][1] == 'foo_1' 
+            and result[1][1] == 'foo_2'
+        )
 
     def helper_datetime_checker(self,date_string):
         try:
