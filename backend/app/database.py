@@ -1260,7 +1260,7 @@ class Database(metaclass=DatabaseMeta):
                 - True when query succeeded.
                 - False when node doesn't exist.
         """ 
-        return self.__delete_node(self.__user_settings_type, self.__user_settings_id, id_value)
+        return self.__delete_node_with_connections(self.__user_settings_type, self.__user_settings_id, id_value)
     
 
     def get_user_settings_id_type(self):
