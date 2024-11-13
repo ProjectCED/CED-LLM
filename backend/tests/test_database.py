@@ -1,5 +1,6 @@
 import pytest
 from app.database import Database, NodeProperties
+from datetime import datetime
 
 
 @pytest.fixture(scope="module")
@@ -607,3 +608,58 @@ class TestRelationshipCreationBadToBad:
     def test_used_blueprint_result_blueprint(self,db:Database):
         result = db.connect_used_blueprint_to_result_blueprint('wrong_id', 'wrong_id')
         assert result == False
+
+
+class TestNodeLookups:
+    """Node lookups
+    
+    1. add nodes
+    2. add names or dates
+    check lookup nodes result
+    """
+    def test_lookup_project_nodes(self,db:Database):
+        id_1 = db.add_project_node()
+        db.set_project_property(id_1,NodeProperties.Project.NAME,'foo_1')
+        id_2 = db.add_project_node()
+        db.set_project_property(id_2,NodeProperties.Project.NAME,'foo_2')
+
+        result = db.lookup_project_nodes()
+
+        assert result[0][0] != None and result[1][0] != None and result[0][1] == 'foo_1' and result[1][1] == 'foo_2'
+
+    def test_lookup_blueprint_nodes(self,db:Database):
+        id_1 = db.add_blueprint_node()
+        db.set_blueprint_property(id_1,NodeProperties.Blueprint.NAME,'foo_1')
+        id_2 = db.add_blueprint_node()
+        db.set_blueprint_property(id_2,NodeProperties.Blueprint.NAME,'foo_2')
+
+        result = db.lookup_blueprint_nodes()
+
+        assert result[0][0] != None and result[1][0] != None and result[0][1] == 'foo_1' and result[1][1] == 'foo_2'
+
+    def helper_datetime_checker(self,date_string):
+        try:
+            print(datetime.fromisoformat(date_string))
+            return True
+        except:
+            return False
+
+    def test_lookup_result_blueprint_nodes(self,db:Database):
+        id = db.add_project_node()
+
+        id_1 = db.add_result_blueprint_node()
+        db.connect_result_blueprint_to_project(id_1,id)
+        id_2 = db.add_result_blueprint_node()
+        db.connect_result_blueprint_to_project(id_2,id)
+
+        result = db.lookup_result_blueprint_nodes(id)
+
+        assert (
+            result[0][0] != None 
+            and result[1][0] != None 
+            and self.helper_datetime_checker(result[0][1]) == True 
+            and self.helper_datetime_checker(result[1][1]) == True
+        )
+
+
+
