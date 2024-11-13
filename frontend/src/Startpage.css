@@ -3,7 +3,7 @@
   position: absolute;
   top: 2vh;
   left: 2vw;
-  font-size: 2.5rem; /* Skaalautuu suhteessa käyttäjän oletusfonttikokoon */
+  font-size: 2.5rem; 
   font-weight: bold;
   color: #dce1d3;
   font-family: Arial, sans-serif;
@@ -18,13 +18,13 @@
   align-items: center;
   color: #dce1d3;
   font-family: Arial, sans-serif;
-  padding: 35vh 5vw; /* Skaalautuva padding näytön koon mukaan */
+  padding: 35vh 5vw; 
 }
 
 /* Text container styling */
 .text-container {
   text-align: left;
-  font-size: 0.6rem; /* Käytetään suhteellista fonttikokoa */
+  font-size: 0.6rem; 
   margin-bottom: 2vh;
 }
 
@@ -54,7 +54,7 @@
   background-color: #117DB9;
 }
 
-/* Responsiiviset media queryt */
+/* Responsive media queries */
 @media (max-width: 768px) {
   .logo-text {
     font-size: 2rem;
