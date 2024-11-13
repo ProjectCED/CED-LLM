@@ -1,9 +1,9 @@
 /* Logo text styling */
 .logo-text {
   position: absolute;
-  top: 25px;
-  left: 25px;
-  font-size: 33px;
+  top: 2vh;
+  left: 2vw;
+  font-size: 2.5rem; /* Skaalautuu suhteessa käyttäjän oletusfonttikokoon */
   font-weight: bold;
   color: #dce1d3;
   font-family: Arial, sans-serif;
@@ -18,37 +18,85 @@
   align-items: center;
   color: #dce1d3;
   font-family: Arial, sans-serif;
-  padding-left: 200px;
-  padding-top: 160px;
-  }
-  
-  /* Text container styling */
-  .text-container {
-    text-align: left;
-    font-size: 10px;
-    margin-bottom: 10px;
-  }
-  
-  /* Button styling */
-  .get-started-btn {
-    align-items: flex-end;
-    background-color: #1B98E0; 
-    color: #dce1d3;
-    padding: 10x 15px;
-    font-size: 16px;
-    border-radius: 50px;
-    cursor: pointer;
- 
+  padding: 35vh 5vw; /* Skaalautuva padding näytön koon mukaan */
+}
+
+/* Text container styling */
+.text-container {
+  text-align: left;
+  font-size: 0.6rem; /* Käytetään suhteellista fonttikokoa */
+  margin-bottom: 2vh;
+}
+
+/* Button styling */
+.get-started-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1B98E0;
+  color: #dce1d3;
+  padding: 0.7rem 2rem;
+  font-size: 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Arrow icon styling */
+.arrow-icon {
+  color: #dce1d3;
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+/* Hover effect */
+.get-started-btn:hover {
+  background-color: #117DB9;
+}
+
+/* Responsiiviset media queryt */
+@media (max-width: 768px) {
+  .logo-text {
+    font-size: 2rem;
+    top: 3vh;
+    left: 3vw;
   }
 
-  /* Arrow icon styling */
+  .start-container {
+    padding: 5vh 2vw;
+  }
+
+  .text-container {
+    font-size: 1rem;
+  }
+
+  .get-started-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
   .arrow-icon {
-    color: #dce1d3;
-    font-size: 15px;
-    margin-left: 5px; 
-    align-items: center;
+    font-size: 1rem;
   }
-  
-  .get-started-btn:hover {
-    background-color: #117DB9;
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 1.5rem;
+    top: 4vh;
+    left: 4vw;
   }
+
+  .text-container {
+    font-size: 0.9rem;
+  }
+
+  .get-started-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .arrow-icon {
+    font-size: 0.8rem;
+  }
+}
