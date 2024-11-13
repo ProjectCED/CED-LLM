@@ -405,8 +405,8 @@ class TestDeleteNodeAdvanced:
         """
         1. create project
         2. create blueprint
-        3. create result
-        4. create used_blueprint
+        3. create 2 results
+        4. create used_blueprint for each result
         5. delete project
         check if any is found(result,used_blueprint)
         """
@@ -416,19 +416,28 @@ class TestDeleteNodeAdvanced:
         db.set_blueprint_property(id_blueprint, NodeProperties.Blueprint.TEST_PASS, 'foo')
         db.connect_blueprint_to_user_settings(id_blueprint,'alice')
 
-        id_result = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id_result, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        db.connect_result_blueprint_to_project(id_result,id_project)
+        id_result_1 = db.add_result_blueprint_node()
+        db.set_result_blueprint_property(id_result_1, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        db.connect_result_blueprint_to_project(id_result_1,id_project)
 
-        id_used_blueprint = db.copy_to_used_blueprint_node(id_blueprint)
-        db.connect_used_blueprint_to_result_blueprint(id_used_blueprint,id_result)
+        id_used_blueprint_1 = db.copy_to_used_blueprint_node(id_blueprint)
+        db.connect_used_blueprint_to_result_blueprint(id_used_blueprint_1,id_result_1)
+
+        id_result_2 = db.add_result_blueprint_node()
+        db.set_result_blueprint_property(id_result_2, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        db.connect_result_blueprint_to_project(id_result_2,id_project)
+
+        id_used_blueprint_2 = db.copy_to_used_blueprint_node(id_blueprint)
+        db.connect_used_blueprint_to_result_blueprint(id_used_blueprint_2,id_result_2)
 
         db.delete_project(id_project)
 
-        result_1 = db.lookup_result_blueprint_property(id_result, NodeProperties.ResultBlueprint.TEST_PASS)
-        result_2 = db.lookup_used_blueprint_property(id_used_blueprint, NodeProperties.Blueprint.TEST_PASS)
+        result_1 = db.lookup_result_blueprint_property(id_result_1, NodeProperties.ResultBlueprint.TEST_PASS)
+        result_2 = db.lookup_used_blueprint_property(id_used_blueprint_1, NodeProperties.Blueprint.TEST_PASS)
+        result_3 = db.lookup_result_blueprint_property(id_result_2, NodeProperties.ResultBlueprint.TEST_PASS)
+        result_4 = db.lookup_used_blueprint_property(id_used_blueprint_2, NodeProperties.Blueprint.TEST_PASS)
 
-        assert result_1 == None and result_2 == None
+        assert result_1 == None and result_2 == None and result_3 == None and result_4 == None
 
     def test_result_blueprint(self,db:Database):
         """
