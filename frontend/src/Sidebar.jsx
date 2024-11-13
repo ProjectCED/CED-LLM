@@ -1,4 +1,3 @@
-// Sidebar.jsx
 import React, { useState } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { FaTrash } from "react-icons/fa";  
@@ -18,6 +17,9 @@ function Sidebar({ setOverlayActive }) {
 
   const toggleSidebar = () => {
     setExpanded(!expanded);
+    if (expanded) {
+        closeResultDetails();
+      }
   };
 
   const toggleProject = (index) => {
@@ -124,7 +126,27 @@ function Sidebar({ setOverlayActive }) {
           {selectedResult && (
             <div className={`result-details ${selectedResult ? 'show' : ''}`}>
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
-              <h2>Analyze result</h2>
+              <h2>Analyze Result</h2>
+
+              <h3>Header 1</h3>
+              <p>
+                Text text text text text text text text text text text text text text text text text.
+              </p>
+
+              <h3>Header 2</h3>
+              <p>
+                Text text text text text text text text text text text text text text text text text.
+              </p>
+
+              <h3>Header 3</h3>
+              <p>
+                Text text text text text text text text text text text text text text text text text.
+              </p>
+
+              <h3>Header 4</h3>
+              <p>
+                Text text text text text text text text text text text text text text text text text.
+              </p>
             </div>
           )}
         </>
@@ -134,4 +156,3 @@ function Sidebar({ setOverlayActive }) {
 }
 
 export default Sidebar;
-

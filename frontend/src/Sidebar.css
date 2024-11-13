@@ -183,13 +183,13 @@
 /* Result details box */
 .result-details {
     position: absolute;
-    top: 50%;  /* Align the result details box to the top of the page */
+    top: 40%;  /* Align the result details box to the top of the page */
     left: 240px;  /* Start right next to the expanded sidebar */
-    width: 1300px; /* Leveämpi laatikko */
-    height: 90vh;  
+    width: 1000px; /* Leveämpi laatikko */
+    height: 60vh;  
     transform: translateY(-50%);
     background-color: #AEAEAE;
-    color: #2B3034;
+    color: #0b0c0c;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7); /* Lisää voimakas varjo */
     opacity: 0; /* Piilottaa elementin aluksi */
@@ -232,3 +232,26 @@
     color: white;
     font-weight: bold;
 }
+
+/* Header style within the result details */
+.result-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #2B3034;
+  }
+
+/* Header style within the result details */
+.result-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 100px;
+    margin-top: 30px;
+    color: #2B3034;
+  }
+
+  /* Text paragraph style within the result details */
+.result-details p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #2B3034;
+  }
