@@ -1,8 +1,7 @@
-// Sidebar.jsx
 import React, { useState } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
-import { FaTrash } from "react-icons/fa";  
-import { AiOutlineClose } from "react-icons/ai";  
+import { FaTrash } from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
 import './Sidebar.css';
 
 function Sidebar({ setOverlayActive }) {
@@ -14,10 +13,14 @@ function Sidebar({ setOverlayActive }) {
   ]);
   const [newProjectName, setNewProjectName] = useState('');
   const [hoveredProject, setHoveredProject] = useState(null);
+  const [hoveredResult, setHoveredResult] = useState({ projectIndex: null, resultIndex: null });
   const [selectedResult, setSelectedResult] = useState(null);
 
   const toggleSidebar = () => {
     setExpanded(!expanded);
+    if (expanded) {
+      closeResultDetails();
+    }
   };
 
   const toggleProject = (index) => {
@@ -51,14 +54,24 @@ function Sidebar({ setOverlayActive }) {
     }
   };
 
+  const deleteResult = (projectIndex, resultIndex) => {
+    setProjects(prevProjects =>
+      prevProjects.map((project, i) =>
+        i === projectIndex
+          ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
+          : project
+      )
+    );
+  };
+
   const openResultDetails = (projectIndex, result) => {
     setSelectedResult({ projectIndex, result });
-    setOverlayActive(true); // Aktivoi overlayn
+    setOverlayActive(true);
   };
 
   const closeResultDetails = () => {
     setSelectedResult(null);
-    setOverlayActive(false); // Poistaa overlayn
+    setOverlayActive(false);
   };
 
   return (
@@ -66,40 +79,52 @@ function Sidebar({ setOverlayActive }) {
       <button className="sidebar-toggle" onClick={toggleSidebar}>
         {expanded ? <TbLayoutSidebarLeftCollapse size={24} /> : <TbLayoutSidebarLeftExpand size={24} />}
       </button>
-      
+
       {expanded && (
         <>
           <h2 className="projects-title">Projects</h2>
           <div className="project-list">
-            {projects.map((project, index) => (
-              <div key={index}
+            {projects.map((project, projectIndex) => (
+              <div
+                key={projectIndex}
                 className="project-item"
-                onMouseEnter={() => setHoveredProject(index)}
+                onMouseEnter={() => setHoveredProject(projectIndex)}
                 onMouseLeave={() => setHoveredProject(null)}
               >
-                <div className="project-header" onClick={() => toggleProject(index)}>
+                <div className="project-header" onClick={() => toggleProject(projectIndex)}>
                   <span className="project-name">
                     {project.open ? '▴' : '▾'} {project.name}
                   </span>
-                  {hoveredProject === index && (
+                  {hoveredProject === projectIndex && (
                     <FaTrash
                       className="delete-icon"
                       onClick={(e) => {
-                        e.stopPropagation();  // Estää klikkausta avaamasta projektia
-                        deleteProject(index);
+                        e.stopPropagation();
+                        deleteProject(projectIndex);
                       }}
                     />
                   )}
                 </div>
                 {project.open && (
                   <div className="project-results">
-                    {project.results.map((result, i) => (
+                    {project.results.map((result, resultIndex) => (
                       <div
-                        key={i}
+                        key={resultIndex}
                         className={`project-result ${selectedResult?.result === result ? 'selected' : ''}`}
-                        onClick={() => openResultDetails(index, result)}
+                        onMouseEnter={() => setHoveredResult({ projectIndex, resultIndex })}
+                        onMouseLeave={() => setHoveredResult({ projectIndex: null, resultIndex: null })}
+                        onClick={() => openResultDetails(projectIndex, result)}
                       >
                         {result}
+                        {hoveredResult.projectIndex === projectIndex && hoveredResult.resultIndex === resultIndex && (
+                          <FaTrash
+                            className="delete-icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteResult(projectIndex, resultIndex);
+                            }}
+                          />
+                        )}
                       </div>
                     ))}
                   </div>
@@ -119,12 +144,31 @@ function Sidebar({ setOverlayActive }) {
             <button onClick={addProject} className="create-project-button">Save</button>
           </div>
 
-          {/* Overlay ja result-details ikkuna */}
           {selectedResult && <div className="overlay" onClick={closeResultDetails}></div>}
           {selectedResult && (
             <div className={`result-details ${selectedResult ? 'show' : ''}`}>
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
-              <h2>Analyze result</h2>
+              <h2>Analyze Result</h2>
+
+              <h3>Header 1</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
+
+              <h3>Header 2</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
+
+              <h3>Header 3</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
+
+              <h3>Header 4</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
             </div>
           )}
         </>
@@ -134,4 +178,5 @@ function Sidebar({ setOverlayActive }) {
 }
 
 export default Sidebar;
+
 

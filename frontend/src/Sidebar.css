@@ -14,12 +14,12 @@
     transition: width 0.3s ease;
     z-index: 1000;
 }
-  
+
 /* Sidebar expanded state */
 .sidebar.expanded {
     width: 240px; 
 }
-  
+
 /* Sidebar toggle button styles */
 .sidebar-toggle {
     background: none;
@@ -31,18 +31,18 @@
     padding: 5px; 
     align-self: center; 
 }
-  
+
 /* Project list container styles */
 .project-list {
     flex-grow: 1;
     overflow-y: auto;
     max-height: calc(100vh - 250px);
-    padding-left: 0px; /* Lisää vähemmän täyttöä vasemmalle */
+    padding-left: 0px;
     padding-right: 5px;
-    margin-left: 0px; /* Varmistaa, ettei margin vaikuta */
+    margin-left: 0px;
     width: 220px;
 }
-  
+
 /* Styles for individual project list items */
 .project-list a {
     color: white;
@@ -50,7 +50,7 @@
     padding: 5px 10px;
     border-radius: 4px;
 }
-  
+
 /* Hover effect for project list items */
 .project-list a:hover {
     background-color: #555;
@@ -73,58 +73,70 @@
     color: white;
     display: flex;
     align-items: center;
-    position: relative; /* Mahdollistaa absoluuttisesti sijoitetun ikonin */
-    width: 100%; /* Varmistaa, että koko projektiotsikon leveys on käytettävissä */
+    position: relative;
+    width: 100%;
 }
 
 /* Projektin nimilaatikko */
 .project-name {
     display: inline-block;
-    white-space: normal; /* Sallii tekstin rivittyä */
+    white-space: normal;
     overflow: hidden;
-    word-wrap: break-word; /* Sallii rivittämisen, jos sana ei mahdu */
-    word-break: break-word; /* Pakottaa sanan katkeamaan, jos se ylittää rajan */
-    padding-right: 15px; /* Jättää tilaa roskakorille */
+    word-wrap: break-word;
+    word-break: break-word;
+    padding-right: 15px;
     text-align: left;
 }
-  
+
 /* Hover effect for project headers */
 .project-header:hover {
     background-color: #555;
 }
 
+/* Roskakorin sijainti project- ja result-otsikoiden oikeassa reunassa */
 .delete-icon {
-    position: absolute; /* Sijoittaa roskakorin ikonin oikealle */
-    right: 10px; /* Asettaa etäisyyden oikeasta reunasta */
+    position: absolute;
+    right: 10px;
     cursor: pointer;
     color: white;
     visibility: hidden;
-    opacity: 0.5; /* Hieman läpinäkyvä aluksi */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Siirtymäefekti läpinäkyvyydelle ja koon muutokselle */
+    opacity: 0.5;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.project-item:hover .delete-icon {
-    visibility: visible; /* Näkyy hover-tilassa */
+/* Näytä roskakuvake projektien ja resultien hover-tilassa */
+.project-header:hover > .delete-icon,
+.project-result:hover > .delete-icon {
+    visibility: visible;
 }
 
 /* Poistaa läpinäkyvyyden ja suurentaa ikonia, kun ollaan roskakorin päällä */
 .delete-icon:hover {
-    opacity: 1; /* Täysin näkyvä */
-    transform: scale(1.2); /* Kasvattaa kokoa hieman */
+    opacity: 1;
+    transform: scale(1.2);
 }
-
 
 /* Project result section styles */
 .project-results {
     color: #ddd;
     margin-left: 20px;
 }
-  
-/* Individual project result item styling */
+
+/* Resultille käytettävä wrapper, jolla roskakuvake saadaan sijoitettua yhtenäisesti */
 .project-result {
+    position: relative;
+    padding-right: 30px; /* Jättää tilaa roskakorille oikealle */
+    cursor: pointer;
     padding: 3px 0;
 }
-  
+
+.project-result:hover,
+.project-result.selected {
+    background-color: #666;
+    color: white;
+    font-weight: bold;
+}
+
 /* "Save" button styles */
 .create-project-button {
     background-color: #3498db; 
@@ -138,7 +150,7 @@
     font-size: 16px;
     margin-bottom: 30px;
 }
-  
+
 /* Hover effect for the "Save" button */
 .create-project-button:hover {
     background-color: #005f99;
@@ -152,9 +164,8 @@
     border-radius: 3px;
     border: 1px solid #ccc;
     display: block;
-    
 }
-  
+
 /* Placeholder text styling inside the input */
 .project-name-input::placeholder {
     color: #aaa;
@@ -183,25 +194,23 @@
 /* Result details box */
 .result-details {
     position: absolute;
-    top: 50%;  /* Align the result details box to the top of the page */
-    left: 240px;  /* Start right next to the expanded sidebar */
-    width: 1300px; /* Leveämpi laatikko */
-    height: 90vh;  
+    top: 50%;
+    left: 240px;
+    width: 1000px;
+    height: 60vh;  
     transform: translateY(-50%);
     background-color: #AEAEAE;
-    color: #2B3034;
+    color: #0b0c0c;
     padding: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7); /* Lisää voimakas varjo */
-    opacity: 0; /* Piilottaa elementin aluksi */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    opacity: 0;
     z-index: 1100;
-    
 }
 
 /* Show result details when there is a selected result */
 .result-details.show {
-    opacity: 1; /* Tee laatikko näkyväksi */
+    opacity: 1;
 }
-
 
 /* Result details close button */
 .close-icon {
@@ -210,25 +219,34 @@
     right: 10px;
     cursor: pointer;
     color: #2B3034;
-    font-size: 30px; /* Suurempi koko */
-    opacity: 0.7; /* Hieman läpinäkyvä */
-    transition: transform 0.3s ease, opacity 0.3s ease; /* Lisää animaatio sulkemisen aikana */
+    font-size: 30px;
+    opacity: 0.7;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .close-icon:hover {
-    opacity: 1; /* Täysin näkyvä hover-tilassa */
-    transform: scale(1.2); /* Kasvattaa kokoa hoverissa */
+    opacity: 1;
+    transform: scale(1.2);
 }
 
-/* Result list item styling */
-.project-result {
-    padding: 3px 0;
-    cursor: pointer;
+/* Header style within the result details */
+.result-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #2B3034;
 }
 
-.project-result:hover,
-.project-result.selected {
-    background-color: #666;
-    color: white;
-    font-weight: bold;
+.result-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 100px;
+    margin-top: 30px;
+    color: #2B3034;
+}
+
+/* Text paragraph style within the result details */
+.result-details p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #2B3034;
 }

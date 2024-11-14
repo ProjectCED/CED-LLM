@@ -3,8 +3,8 @@
   width: 100%;
   margin: 0 auto;
   text-align: center;
-  background-color: #13293D; 
-  font-family: Arial, sans-serif; 
+  background-color: #13293D;
+  font-family: Arial, sans-serif;
 }
 
 /* Container for the app */
@@ -18,6 +18,19 @@
   background-position: center;
 }
 
+/* Overlay for darkening the entire viewport */
+.app-container.overlay-active::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+  z-index: 999; /* Ensures overlay is on top */
+  pointer-events: none; /* Prevents clicks on overlay */
+}
+
 .main-layout {
   display: flex;
   flex-direction: column;
@@ -27,8 +40,8 @@
 .content-container {
   display: flex;
   flex: 1;
-  height: calc(100vh - 60px); /* Asettaa korkeuden jäljelle jäävästä tilasta headerin alla */
-  overflow: hidden; /* Rajoittaa skrollauksen vain main-content-alueelle */
+  height: calc(100vh - 60px); /* Allocates remaining space under the header */
+  overflow: hidden; /* Restricts scroll to main-content area */
 }
 
 /* Adds top padding to ensure content is not hidden under the fixed navbar */
@@ -36,35 +49,14 @@
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  padding-top: 100px; 
+  padding-top: 100px;
   margin-left: 60px;
-  height: 100%; /* Varmistaa, että main-content vie täyden tilan */
+  height: 100%; /* Ensures main-content occupies full space */
 }
 
-
-/* Tämä luo tumman kerroksen koko main-contentin päälle */
+/* Ensures main-content is below overlay */
 .app-container.overlay-active .main-content {
   position: relative;
-  z-index: 500; /* Varmistaa, että sisältö jää overlayn alle */
-  pointer-events: none; /* Estää klikkaukset */
-  height: 100%;
+  z-index: 500; /* Ensures content is under overlay */
+  pointer-events: none; /* Disables clicks */
 }
-
-.app-container.overlay-active .main-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Tummentaa kaiken */
-  pointer-events: none; /* Estää klikkaukset */
-  z-index: 1000; /* Overlay on päällä mutta sisällön alla */
-}
-
-/* Tämä estää sisällön klikkaukset */
-.app-container.overlay-active .main-content.no-clicks {
-  pointer-events: none; /* Estää klikkaukset */
-}
-
-
