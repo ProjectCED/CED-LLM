@@ -3,7 +3,7 @@
   position: absolute;
   top: 2vh;
   left: 2vw;
-  font-size: 2.5rem;
+  font-size: 4rem;
   font-weight: bold;
   color: #dce1d3;
   font-family: Arial, sans-serif;
@@ -24,7 +24,7 @@
 /* Text container styling */
 .text-container {
   text-align: left;
-  font-size: 0.6rem; 
+  font-size: 1.5rem; 
   margin-bottom: 2vh;
 }
 
@@ -36,7 +36,7 @@
   background-color: #1B98E0;
   color: #dce1d3;
   padding: 0.7rem 2rem;
-  font-size: 1rem;
+  font-size: 2rem;
   border-radius: 50px;
   cursor: pointer;
   transition: background-color 0.3s ease;
