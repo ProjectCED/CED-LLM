@@ -152,22 +152,22 @@ function Sidebar({ setOverlayActive }) {
 
               <h3>Header 1</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Text text text text text text text text text text text text text text text text text.
               </p>
 
               <h3>Header 2</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Text text text text text text text text text text text text text text text text text.
               </p>
 
               <h3>Header 3</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Text text text text text text text text text text text text text text text text text.
               </p>
 
               <h3>Header 4</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Text text text text text text text text text text text text text text text text text.
               </p>
             </div>
           )}
