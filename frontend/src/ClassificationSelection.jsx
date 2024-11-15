@@ -7,15 +7,22 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   // selected blueprint and custom input text
   const [localSelectedClassification, setLocalSelectedClassification] = useState(selectedClassification || '');
   const [selectedBlueprint, setSelectedBlueprint] = useState('');
+  const [blueprints, setBlueprints] = useState([]);
   const [customText, setCustomText] = useState('');
+
+  const getBlueprints = async () => {
+    const response = await fetch('http://127.0.0.1:5000/get_blueprints', {
+      method: 'GET'
+    }); 
+    const data = await response.json();
+    setBlueprints(data);
+  };
 
   // Update localSelectedClassification if selectedClassification prop changes
   useEffect(() => {
     setLocalSelectedClassification(selectedClassification);
+    getBlueprints();
   }, [selectedClassification]);
-
-  // Array of blueprint options available for selection
-  const blueprints = ['Blueprint 1', 'Blueprint 2', 'Blueprint 3'];
 
   // Handles classification button click
   const handleButtonClick = (classification) => {

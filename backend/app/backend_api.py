@@ -1,13 +1,16 @@
-from flask import Flask, jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request
 from flask_cors import CORS
 from app.api_handler import ApiHandler
+from app.database import Database
 import os
 
 main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
+database = Database()
 
 CORS(main)  # Allows connections between domains
 
+# File management
 @main.route('/analyze', methods=['POST']) 
 def analyze():
     file = request.files['file']
@@ -56,6 +59,13 @@ def analyze_file():
     
 
     return jsonify(results)
+
+# Database handling
+@main.route('/get_blueprints', methods=['GET'])
+def get_blueprints():
+    blueprints = database.lookup_blueprint_nodes()
+    names = [blueprint[1] for blueprint in blueprints]
+    return jsonify(names)
 
 if __name__ == '__main__':
     main.run(debug=True)
