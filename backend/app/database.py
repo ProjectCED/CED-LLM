@@ -137,7 +137,6 @@ class Database(metaclass=DatabaseMeta):
         
         self.__project_type = 'Project'
         self.__project_id = 'id'
-        self.__project_exclusion = ['FAVORITED_IN'] # exclusion relationships for deletion
         
         self.__result_blueprint_type = 'ResultBlueprint'
         self.__result_blueprint_id = 'id'
@@ -173,6 +172,8 @@ class Database(metaclass=DatabaseMeta):
         self.__connect_used_blueprint_result_blueprint = 'USED_IN_ANALYSIS'
         self.__connect_used_dataset_used_data_model = 'USED_FOR_TRAINING'
         self.__connect_used_dataset_used_analyze_model = 'USED_FOR_TRAINING'
+        self.__connect_project_user_settings = 'OWNED_BY'
+        self.__connect_blueprint_user_settings = 'OWNED_BY'
 
 
     def debug_clear_all(self):
@@ -421,12 +422,12 @@ class Database(metaclass=DatabaseMeta):
             raise RuntimeError( "Neo4j lookup_nodes() query failed: " + error_string )
         
         
-    def __delete_node_with_connections(self, type, id_type, id_value, exclude_relationships = None):
+    def __delete_node_with_connections(self, label, id_type, id_value, exclude_relationships = None):
         """
         Delete node and all related nodes with incoming relationships 0..n deep. Possible to exclude relationships.
 
         Args:
-            type (string): Node label
+            label (string): Node label
             id_type (string): Node id(property)
             id_value (string): Value for the id
             exclude_relationships (string or list[string], optional): Relationships to exclude from deletion
@@ -438,18 +439,19 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             bool:
                 - True when query succeeded.
-                - False if node exists.
+                - False if node doesn't exists.
         """
         # check if node exists
-        if not self.__does_node_exist(type, id_type, id_value):
+        if not self.__does_node_exist(label, id_type, id_value):
             return False
 
         id_value = str(id_value)
 
         # Supporting: None, string list, single string
+        # TODO: something wrong here if trying to use exclusion
         if exclude_relationships == None:
             query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) "
+                "MATCH (n:" + label + " {" + id_type + ": '" + id_value + "'}) <- [*0..] - (d) "
                 "DETACH DELETE n "
                 "WITH DISTINCT d "
                 "DETACH DELETE d"
@@ -457,7 +459,7 @@ class Database(metaclass=DatabaseMeta):
         elif isinstance(exclude_relationships,list) and all(isinstance(item,str) for item in list):
             exclude_relationships = "','".join(exclude_relationships)
             query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
+                "MATCH (n:" + label + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
                 "WHERE NONE ( rel IN r WHERE type(rel) IN ['"+ exclude_relationships + "']) "
                 "DETACH DELETE n "
                 "WITH DISTINCT d "
@@ -465,7 +467,7 @@ class Database(metaclass=DatabaseMeta):
             )
         elif isinstance(exclude_relationships,str):
             query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
+                "MATCH (n:" + label + " {" + id_type + ": '" + id_value + "'}) <- [r*0..] - (d) "
                 "WHERE NONE ( rel IN r WHERE type(rel) = '"+ exclude_relationships + "') "
                 "DETACH DELETE n "
                 "WITH DISTINCT d "
@@ -1015,6 +1017,42 @@ class Database(metaclass=DatabaseMeta):
                 - False when either of the nodes doesn't exist.
         """
         return self.__connect_with_relationship(self.__used_dataset_type, self.__used_dataset_id, used_dataset_id_value, self.__used_analyze_model_type, self.__used_analyze_model_id, used_analyze_model_id_value, self.__connect_used_dataset_used_analyze_model)
+    
+
+    def connect_project_to_user_settings(self, project_id_value, user_settings_id_value):
+        """
+        Connect Project to UserSettings
+        Args:
+            project_id_value (string): Value for the Project id
+            user_settings_id_value (string): Value for the user_settings id
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
+        """
+        return self.__connect_with_relationship(self.__project_type, self.__project_id, project_id_value, self.__user_settings_type, self.__user_settings_id, user_settings_id_value, self.__connect_project_user_settings)
+
+
+    def connect_blueprint_to_user_settings(self, blueprint_id_value, user_settings_id_value):
+        """
+        Connect Blueprint to UserSettings
+        Args:
+            blueprint_id_value (string): Value for the Blueprint id
+            user_settings_id_value (string): Value for the user_settings id
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
+        """
+        return self.__connect_with_relationship(self.__blueprint_type, self.__blueprint_id, blueprint_id_value, self.__user_settings_type, self.__user_settings_id, user_settings_id_value, self.__connect_blueprint_user_settings)
 
     
     ### Global settings
@@ -1222,7 +1260,7 @@ class Database(metaclass=DatabaseMeta):
                 - True when query succeeded.
                 - False when node doesn't exist.
         """ 
-        return self.__delete_node(self.__user_settings_type, self.__user_settings_id, id_value)
+        return self.__delete_node_with_connections(self.__user_settings_type, self.__user_settings_id, id_value)
     
 
     def get_user_settings_id_type(self):
@@ -1341,7 +1379,7 @@ class Database(metaclass=DatabaseMeta):
                 - True when query succeeded.
                 - False when node doesn't exist.
         """ 
-        return self.__delete_node_with_connections(self.__project_type, self.__project_id, id_value, self.__project_exclusion)
+        return self.__delete_node_with_connections(self.__project_type, self.__project_id, id_value)
     
 
     def get_project_id_type(self):
@@ -2050,9 +2088,19 @@ class Database(metaclass=DatabaseMeta):
     
     def add_result_blueprint_node(self):
         """
-        Made to be similar to add_project_node()
+        Create Result-blueprint node. Also adding property DATETIME for it.
+        
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists. 
         """
-        return self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+        id = self.__add_node(self.__result_blueprint_type, self.__result_blueprint_id)
+        self.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.DATETIME, datetime.now().isoformat())
+        return id
 
     def set_result_blueprint_property(self, id_value, property_name: NodeProperties.ResultBlueprint, new_data):
         """
