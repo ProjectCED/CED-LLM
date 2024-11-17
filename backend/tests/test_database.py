@@ -2,6 +2,7 @@ import pytest
 from app.database import Database, NodeProperties
 from datetime import datetime
 
+pytestmark = pytest.mark.database
 
 @pytest.fixture(scope="module")
 def db():
@@ -33,7 +34,6 @@ class TestAddNode:
     1. create node
     check returned id-string
     """
-
     def test_global_settings(self,db:Database):
         result = db.add_global_settings_node()
         assert result == 'Global'
