@@ -50,6 +50,7 @@ class NodeProperties:
         NAME = "name"
         DESCRIPTION = "description"
         QUESTIONS = "questions"
+        DATETIME = "datetime"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -69,6 +70,7 @@ class NodeProperties:
         # Project
         # example FOO = "foo"
         NAME = "name"
+        DATETIME = "datetime"
         
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -1278,7 +1280,7 @@ class Database(metaclass=DatabaseMeta):
     ### Project
     def add_project_node(self):
         """
-        Create a Project node.
+        Create a Project node. Also set DATETIME as creation time.
 
         Raises:
             RuntimeError: If database query error.
@@ -1288,7 +1290,11 @@ class Database(metaclass=DatabaseMeta):
                 - string containing ID value for the created node.
                 - None if node already exists.
         """        
-        return self.__add_node(self.__project_type, self.__project_id)
+
+        id = self.__add_node(self.__project_type, self.__project_id)
+        self.set_project_property(id, NodeProperties.Project.DATETIME, datetime.now().isoformat())
+
+        return id
 
 
     def set_project_property(self, id_value, property_name: NodeProperties.Project, new_data):
@@ -1631,7 +1637,7 @@ class Database(metaclass=DatabaseMeta):
     ### Blueprint
     def add_blueprint_node(self):
         """
-        Create a Blueprint node.
+        Create a Blueprint node. Also set DATETIME as creation time.
         
         Raises:
             RuntimeError: If database query error.
@@ -1641,7 +1647,9 @@ class Database(metaclass=DatabaseMeta):
                 - string containing ID value for the created node.
                 - None if node already exists.
         """
-        return self.__add_node(self.__blueprint_type, self.__blueprint_id)
+        id = self.__add_node(self.__blueprint_type, self.__blueprint_id)
+        self.set_project_property(id, NodeProperties.Project.DATETIME, datetime.now().isoformat())
+        return id
 
 
     def set_blueprint_property(self, id_value, property_name: NodeProperties.DataModel, new_data):
@@ -2088,7 +2096,7 @@ class Database(metaclass=DatabaseMeta):
     
     def add_result_blueprint_node(self):
         """
-        Create Result-blueprint node. Also adding property DATETIME for it.
+        Create Result-blueprint node. Also set DATETIME as creation time.
         
         Raises:
             RuntimeError: If database query error.
