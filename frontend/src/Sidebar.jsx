@@ -5,7 +5,10 @@ import { AiOutlineClose } from "react-icons/ai";
 import './Sidebar.css';
 
 function Sidebar({ setOverlayActive }) {
+
+  // State to manage sidebar expansion
   const [expanded, setExpanded] = useState(false);
+  // State for project list, with each project containing results
   const [projects, setProjects] = useState([
     { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
     { name: 'Dog show data', open: false, results: ['28042023'] },
@@ -16,6 +19,7 @@ function Sidebar({ setOverlayActive }) {
   const [hoveredResult, setHoveredResult] = useState({ projectIndex: null, resultIndex: null });
   const [selectedResult, setSelectedResult] = useState(null);
 
+  // Toggles sidebar between expanded and collapsed states
   const toggleSidebar = () => {
     setExpanded(!expanded);
     if (expanded) {
@@ -23,6 +27,7 @@ function Sidebar({ setOverlayActive }) {
     }
   };
 
+  // Toggles a project's open/closed state
   const toggleProject = (index) => {
     setProjects(prevProjects =>
       prevProjects.map((project, i) =>
@@ -31,6 +36,7 @@ function Sidebar({ setOverlayActive }) {
     );
   };
 
+  // Adds a new project to the project list
   const addProject = () => {
     if (newProjectName.trim()) {
       const newProject = {
@@ -45,6 +51,7 @@ function Sidebar({ setOverlayActive }) {
     }
   };
 
+  // Deletes a project from the list
   const deleteProject = (index) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete the project and lose all its results?"
@@ -54,6 +61,7 @@ function Sidebar({ setOverlayActive }) {
     }
   };
 
+  // Deletes a specific result from a project
   const deleteResult = (projectIndex, resultIndex) => {
     setProjects(prevProjects =>
       prevProjects.map((project, i) =>
@@ -64,11 +72,13 @@ function Sidebar({ setOverlayActive }) {
     );
   };
 
+  // Opens detailed view for a specific result
   const openResultDetails = (projectIndex, result) => {
     setSelectedResult({ projectIndex, result });
     setOverlayActive(true);
   };
 
+  // Closes the detailed view
   const closeResultDetails = () => {
     setSelectedResult(null);
     setOverlayActive(false);
@@ -178,5 +188,3 @@ function Sidebar({ setOverlayActive }) {
 }
 
 export default Sidebar;
-
-

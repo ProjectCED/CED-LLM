@@ -78,7 +78,7 @@
     width: 100%;
 }
 
-/* Projektin nimilaatikko */
+/* Project name box */
 .project-name {
     display: inline-block;
     white-space: normal;
@@ -94,7 +94,7 @@
     background-color: #555;
 }
 
-/* Roskakorin sijainti project- ja result-otsikoiden oikeassa reunassa */
+/* Trash icon positioning at the right edge of project and result headers */
 .delete-icon {
     position: absolute;
     right: 10px;
@@ -105,13 +105,13 @@
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Näytä roskakuvake projektien ja resultien hover-tilassa */
+/* Show the trash icon on hover for projects and results */
 .project-header:hover > .delete-icon,
 .project-result:hover > .delete-icon {
     visibility: visible;
 }
 
-/* Poistaa läpinäkyvyyden ja suurentaa ikonia, kun ollaan roskakorin päällä */
+/* Remove transparency and enlarge the icon when hovering over the trash icon */
 .delete-icon:hover {
     opacity: 1;
     transform: scale(1.2);
@@ -123,10 +123,10 @@
     margin-left: 20px;
 }
 
-/* Resultille käytettävä wrapper, jolla roskakuvake saadaan sijoitettua yhtenäisesti */
+/* Wrapper for results to position the trash icon consistently */
 .project-result {
     position: relative;
-    padding-right: 30px; /* Jättää tilaa roskakorille oikealle */
+    padding-right: 30px; 
     cursor: pointer;
     padding: 3px 0;
 }
