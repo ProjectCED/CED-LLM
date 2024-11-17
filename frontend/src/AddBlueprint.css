@@ -44,7 +44,7 @@ input[type="text"],
 
 /* Container styling for the form */
 .new-blueprint-form {
-    background-color: #13293D;
+    background-color: #1a334a;
     border-radius: 8px;
     padding: 20px;
     width: 1000px;
@@ -121,9 +121,9 @@ input[type="text"],
 /* Save and Cancel button styling */
 .save-button-add,
 .cancel-button {
-    background-color: #3498db; 
+    background-color: #1a334a; 
     color: #fff;
-    border: none;
+    border: 1px solid #E8F1F2;
     border-radius: 4px;
     padding: 10px 20px;
     cursor: pointer;
@@ -132,9 +132,13 @@ input[type="text"],
     font-size: 16px;
 }
 
-.save-button-add:hover,
+
 .cancel-button:hover {
-    background-color: #2980b9;
+    background-color: #d9534f;
+}
+
+.save-button-add:hover {
+    background-color: green;
 }
 
 /* Required fields notice styling */
