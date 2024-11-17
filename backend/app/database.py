@@ -1658,7 +1658,7 @@ class Database(metaclass=DatabaseMeta):
                 - None if node already exists.
         """
         id = self.__add_node(self.__blueprint_type, self.__blueprint_id)
-        self.set_project_property(id, NodeProperties.Project.DATETIME, datetime.now().isoformat())
+        self.set_blueprint_property(id, NodeProperties.Blueprint.DATETIME, datetime.now().isoformat())
         return id
 
 
@@ -2198,7 +2198,7 @@ class Database(metaclass=DatabaseMeta):
         """ 
         project_info = { "node_type" : self.__project_type, "id_type" : self.__project_id, "id_value" : project_id }
         property_list = [
-            NodeProperties.Project.DATETIME.value,
+            NodeProperties.ResultBlueprint.DATETIME.value,
             ]
         return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, property_list, project_info)
 
