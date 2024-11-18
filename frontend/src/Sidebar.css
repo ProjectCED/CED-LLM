@@ -1,0 +1,253 @@
+/* Sidebar container styles */
+.sidebar {
+    position: fixed;
+    top: 78px; 
+    left: 0;
+    bottom: 0;
+    width: 60px; 
+    background-color: #44494F;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px; 
+    transition: width 0.3s ease;
+    z-index: 1000;
+    box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar expanded state */
+.sidebar.expanded {
+    width: 240px; 
+}
+
+/* Sidebar toggle button styles */
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem; 
+    cursor: pointer;
+    margin-bottom: 10px; 
+    padding: 5px; 
+    align-self: center; 
+}
+
+/* Project list container styles */
+.project-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 250px);
+    padding-left: 0px;
+    padding-right: 5px;
+    margin-left: 0px;
+    width: 220px;
+}
+
+/* Styles for individual project list items */
+.project-list a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+/* Hover effect for project list items */
+.project-list a:hover {
+    background-color: #555;
+}
+
+/* "Projects" section title styles */
+.projects-title {
+    color: white;
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 1.6rem;
+    text-align: center;
+    border-bottom: 1px solid #666;
+}
+
+/* Styles for each project header (clickable project names) */
+.project-header {
+    cursor: pointer;
+    padding: 5px 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+/* Project name box */
+.project-name {
+    display: inline-block;
+    white-space: normal;
+    overflow: hidden;
+    word-wrap: break-word;
+    word-break: break-word;
+    padding-right: 15px;
+    text-align: left;
+}
+
+/* Hover effect for project headers */
+.project-header:hover {
+    background-color: #555;
+}
+
+/* Trash icon positioning at the right edge of project and result headers */
+.delete-icon {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: white;
+    visibility: hidden;
+    opacity: 0.5;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Show the trash icon on hover for projects and results */
+.project-header:hover > .delete-icon,
+.project-result:hover > .delete-icon {
+    visibility: visible;
+}
+
+/* Remove transparency and enlarge the icon when hovering over the trash icon */
+.delete-icon:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Project result section styles */
+.project-results {
+    color: #ddd;
+    margin-left: 20px;
+}
+
+/* Wrapper for results to position the trash icon consistently */
+.project-result {
+    position: relative;
+    padding-right: 30px; 
+    cursor: pointer;
+    padding: 3px 0;
+}
+
+.project-result:hover,
+.project-result.selected {
+    background-color: #666;
+    color: white;
+    font-weight: bold;
+}
+
+/* "Save" button styles */
+.create-project-button {
+    background-color: #3498db; 
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    text-align: center;
+    width: 70px;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+/* Hover effect for the "Save" button */
+.create-project-button:hover {
+    background-color: #005f99;
+}
+
+/* Styles for the project name input field */
+.project-name-input {
+    width: 90%;
+    max-width: 190px;
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    display: block;
+}
+
+/* Placeholder text styling inside the input */
+.project-name-input::placeholder {
+    color: #aaa;
+}
+
+/* Container for the input field and the "Create New Project" button */
+.input-container {
+    display: flex;
+    margin-bottom: 30px;
+    margin-top: 30px;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    gap: 20px; 
+    width: 100%; 
+}
+
+.add-project-title {
+    color: white;
+    margin-bottom: 0px;
+    padding: 5px;
+    text-align: center;
+    border-bottom: 1px solid #666;
+}
+
+/* Result details box */
+.result-details {
+    position: absolute;
+    top: 50%;
+    left: 240px;
+    width: 1000px;
+    height: 60vh;  
+    transform: translateY(-50%);
+    background-color: #AEAEAE;
+    color: #0b0c0c;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    z-index: 1100;
+}
+
+/* Show result details when there is a selected result */
+.result-details.show {
+    opacity: 1;
+}
+
+/* Result details close button */
+.close-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: #2B3034;
+    font-size: 30px;
+    opacity: 0.7;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.close-icon:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Header style within the result details */
+.result-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #2B3034;
+}
+
+.result-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 100px;
+    margin-top: 30px;
+    color: #2B3034;
+}
+
+/* Text paragraph style within the result details */
+.result-details p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #2B3034;
+}

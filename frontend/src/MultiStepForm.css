@@ -3,19 +3,18 @@
     max-width: 1500px; 
     margin: 0 auto; 
     padding: 20px; 
-    background-color: #13293D; 
+    background-color: transparent; 
     border-radius: 8px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
     min-height: 100vh;
   }
   
   /* Styling for each step box in the form */
   .step {
-    border: 1px solid #1B98E0;
+    border: 2px solid #E8F1F2;
     border-radius: 8px; 
     padding: 15px; 
     margin-bottom: 20px; 
-    background-color: #E8F1F2;
+    background-color: #1a334a;
   }
 
   /* Layout for the header in each step box */
@@ -29,8 +28,9 @@
   /* Styling for the title of each step */
   .step-title {
     margin: 0px 0px 10px; 
-    font-size: 28px; 
-    color: #13293D; 
+    font-size: 24px; 
+    font-weight: 700;
+    color: #E8F1F2; 
     text-align: left;
   }
   
@@ -43,16 +43,14 @@
   
   /* Styling for the next button in each step */
   .next-button, .multiform-save-button {
-    margin-top: 15px; 
-    padding: 15px 30px; 
-    border: none; 
-    font-size: 20px;
+    padding: 8px 61px; 
+    font-size: 16px;
     border-radius: 8px;
     background-color: #1B98E0; 
     color: #e8f1f2; 
     cursor: pointer; 
-    margin-top: 20px;
     display: inline-block;
+    margin-bottom: 20px;
   }
   
   /* Change button color when hovered */
@@ -79,7 +77,7 @@
     padding: 0px 20px;
     margin-bottom: 5px;
     margin-top: 5px;
-    font-size: 25px;
+    font-size: 20px;
     color: #e8f1f2; 
     text-align: left; 
     border-radius: 5px; 

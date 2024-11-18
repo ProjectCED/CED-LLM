@@ -2,6 +2,7 @@
 .input-with-button {
     display: flex;
     align-items: center;
+    gap: 0;
 }
 
 /* Standard input styling for all input fields */
@@ -32,7 +33,7 @@ input[type="text"],
     padding: 0 12px;
     cursor: pointer;
     font-size: 16px;
-    margin-left: -1px;
+    margin-left: 2px;
     height: 40px;
     box-sizing: border-box;
 }
@@ -43,18 +44,17 @@ input[type="text"],
 
 /* Container styling for the form */
 .new-blueprint-form {
-    background-color: #e8f1f2;
+    background-color: #1a334a;
     border-radius: 8px;
     padding: 20px;
     width: 1000px;
     margin: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Header styling */
 .new-blueprint-form h2 {
     font-size: 36px;
-    color:#13293D;
+    color:lightgray;
     margin-bottom: 20px;
 }
 
@@ -67,8 +67,7 @@ input[type="text"],
 
 .input-group span {
     margin-bottom: 5px; 
-    font-weight: bold;
-    color: #13293D;
+    color: lightgray;
     text-align: left; 
     font-size: 20px;
 }
@@ -80,7 +79,7 @@ input[type="text"],
 
 /* Updated .question-item to match input-field size */
 .question-item {
-    background-color: #e8f1f2;
+    background-color: lightgray;
     border-radius: 4px; 
     padding: 10px; 
     display: inline-block;
@@ -101,7 +100,7 @@ input[type="text"],
     cursor: pointer;
     font-size: 20px; 
     position: absolute;
-    right: 10px; 
+    right: -10px; 
     top: 50%;
     transform: translateY(-50%); 
 }
@@ -122,9 +121,9 @@ input[type="text"],
 /* Save and Cancel button styling */
 .save-button-add,
 .cancel-button {
-    background-color: #3498db; 
+    background-color: #1a334a; 
     color: #fff;
-    border: none;
+    border: 1px solid #E8F1F2;
     border-radius: 4px;
     padding: 10px 20px;
     cursor: pointer;
@@ -133,15 +132,19 @@ input[type="text"],
     font-size: 16px;
 }
 
-.save-button-add:hover,
+
 .cancel-button:hover {
-    background-color: #2980b9;
+    background-color: #d9534f;
+}
+
+.save-button-add:hover {
+    background-color: green;
 }
 
 /* Required fields notice styling */
 .required-note {
     margin-top: 0px;
     font-size: 16px;
-    color: #13293D; 
+    color: lightgray; 
     text-align: left; 
 }
