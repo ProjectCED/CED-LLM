@@ -244,11 +244,18 @@ const MultiStepForm = ({ projects, setProjects }) => {
       }
     }
 
+    // Validation for step 4
     if (currentStep === 4) {
       if (!selectedProjectOption) {
         alert('Please choose a project option.');
         return;
       }
+
+      if (selectedProjectOption === 'New Project' && !newProjectName.trim()) {
+        alert('Please enter a new project name.');
+        return;
+      }
+      
       if (selectedProjectOption === 'Existing Project' && !selectedExistingProject) {
         alert('Please select an existing project to continue.');
         return;

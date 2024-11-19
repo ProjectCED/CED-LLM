@@ -104,7 +104,7 @@ const ProjectSelection = ({
           <p>Enter a new project name or use the default name:</p>
           <input
             type="text"
-            placeholder="New project name"
+            placeholder="Enter a New Project Name"
             value={localNewProjectName}
             onChange={handleNewProjectNameChange}
           />
