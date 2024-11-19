@@ -7,6 +7,7 @@
   font-weight: bold;
   color: #dce1d3;
   font-family: Arial, sans-serif;
+  z-index: 10;
 }
 
 /* Container styling */
@@ -19,6 +20,7 @@
   color: #dce1d3;
   font-family: Arial, sans-serif;
   padding: 35vh 5vw; 
+  position: relative;
 }
 
 /* Text container styling */
@@ -26,7 +28,10 @@
   text-align: left;
   font-size: 1rem; 
   margin-bottom: 2vh;
+  text-shadow: 2px 2px 2px #13293D;
 }
+
+
 
 /* Button styling */
 .get-started-btn {
@@ -63,7 +68,7 @@
   }
 
   .start-container {
-    padding: 5vh 2vw;
+    padding: 15vh 5vw;
   }
 
   .text-container {
@@ -85,6 +90,10 @@
     font-size: 1.5rem;
     top: 4vh;
     left: 4vw;
+  }
+
+  .start-container {
+    padding: 10vh 4vw;
   }
 
   .text-container {
