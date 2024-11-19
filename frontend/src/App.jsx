@@ -7,6 +7,7 @@ import Projects from './Projects';
 import Blueprints from './Blueprints';
 import Header from './Header';
 import Sidebar from './Sidebar'; 
+import MultiStepForm from './MultiStepForm';
 
 function App() {
   const [overlayActive, setOverlayActive] = useState(false);
@@ -43,7 +44,7 @@ function MainLayout({ setOverlayActive, projects, setProjects }) {
         <Sidebar setOverlayActive={setOverlayActive} projects={projects} setProjects={setProjects} />
         <div className="main-content"> {/* Tämä tummentuu, kun overlay on aktiivinen */}
           <Routes>
-            <Route path="classification" element={<Classification projects={projects} setProjects={setProjects} />} />
+            <Route path="classification" element={<MultiStepForm projects={projects} setProjects={setProjects} />} />
             <Route path="projects" element={<Projects />} />
             <Route path="blueprints" element={<Blueprints />} />
           </Routes>

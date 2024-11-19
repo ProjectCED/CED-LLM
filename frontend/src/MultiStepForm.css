@@ -118,3 +118,14 @@
   color: #666666; 
   cursor: not-allowed; 
 }
+
+.classification-heading {
+  display: block;
+  text-align: center;
+  margin: 30px auto;
+  font-size: 21px;
+  max-width: 900px;
+  line-height: 1.5;
+  font-weight: 700;
+  color: white;
+}

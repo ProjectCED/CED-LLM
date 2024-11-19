@@ -263,6 +263,9 @@ const MultiStepForm = ({ projects, setProjects }) => {
 
   return (
     <div className="multi-step-form">
+      <p className="classification-heading">
+        CED-LLM offers a streamlined process for classifying text data using AI technology. The interface provides four key steps to guide you through the classification process.
+      </p>
       {/* Step 1: File upload or copy-paste text */}
       <div className="step">
         <div className="step-header">
