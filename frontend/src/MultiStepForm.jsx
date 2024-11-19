@@ -20,6 +20,8 @@ const MultiStepForm = () => {
   const [stepCompleted, setStepCompleted] = useState(0); 
   const [isEditing, setIsEditing] = useState(false);
   const [customClassificationText, setCustomClassificationText] = useState('');
+  const [newProjectName, setNewProjectName] = useState('');
+  
   
   const navigate = useNavigate(); // Hook for navigation
 
@@ -97,11 +99,16 @@ const MultiStepForm = () => {
     // Validation for step 4: Ensure a project is selected
     if (currentStep === 4) {
       if (!selectedProjectOption) {
-        alert('Please choose a project option.');
+        alert('Please select a project option.');
+        return;
+      }
+      if (selectedProjectOption === 'Existing Project' && !selectedExistingProject) {
+        alert('Please select an existing project.');
         return;
       }
     }
 
+    // Move to the next step and update the step completion status
     const newStep = currentStep + 1;
     setCurrentStep(newStep);
     setStepCompleted(Math.max(stepCompleted, newStep));
@@ -122,20 +129,34 @@ const MultiStepForm = () => {
     setSelectedBlueprint(blueprint);
   };
 
+  // Function to custom blueprint text
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
   };
 
+  // Function to update selected project option (New or Existing)
   const handleProjectOptionSelection = (option) => {
     setSelectedProjectOption(option);
-    setSelectedExistingProject(null); // Reset existing project selection when option changes
+    if (option === 'New Project') {
+      setNewProjectName(''); 
+    }
+    if (option !== 'Existing Project') {
+      setSelectedExistingProject(null); 
+    }
   };
 
+  // Function to update the new project name
+  const handleNewProjectNameChange = (name) => {
+    setNewProjectName(name); 
+  };
+  
+  // Function to update selected existing project
   const handleExistingProjectSelection = (project) => {
     setSelectedExistingProject(project);
-    setSelectedProjectOption('Existing Project'); // Update the project option when an existing project is selected
+    setSelectedProjectOption('Existing Project'); 
   };
 
+  // Function to handle clicking the "Edit" button for a specific step
   const handleEditClick = (step) => {
     // Prevent editing another step if currently in editing mode
     if (isEditing) {
@@ -147,6 +168,7 @@ const MultiStepForm = () => {
     setIsEditing(true);
   };
 
+  // Function to handle the "Save" button click
   const handleSaveClick = () => {
     // Validation for step 2: Ensure a classification option is selected
     if (currentStep === 2) {
@@ -166,17 +188,22 @@ const MultiStepForm = () => {
       }
     }
 
+    if (currentStep === 4) {
+      if (!selectedProjectOption) {
+        alert('Please choose a project option.');
+        return;
+      }
+      if (selectedProjectOption === 'Existing Project' && !selectedExistingProject) {
+        alert('Please select an existing project to continue.');
+        return;
+      }
+    }
+
     setIsEditing(false); // Close the edit mode
     setCurrentStep(5);
   };
 
-  const resetSelections = () => {
-    setSelectedFiles([]); 
-    setCopiedText(''); 
-    setSelectedClassification(null);
-    setSelectedAI(null);
-    setSelectedBlueprint(null);
-  };
+
 
   return (
     <div className="multi-step-form">
@@ -197,7 +224,7 @@ const MultiStepForm = () => {
             <FileDownload 
               onFileUpload={handleFileUpload}
               onTextChange={handleTextChange}
-              isEditing={isEditing} // Pass isEditing prop to FileDownload
+              isEditing={isEditing} 
             />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
@@ -243,7 +270,7 @@ const MultiStepForm = () => {
               selectedClassification={selectedClassification}
               onSelectClassification={handleClassificationSelection} 
               onSelectBlueprint={handleBlueprintSelection}
-              isLocked={isEditing} // Pass isLocked prop to ClassificationSelection
+              isLocked={isEditing} 
               onCustomTextChange={handleCustomTextChange}
             />
             {isEditing ? (
@@ -309,8 +336,12 @@ const MultiStepForm = () => {
               existingProjects={['Project A', 'Project B', 'Project C']}
               selectedProjectOption={selectedProjectOption}
               onSelectProjectOption={handleProjectOptionSelection}
-              onSelectExistingProject={handleExistingProjectSelection} // Pass the handler for existing project
+              onSelectExistingProject={handleExistingProjectSelection}
               isLocked={isEditing}
+              uploadedFileName={selectedFiles.length > 0 ? selectedFiles[0].name : ''}
+              copiedText={copiedText}
+              newProjectName={newProjectName}
+              onNewProjectNameChange={handleNewProjectNameChange}
             />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
@@ -324,6 +355,9 @@ const MultiStepForm = () => {
             <p>{selectedProjectOption}</p>
             {selectedProjectOption === 'Existing Project' && selectedExistingProject && (
               <p>{selectedExistingProject}</p>
+            )}
+            {selectedProjectOption === 'New Project' && newProjectName && (
+              <p>The given name: {newProjectName}</p>
             )}
           </div>
         )}
