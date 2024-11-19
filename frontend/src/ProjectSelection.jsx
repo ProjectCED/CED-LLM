@@ -1,18 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import './ProjectSelection.css';
 
 // ProjectSelection component that handles the selection of a project type (existing, new, or no project)
-const ProjectSelection = ({ existingProjects, selectedProjectOption, onSelectProjectOption, onSelectExistingProject }) => {
+const ProjectSelection = ({
+  existingProjects = [], // Default value to prevent errors if prop is missing
+  selectedProjectOption,
+  onSelectProjectOption,
+  onSelectExistingProject
+}) => {
+
+  console.log('Existing projects:', existingProjects)
   // Local state to manage the selected option (existing, new, or no project)
   const [localSelectedOption, setLocalSelectedOption] = useState(selectedProjectOption || '');
-  
+
   // Local state to manage the selected existing project
   const [selectedExistingProject, setSelectedExistingProject] = useState('');
 
   // Effect hook to update the local selected option when the prop 'selectedProjectOption' changes
   useEffect(() => {
-    setLocalSelectedOption(selectedProjectOption);
+    setLocalSelectedOption(selectedProjectOption || '');
   }, [selectedProjectOption]);
+
+  // Effect hook to reset the selected existing project when the list of existing projects changes
+  useEffect(() => {
+    if (!existingProjects.includes(selectedExistingProject)) {
+      setSelectedExistingProject(''); // Reset if current selection is not in the updated list
+    }
+  }, [existingProjects, selectedExistingProject]);
 
   // Handler for when an option (existing, new, or no project) is selected
   const handleOptionSelect = (option) => {
@@ -22,7 +36,7 @@ const ProjectSelection = ({ existingProjects, selectedProjectOption, onSelectPro
     // If the selected option is not "Existing Project", reset the existing project selection
     if (option !== 'Existing Project') {
       setSelectedExistingProject('');
-      onSelectExistingProject(''); 
+      onSelectExistingProject('');
     }
   };
 
@@ -60,7 +74,7 @@ const ProjectSelection = ({ existingProjects, selectedProjectOption, onSelectPro
           <select
             id="existing-projects"
             value={selectedExistingProject} 
-            onChange={(e) => handleExistingProjectSelect(e.target.value)} 
+            onChange={(e) => handleExistingProjectSelect(e.target.value)}
           >
             <option value="">-- Choose a Project --</option>
             {existingProjects.map((project, index) => (

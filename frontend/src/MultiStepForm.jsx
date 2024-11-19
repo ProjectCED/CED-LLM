@@ -7,7 +7,7 @@ import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
 
-const MultiStepForm = () => {
+const MultiStepForm = ({ projects, setProjects, selectedResult, setSelectedResult}) => {
   // State variables to track the current step and selections
   const [currentStep, setCurrentStep] = useState(1); 
   const [selectedFiles, setSelectedFiles] = useState([]); 
@@ -22,6 +22,21 @@ const MultiStepForm = () => {
   const [customClassificationText, setCustomClassificationText] = useState('');
   
   const navigate = useNavigate(); // Hook for navigation
+
+  // Funktio nollaa lomakkeen tilat
+  const resetFormState = () => {
+    setCurrentStep(1); // Palaa ensimmäiseen vaiheeseen
+    setSelectedFiles([]);
+    setCopiedText('');
+    setSelectedClassification(null);
+    setSelectedAI(null);
+    setSelectedBlueprint(null);
+    setSelectedProjectOption(null);
+    setSelectedExistingProject(null);
+    setStepCompleted(0); // Nollaa suoritetut vaiheet
+    setIsEditing(false);
+    setCustomClassificationText('');
+  };
 
   // Update selected files state
   const handleFileUpload = (files) => {
@@ -45,15 +60,70 @@ const MultiStepForm = () => {
 
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = async () => {
-    const formdata = new FormData();
-    formdata.append('file', selectedFiles[0]);
-    const response = await fetch('http://127.0.0.1:5000/upload_file', {
-      method: 'POST',
-      body: formdata,
-    });
-    const data = await response.json();
-    navigate('/app/projects', { state : data});
+    //const formdata = new FormData();
+    //formdata.append('file', selectedFiles[0]);
+    //const response = await fetch('http://127.0.0.1:5000/upload_file', {
+      //method: 'POST',
+      //body: formdata,
+    //});
+    //const data = await response.json();
+    //navigate('/app/projects', { state : data});
+
+    // Luo uusi tulos nykyisellä päivämäärällä
+    const today = new Date();
+    const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
+    console.log("Formatted date (DDMMYYYY):", formattedDate); // Tarkista luotu päivämäärä
+
+  // Tarkista, löytyykö valittu projekti
+  const existingProjectIndex = projects.findIndex(
+    (project) => project.name === selectedExistingProject
+  );
+  
+  console.log("Selected existing project index:", existingProjectIndex); // Tarkista indeksi
+
+  if (existingProjectIndex === -1) {
+    console.error("Selected project not found:", selectedExistingProject);
+    return;
   }
+
+  // Päivitä projektit
+  setProjects((prevProjects) => {
+    const updatedProjects = prevProjects.map((project, index) => {
+      if (index === existingProjectIndex) {
+        const newResultName = generateUniqueResultName(project.results, formattedDate);
+        console.log("New result name:", newResultName); // Tarkista luodun tuloksen nimi
+        return { ...project, results: [...project.results, newResultName] };
+      }
+      return project;
+    });
+    console.log("Updated projects:", updatedProjects); // Tarkista päivitetty tila
+    return updatedProjects;
+  });
+  
+  // Adding the result to the project
+  setTimeout(() => {
+    setOverlayActive(true); // Shows overlay
+    setSelectedResult({ projectIndex: existingProjectIndex, result: newResultName }); // Opens new result
+  }, 100); // Increased timeout to ensure state propagation
+
+  // Nollaa lomake ja palaa alkuun
+  resetFormState();
+
+  alert("Analysis completed! The result has been added to the selected project.");
+
+} 
+
+
+
+// Funktio generoi uniikin tulosnimen, jos samannimisiä on jo olemassa
+const generateUniqueResultName = (results, baseName) => {
+  let name = baseName;
+  let counter = 1;
+  while (results.includes(name)) {
+    name = `${baseName} (${counter++})`;
+  }
+  return name;
+};
 
   const allStepsCompleted = stepCompleted > 4;
   
@@ -177,6 +247,8 @@ const MultiStepForm = () => {
     setSelectedAI(null);
     setSelectedBlueprint(null);
   };
+
+  console.log('Projects in MultiStepForm:', projects);
 
   return (
     <div className="multi-step-form">
@@ -305,8 +377,9 @@ const MultiStepForm = () => {
         </div>
         {currentStep === 4 && (
           <div className="step-content">
+            
             <ProjectSelection
-              existingProjects={['Project A', 'Project B', 'Project C']}
+              existingProjects={projects?.map((project) => project.name) || []}
               selectedProjectOption={selectedProjectOption}
               onSelectProjectOption={handleProjectOptionSelection}
               onSelectExistingProject={handleExistingProjectSelection} // Pass the handler for existing project

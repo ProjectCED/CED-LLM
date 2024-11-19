@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import './Sidebar.css';
 
-function Sidebar({ setOverlayActive }) {
+const Sidebar = ({ setOverlayActive, projects, setProjects, selectedResult, setSelectedResult }) => {
 
+  console.log("Projects in Sidebar:", projects); // Tarkista data
+  
   // State to manage sidebar expansion
   const [expanded, setExpanded] = useState(false);
-  // State for project list, with each project containing results
-  const [projects, setProjects] = useState([
-    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
-    { name: 'Dog show data', open: false, results: ['28042023'] },
-    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
-  ]);
   const [newProjectName, setNewProjectName] = useState('');
   const [hoveredProject, setHoveredProject] = useState(null);
   const [hoveredResult, setHoveredResult] = useState({ projectIndex: null, resultIndex: null });
-  const [selectedResult, setSelectedResult] = useState(null);
+
+  // Lisää tämä useEffect
+  useEffect(() => {
+    if (selectedResult) {
+      setExpanded(true); // Avaa Sidebari, kun tulos valitaan
+    }
+  }, [selectedResult]);
 
   // Toggles sidebar between expanded and collapsed states
   const toggleSidebar = () => {
@@ -63,13 +65,18 @@ function Sidebar({ setOverlayActive }) {
 
   // Deletes a specific result from a project
   const deleteResult = (projectIndex, resultIndex) => {
-    setProjects(prevProjects =>
-      prevProjects.map((project, i) =>
-        i === projectIndex
-          ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
-          : project
-      )
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this result?"
     );
+    if (confirmDelete) {
+      setProjects(prevProjects =>
+        prevProjects.map((project, i) =>
+          i === projectIndex
+            ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
+            : project
+        )
+      );
+    }
   };
 
   // Opens detailed view for a specific result
