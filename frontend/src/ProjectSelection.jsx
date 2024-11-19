@@ -3,7 +3,7 @@ import './ProjectSelection.css';
 
 // ProjectSelection component that handles the selection of a project type (existing, new, or no project)
 const ProjectSelection = ({
-  existingProjects,
+  existingProjects = [],
   selectedProjectOption,
   onSelectProjectOption,
   onSelectExistingProject,

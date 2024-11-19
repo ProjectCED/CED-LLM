@@ -4,16 +4,11 @@ import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import './Sidebar.css';
 
-function Sidebar({ setOverlayActive }) {
+function Sidebar({ setOverlayActive, projects, setProjects }) {
 
   // State to manage sidebar expansion
   const [expanded, setExpanded] = useState(false);
-  // State for project list, with each project containing results
-  const [projects, setProjects] = useState([
-    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
-    { name: 'Dog show data', open: false, results: ['28042023'] },
-    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
-  ]);
+  
   const [newProjectName, setNewProjectName] = useState('');
   const [hoveredProject, setHoveredProject] = useState(null);
   const [hoveredResult, setHoveredResult] = useState({ projectIndex: null, resultIndex: null });

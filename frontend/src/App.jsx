@@ -11,6 +11,15 @@ import Sidebar from './Sidebar';
 function App() {
   const [overlayActive, setOverlayActive] = useState(false);
 
+  // State for project list, with each project containing results
+  const [projects, setProjects] = useState([
+    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
+    { name: 'Dog show data', open: false, results: ['28042023'] },
+    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
+  ]);
+
+  console.log('Projects in App:', projects);
+  
   return (
     <div className={`app-container ${overlayActive ? 'overlay-active' : ''}`}>
       <Router>
@@ -19,22 +28,22 @@ function App() {
           <Route path="/" element={<StartPage />} />
 
           {/* Views that have Header */}
-          <Route path="/app/*" element={<MainLayout setOverlayActive={setOverlayActive} />} />
+          <Route path="/app/*" element={<MainLayout setOverlayActive={setOverlayActive} projects={projects} setProjects={setProjects} />} />
         </Routes>
       </Router>
     </div>
   );
 }
 
-function MainLayout({ setOverlayActive }) {
+function MainLayout({ setOverlayActive, projects, setProjects }) {
   return (
     <div className="main-layout">
       <Header />
       <div className="content-container">
-        <Sidebar setOverlayActive={setOverlayActive} />
+        <Sidebar setOverlayActive={setOverlayActive} projects={projects} setProjects={setProjects} />
         <div className="main-content"> {/* Tämä tummentuu, kun overlay on aktiivinen */}
           <Routes>
-            <Route path="classification" element={<Classification />} />
+            <Route path="classification" element={<Classification projects={projects} setProjects={setProjects} />} />
             <Route path="projects" element={<Projects />} />
             <Route path="blueprints" element={<Blueprints />} />
           </Routes>
