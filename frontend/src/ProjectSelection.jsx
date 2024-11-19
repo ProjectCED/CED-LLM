@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ProjectSelection.css';
 
-// ProjectSelection component that handles the selection of a project type (existing, new, or no project)
 const ProjectSelection = ({
   existingProjects,
   selectedProjectOption,
@@ -14,6 +13,7 @@ const ProjectSelection = ({
 }) => {
   const [localSelectedOption, setLocalSelectedOption] = useState(selectedProjectOption || '');
   const [selectedExistingProject, setSelectedExistingProject] = useState('');
+  const [localNewProjectName, setLocalNewProjectName] = useState(newProjectName || '');
 
   // Sync the local selected option with the selectedProjectOption prop whenever it changes
   useEffect(() => {
@@ -26,12 +26,19 @@ const ProjectSelection = ({
   useEffect(() => {
     if (localSelectedOption === 'New Project') {
       if (uploadedFileName) {
-        onNewProjectNameChange(uploadedFileName);
+        setLocalNewProjectName(uploadedFileName);
       } else if (copiedText) {
-        onNewProjectNameChange(copiedText.split(' ').slice(0, 3).join(' '));
+        setLocalNewProjectName(copiedText.split(' ').slice(0, 3).join(' '));
       }
     }
-  }, [localSelectedOption, uploadedFileName, copiedText, onNewProjectNameChange]);
+  }, [localSelectedOption, uploadedFileName, copiedText]);
+
+  // Effect hook to update the project name in parent when it changes
+  useEffect(() => {
+    if (localNewProjectName !== newProjectName) {
+      onNewProjectNameChange(localNewProjectName);
+    }
+  }, [localNewProjectName, newProjectName, onNewProjectNameChange]);
 
   // Handler for when an option (existing, new, or none) is selected
   const handleOptionSelect = (option) => {
@@ -39,8 +46,8 @@ const ProjectSelection = ({
     onSelectProjectOption(option);
 
     if (option === 'Existing Project') {
-      setSelectedExistingProject(''); 
-      onSelectExistingProject(''); 
+      setSelectedExistingProject('');
+      onSelectExistingProject('');
     }
   };
 
@@ -49,6 +56,12 @@ const ProjectSelection = ({
     setSelectedExistingProject(project);
     onSelectExistingProject(project);
     onSelectProjectOption('Existing Project');
+  };
+
+  // Handler for the new project name change
+  const handleNewProjectNameChange = (event) => {
+    const value = event.target.value;
+    setLocalNewProjectName(value); 
   };
 
   return (
@@ -92,8 +105,8 @@ const ProjectSelection = ({
           <input
             type="text"
             placeholder="New project name"
-            value={newProjectName}
-            onChange={(e) => onNewProjectNameChange(e.target.value)}
+            value={localNewProjectName}
+            onChange={handleNewProjectNameChange}
           />
         </div>
       )}
