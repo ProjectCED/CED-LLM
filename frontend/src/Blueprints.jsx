@@ -118,7 +118,7 @@ const Blueprints = () => {
               <p>{blueprint.description}</p>
               <p>Type a question for the AI</p>
               
-              <div className="input-container">
+              <div className="blueprint-input-container">
                 <input
                   type="text"
                   placeholder="Enter question for the AI"

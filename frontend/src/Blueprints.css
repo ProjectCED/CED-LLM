@@ -4,7 +4,7 @@
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #13293D;
+    background-color: transparent;
     min-height: 100vh;
     color: #E8F1F2;
     position: relative; 
@@ -63,9 +63,9 @@
 
 /* Styles for each blueprint card */
 .blueprint-card {
-    background-color: #E8F1F2;
-    color: #13293D;
-    border: 1px solid #1B98E0;
+    background-color: #1a334a;
+    color: #E8F1F2;
+    border: 2px solid #E8F1F2;
     border-radius: 8px;
     width: 800px;
     margin-bottom: 20px;
@@ -89,9 +89,9 @@
 
 /* Styles for the "Edit" and "Close" buttons */
 .edit-button {
-    background-color: #1B98E0;
-    color: white;
-    border: none;
+    background-color: #1a334a;
+    color: #E8F1F2;
+    border: 1px solid #E8F1F2;
     border-radius: 5px;
     padding: 5px 10px;
     font-size: 20px;
@@ -106,15 +106,16 @@
 /* Styling for simple text (paragraphs) */
 .blueprint-body p {
     font-size: 20px;
-    color: #13293D;
+    color: #E8F1F2;
     margin-bottom: 10px;
     text-align: left;
 }
 
 /* Container for the input field and add question button */
-.input-container {
+.blueprint-input-container {
     display: flex;
     align-items: center;
+    gap: 10px;
     width: 100%;
     margin-bottom: 10px;
 }
@@ -126,7 +127,7 @@ input[type="text"] {
     border: 1px solid #13293D;
     border-radius: 5px;
     font-size: 16px;
-    margin-right: 10px;
+    
 }
 
 /* Button to add a question */
@@ -135,7 +136,7 @@ input[type="text"] {
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 10px;
+    padding: 7px;
     font-size: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -172,9 +173,16 @@ input[type="text"] {
 
 /* Remove button for each question (shown as an "X") */
 .remove-button {
-    color: #e8f1f2; 
-    cursor: pointer; 
+    background: none;
+    border: none;
+    color: #dff9fb; 
+    font-weight: bold;
+    cursor: pointer;
     font-size: 20px; 
+    position: absolute;
+    right: 15px; 
+    top: 50%;
+    transform: translateY(-50%); 
 }
 
 .remove-button:hover {
@@ -189,9 +197,9 @@ input[type="text"] {
 }
 
 .delete-button, .save-button {
-    background-color: #1B98E0;
+    background-color: #1a334a;
+    border: 1px solid #E8F1F2;
     color: white;
-    border: none;
     border-radius: 5px;
     padding: 5px 10px;
     margin-left: 10px;
@@ -200,8 +208,12 @@ input[type="text"] {
     transition: background-color 0.3s ease;
 }
 
-.delete-button:hover, .save-button:hover {
-    background-color: #117DB9;
+.delete-button:hover {
+    background-color: #d9534f;
+}
+
+.save-button:hover {
+    background-color: green;
 }
 
 /* Success message styling */

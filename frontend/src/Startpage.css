@@ -1,34 +1,102 @@
+/* Logo text styling */
+.logo-text {
+  position: absolute;
+  top: 2vh;
+  left: 2vw;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #dce1d3;
+  font-family: Arial, sans-serif;
+}
+
 /* Container styling */
 .start-container {
-    background-color: #13293D; 
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #e8f1f2;
-    font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  color: #dce1d3;
+  font-family: Arial, sans-serif;
+  padding: 35vh 5vw; 
+}
+
+/* Text container styling */
+.text-container {
+  text-align: left;
+  font-size: 1rem; 
+  margin-bottom: 2vh;
+}
+
+/* Button styling */
+.get-started-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1B98E0;
+  color: #dce1d3;
+  padding: 0.7rem 2rem;
+  font-size: 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Arrow icon styling */
+.arrow-icon {
+  color: #dce1d3;
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+/* Hover effect */
+.get-started-btn:hover {
+  background-color: #117DB9;
+}
+
+/* Responsive media queries */
+@media (max-width: 768px) {
+  .logo-text {
+    font-size: 2rem;
+    top: 3vh;
+    left: 3vw;
   }
-  
-  /* Text container styling */
+
+  .start-container {
+    padding: 5vh 2vw;
+  }
+
   .text-container {
-    text-align: left;
-    font-size: 20px;
-    margin-bottom: 20px;
+    font-size: 1rem;
   }
-  
-  /* Button styling */
+
   .get-started-btn {
-    background-color: #1B98E0; 
-    color: #e8f1f2;;
-    border: none;
-    padding: 10px 20px;
-    font-size: 40px;
-    border-radius: 20px;
-    cursor: pointer;
-    outline: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
   }
-  
-  .get-started-btn:hover {
-    background-color: #1B98E0; 
+
+  .arrow-icon {
+    font-size: 1rem;
   }
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 1.5rem;
+    top: 4vh;
+    left: 4vw;
+  }
+
+  .text-container {
+    font-size: 0.9rem;
+  }
+
+  .get-started-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .arrow-icon {
+    font-size: 0.8rem;
+  }
+}

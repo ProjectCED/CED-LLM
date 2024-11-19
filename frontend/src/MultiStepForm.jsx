@@ -3,6 +3,7 @@ import { Form, useNavigate } from 'react-router-dom';
 import FileDownload from './FileDownload'; // Step 1 component
 import ClassificationSelection from './ClassificationSelection'; // Step 2 component
 import AISelection from './AISelection'; // Step 3 component
+import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
 
@@ -14,6 +15,8 @@ const MultiStepForm = () => {
   const [selectedClassification, setSelectedClassification] = useState(null); 
   const [selectedAI, setSelectedAI] = useState(null); 
   const [selectedBlueprint, setSelectedBlueprint] = useState([]);
+  const [selectedProjectOption, setSelectedProjectOption] = useState(null); 
+  const [selectedExistingProject, setSelectedExistingProject] = useState(null);
   const [stepCompleted, setStepCompleted] = useState(0); 
   const [isEditing, setIsEditing] = useState(false);
   const [customClassificationText, setCustomClassificationText] = useState('');
@@ -52,7 +55,7 @@ const MultiStepForm = () => {
     navigate('/app/projects', { state : data});
   }
 
-  const allStepsCompleted = stepCompleted > 3;
+  const allStepsCompleted = stepCompleted > 4;
   
   // Function to go to the next step with validation
   const nextStep = () => {
@@ -91,6 +94,14 @@ const MultiStepForm = () => {
       }
     }
 
+    // Validation for step 4: Ensure a project is selected
+    if (currentStep === 4) {
+      if (!selectedProjectOption) {
+        alert('Please choose a project option.');
+        return;
+      }
+    }
+
     const newStep = currentStep + 1;
     setCurrentStep(newStep);
     setStepCompleted(Math.max(stepCompleted, newStep));
@@ -113,6 +124,16 @@ const MultiStepForm = () => {
 
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
+  };
+
+  const handleProjectOptionSelection = (option) => {
+    setSelectedProjectOption(option);
+    setSelectedExistingProject(null); // Reset existing project selection when option changes
+  };
+
+  const handleExistingProjectSelection = (project) => {
+    setSelectedExistingProject(project);
+    setSelectedProjectOption('Existing Project'); // Update the project option when an existing project is selected
   };
 
   const handleEditClick = (step) => {
@@ -146,7 +167,7 @@ const MultiStepForm = () => {
     }
 
     setIsEditing(false); // Close the edit mode
-    setCurrentStep(4);
+    setCurrentStep(5);
   };
 
   const resetSelections = () => {
@@ -266,6 +287,44 @@ const MultiStepForm = () => {
         {stepCompleted >= 3 && (
           <div className="step-summary">
             <p>{selectedAI}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Step 4: Project Selection */}
+      <div className="step">
+        <div className="step-header">
+          <h2 className={`step-title ${currentStep === 4 ? 'active' : ''}`}>
+            4. Choose a Project for Displaying Results
+          </h2>
+          {allStepsCompleted && currentStep !== 4 && (
+            <button className="edit-button" onClick={() => handleEditClick(4)}>
+              Edit
+            </button>
+          )}
+        </div>
+        {currentStep === 4 && (
+          <div className="step-content">
+            <ProjectSelection
+              existingProjects={['Project A', 'Project B', 'Project C']}
+              selectedProjectOption={selectedProjectOption}
+              onSelectProjectOption={handleProjectOptionSelection}
+              onSelectExistingProject={handleExistingProjectSelection} // Pass the handler for existing project
+              isLocked={isEditing}
+            />
+            {isEditing ? (
+              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
+            ) : (
+              <button className="next-button" onClick={nextStep}>Next</button>
+            )}
+          </div>
+        )}
+        {stepCompleted >= 4 && (
+          <div className="step-summary">
+            <p>{selectedProjectOption}</p>
+            {selectedProjectOption === 'Existing Project' && selectedExistingProject && (
+              <p>{selectedExistingProject}</p>
+            )}
           </div>
         )}
       </div>
