@@ -63,13 +63,18 @@ function Sidebar({ setOverlayActive }) {
 
   // Deletes a specific result from a project
   const deleteResult = (projectIndex, resultIndex) => {
-    setProjects(prevProjects =>
-      prevProjects.map((project, i) =>
-        i === projectIndex
-          ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
-          : project
-      )
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this result?"
     );
+    if (confirmDelete) {
+      setProjects(prevProjects =>
+        prevProjects.map((project, i) =>
+          i === projectIndex
+            ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
+            : project
+        )
+      );
+    }
   };
 
   // Opens detailed view for a specific result
