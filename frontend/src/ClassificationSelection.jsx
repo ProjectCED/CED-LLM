@@ -6,8 +6,8 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   // Local state to keep track of the currently selected classification,
   // selected blueprint and custom input text
   const [localSelectedClassification, setLocalSelectedClassification] = useState(selectedClassification || '');
-  const [selectedBlueprint, setSelectedBlueprint] = useState('');
-  const [blueprints, setBlueprints] = useState([]);
+  const [selectedBlueprint, setSelectedBlueprint] = useState([]);
+  const [blueprints, setBlueprints] = useState([[]]);
   const [customText, setCustomText] = useState('');
 
   const getBlueprints = async () => {
@@ -31,8 +31,8 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   
     // If classification is not 'Saved Classification', clears selected blueprint
   if (classification !== 'Saved Blueprint') {
-    setSelectedBlueprint('');
-    onSelectBlueprint(''); 
+    setSelectedBlueprint([]);
+    onSelectBlueprint([]); 
   }
 
   if (classification !== 'Created Blueprint') {
@@ -43,7 +43,8 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   };
 
   // Handles blueprint selection in the BlueprintDropdown component
-  const handleBlueprintSelect = (blueprint) => {
+  const handleBlueprintSelect = (blueprintIndex) => {
+    const blueprint = blueprints[blueprintIndex];
     setSelectedBlueprint(blueprint);
     onSelectBlueprint(blueprint);
   };
@@ -89,7 +90,7 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
         <BlueprintDropdown
           key={localSelectedClassification} 
           blueprints={blueprints}
-          selectedBlueprint={selectedBlueprint}
+          selectedBlueprint={selectedBlueprint[1]}
           onSelectBlueprint={handleBlueprintSelect}
         />
       )}

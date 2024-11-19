@@ -64,8 +64,7 @@ def analyze_file():
 @main.route('/get_blueprints', methods=['GET'])
 def get_blueprints():
     blueprints = database.lookup_blueprint_nodes()
-    names = [blueprint[1] for blueprint in blueprints]
-    return jsonify(names)
+    return jsonify(blueprints)
 
 if __name__ == '__main__':
     main.run(debug=True)

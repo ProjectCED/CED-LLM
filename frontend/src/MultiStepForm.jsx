@@ -13,7 +13,7 @@ const MultiStepForm = () => {
   const [copiedText, setCopiedText] = useState(''); 
   const [selectedClassification, setSelectedClassification] = useState(null); 
   const [selectedAI, setSelectedAI] = useState(null); 
-  const [selectedBlueprint, setSelectedBlueprint] = useState(null);
+  const [selectedBlueprint, setSelectedBlueprint] = useState([]);
   const [stepCompleted, setStepCompleted] = useState(0); 
   const [isEditing, setIsEditing] = useState(false);
   const [customClassificationText, setCustomClassificationText] = useState('');
@@ -71,7 +71,7 @@ const MultiStepForm = () => {
         return;
       }
       // Check if "Saved Blueprint" requires a blueprint selection
-      if (selectedClassification === 'Saved Blueprint' && !selectedBlueprint) {
+      if (selectedClassification === 'Saved Blueprint' && selectedBlueprint.length === 0) {
         alert('Please select a saved blueprint.');
         return;
       }
@@ -134,7 +134,7 @@ const MultiStepForm = () => {
         return;
       }
       // Check if "Saved Blueprint" requires a blueprint selection
-      if (selectedClassification === 'Saved Blueprint' && !selectedBlueprint) {
+      if (selectedClassification === 'Saved Blueprint' && selectedBlueprint.length === 0) {
         alert('Please select a a saved blueprint.');
         return;
       }
@@ -154,7 +154,7 @@ const MultiStepForm = () => {
     setCopiedText(''); 
     setSelectedClassification(null);
     setSelectedAI(null);
-    setSelectedBlueprint(null);
+    setSelectedBlueprint([]);
   };
 
   return (
@@ -235,7 +235,7 @@ const MultiStepForm = () => {
         {stepCompleted >= 2 && (
           <div className="step-summary">
             <p>{selectedClassification}</p>
-            {selectedBlueprint && <p>{selectedBlueprint}</p>}
+            {selectedBlueprint && <p>{selectedBlueprint[1]}</p>}
             {customClassificationText && <p>{customClassificationText}</p>}
           </div>
         )}
