@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ClassificationSelection.css';
 import BlueprintDropdown from './BlueprintDropdown';
+import { getBlueprints } from './utils';
 
 const ClassificationSelection = ({ selectedClassification, onSelectClassification, onSelectBlueprint, onCustomTextChange }) => {
   // Local state to keep track of the currently selected classification,
@@ -10,18 +11,12 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   const [blueprints, setBlueprints] = useState([[]]);
   const [customText, setCustomText] = useState('');
 
-  const getBlueprints = async () => {
-    const response = await fetch('http://127.0.0.1:5000/get_blueprints', {
-      method: 'GET'
-    }); 
-    const data = await response.json();
-    setBlueprints(data);
-  };
-
   // Update localSelectedClassification if selectedClassification prop changes
   useEffect(() => {
     setLocalSelectedClassification(selectedClassification);
-    getBlueprints();
+    getBlueprints().then((blueprints) => {
+      setBlueprints(blueprints);
+    });
   }, [selectedClassification]);
 
   // Handles classification button click
