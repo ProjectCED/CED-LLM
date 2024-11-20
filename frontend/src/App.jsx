@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';  
 import StartPage from './StartPage';
-import Classification from './Classification';
 import Projects from './Projects';
 import Blueprints from './Blueprints';
 import Header from './Header';
