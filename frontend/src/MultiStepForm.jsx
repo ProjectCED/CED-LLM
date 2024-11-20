@@ -63,26 +63,53 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult})
 
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = async () => {
-    //const formdata = new FormData();
-    //formdata.append('file', selectedFiles[0]);
-    //const response = await fetch('http://127.0.0.1:5000/upload_file', {
-      //method: 'POST',
-      //body: formdata,
-    //});
-    //const data = await response.json();
-    //navigate('/app/projects', { state : data});
+  //const formdata = new FormData();
+  //formdata.append('file', selectedFiles[0]);
+  //const response = await fetch('http://127.0.0.1:5000/upload_file', {
+    //method: 'POST',
+    //body: formdata,
+  //});
+  //const data = await response.json();
+  //navigate('/app/projects', { state : data});
 
-    // Create new result 
-    const today = new Date();
-    const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
-    console.log("Formatted date (DDMMYYYY):", formattedDate); // Tarkista luotu päivämäärä
+  // Create new result 
+  const today = new Date();
+  const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
+  console.log("Formatted date (DDMMYYYY):", formattedDate);
 
+  // If the user selected "New Project"
+  if (selectedProjectOption === 'New Project') {
+    if (!newProjectName.trim()) {
+      alert('Please enter a new project name.');
+      return;
+    }
+
+    // Create a new project object
+    const newProject = {
+      name: newProjectName,
+      results: [formattedDate],
+      open: true
+    };
+
+    // Add the new project to the projects list
+    setProjects((prevProjects) => [...prevProjects, newProject]);
+
+    // Set the new project as the selected one and open the Sidebar
+    setSelectedResult({
+      projectIndex: projects.length,
+      result: formattedDate,
+    });
+
+    setExpanded(true);
+
+    // If the user selected "Existing Project"
+  } else if (selectedProjectOption === 'Existing Project') {
     // Check if chosen project can be found
     const existingProjectIndex = projects.findIndex(
       (project) => project.name === selectedExistingProject
     );
 
-    // Luo uusi tulos ja päivitä projekti
+    // Create a new result and update the project
     let newResultName;
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
@@ -95,7 +122,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult})
       return updatedProjects;
     });
 
-    // Avaa Sidebar ja aseta valituksi tulokseksi luotu tulos
+    // Open the Sidebar and set the created result as selected
     if (newResultName) {
       setSelectedResult({
         projectIndex: existingProjectIndex,
@@ -103,24 +130,26 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult})
       });
       setExpanded(true); // Avaa Sidebar
     }
+  }
 
-    // Lopuksi resetoi lomaketila
-    resetFormState();
+  // Finally, reset the form state
+  resetFormState();
 
-    alert("Analysis completed! The result has been added to the selected project.");
-  };
+  alert("Analysis completed! The result has been added to the selected project.");
+};
 
-  // Funktio generoi uniikin tulosnimen, jos samannimisiä on jo olemassa
-  const generateUniqueResultName = (results, baseName) => {
-    let name = baseName;
-    let counter = 1;
-    while (results.includes(name)) {
-      name = `${baseName} (${counter++})`;
-    }
-    return name;
-  };
+// Function to generate a unique result name if duplicates exist
+const generateUniqueResultName = (results, baseName) => {
+  let name = baseName;
+  let counter = 1;
+  while (results.includes(name)) {
+    name = `${baseName} (${counter++})`;
+  }
+  return name;
+};
 
-  const allStepsCompleted = stepCompleted > 4;
+const allStepsCompleted = stepCompleted > 4;
+
   
   // Function to go to the next step with validation
   const nextStep = () => {
