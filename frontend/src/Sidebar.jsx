@@ -127,7 +127,9 @@ function Sidebar({
                     {project.results.map((result, resultIndex) => (
                       <div
                         key={resultIndex}
-                        className={`project-result ${selectedResult?.result === result ? 'selected' : ''}`}
+                        className={`project-result ${
+                          selectedResult?.projectIndex === projectIndex && selectedResult?.result === result ? 'selected' : ''
+                        }`}
                         onMouseEnter={() => setHoveredResult({ projectIndex, resultIndex })}
                         onMouseLeave={() => setHoveredResult({ projectIndex: null, resultIndex: null })}
                         onClick={() => openResultDetails(projectIndex, result)}
@@ -167,25 +169,11 @@ function Sidebar({
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
               <h2>Analyze Result</h2>
 
-              <h3>Header 1</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
+            
+              <h3>Project: {projects[selectedResult.projectIndex]?.name}</h3>
+              <h3>Details for result: {selectedResult.result}</h3>
 
-              <h3>Header 2</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
-
-              <h3>Header 3</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
-
-              <h3>Header 4</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
+            
             </div>
           )}
         </>
