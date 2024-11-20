@@ -50,6 +50,7 @@ class NodeProperties:
         NAME = "name"
         DESCRIPTION = "description"
         QUESTIONS = "questions"
+        DATETIME = "datetime"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -69,6 +70,7 @@ class NodeProperties:
         # Project
         # example FOO = "foo"
         NAME = "name"
+        DATETIME = "datetime"
         
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -369,15 +371,15 @@ class Database(metaclass=DatabaseMeta):
             raise RuntimeError( "Neo4j lookup_node_property query failed: " + error_string )
 
 
-    def __lookup_nodes(self, type, id_type, property_name, parent_info = None):
+    def __lookup_nodes(self, type, id_type, property_list, parent_info = None):
         """
-        Lookup nodes and return list of them in a [[ID, property_name]] combo.
+        Lookup nodes and return list of them in a [[ID, property_list]] combo.
 
         Args:
             type (string): Node label
             id_type (string): Node id(property)
             id_value (string): Value for the id
-            property_name (string): property name to create/modify
+            property_list (list[string]): list of properties to lookup
             parent_info (dict, optional): Where relationship is pointing at
                 Expected keys:
                 - 'node_type' (string): Node label
@@ -393,15 +395,20 @@ class Database(metaclass=DatabaseMeta):
                 - None if nothing was found.
         """
 
+        property_list_string = ''
+        for item in property_list:
+            property_list_string = property_list_string + ", n." + item
+
+
         if parent_info == None:
             query_string = (
                 "MATCH (n:" + type + " ) "
-                "RETURN COLLECT ([n." + id_type + ", n." + property_name + "]) AS list"
+                "RETURN COLLECT ([n." + id_type + property_list_string + "]) AS list"
             )
         else:
             query_string = (
                 "MATCH (n:" + type + " ) - [] -> (:" + parent_info["node_type"] + " {" + parent_info["id_type"] + ": '" + parent_info["id_value"] + "'}) "
-                "RETURN COLLECT ([n." + id_type + ", n." + property_name + "]) AS list"
+                "RETURN COLLECT ([n." + id_type + property_list_string + "]) AS list"
             )
 
         try:
@@ -1278,7 +1285,7 @@ class Database(metaclass=DatabaseMeta):
     ### Project
     def add_project_node(self):
         """
-        Create a Project node.
+        Create a Project node. Also set DATETIME as creation time.
 
         Raises:
             RuntimeError: If database query error.
@@ -1288,7 +1295,11 @@ class Database(metaclass=DatabaseMeta):
                 - string containing ID value for the created node.
                 - None if node already exists.
         """        
-        return self.__add_node(self.__project_type, self.__project_id)
+
+        id = self.__add_node(self.__project_type, self.__project_id)
+        self.set_project_property(id, NodeProperties.Project.DATETIME, datetime.now().isoformat())
+
+        return id
 
 
     def set_project_property(self, id_value, property_name: NodeProperties.Project, new_data):
@@ -1351,17 +1362,22 @@ class Database(metaclass=DatabaseMeta):
 
     def lookup_project_nodes(self):
         """
-        Lookup Projects and return list of them in a [[ID, NAME]] combo.
+        Lookup Projects and return list of them in a [[ID, NAME, DATETIME]] combo.
 
         Raises:
             RuntimeError: If database query error.   
 
         Returns:
-            list[string, string] or None:
-                - list[string, string] A list of found nodes with ID and NAME combination.
+            list[string, string, string] or None:
+                - list[string, string, string] A list of found nodes with ID, NAME and DATETIME.iso() combination.
                 - None if nothing was found.
         """
-        return self.__lookup_nodes(self.__project_type, self.__project_id, NodeProperties.Project.NAME.value)
+        property_list = [
+            NodeProperties.Project.NAME.value,
+            NodeProperties.Project.DATETIME.value,
+            ]
+        
+        return self.__lookup_nodes(self.__project_type, self.__project_id, property_list)
     
 
     def delete_project(self, id_value):
@@ -1631,7 +1647,7 @@ class Database(metaclass=DatabaseMeta):
     ### Blueprint
     def add_blueprint_node(self):
         """
-        Create a Blueprint node.
+        Create a Blueprint node. Also set DATETIME as creation time.
         
         Raises:
             RuntimeError: If database query error.
@@ -1641,7 +1657,9 @@ class Database(metaclass=DatabaseMeta):
                 - string containing ID value for the created node.
                 - None if node already exists.
         """
-        return self.__add_node(self.__blueprint_type, self.__blueprint_id)
+        id = self.__add_node(self.__blueprint_type, self.__blueprint_id)
+        self.set_blueprint_property(id, NodeProperties.Blueprint.DATETIME, datetime.now().isoformat())
+        return id
 
 
     def set_blueprint_property(self, id_value, property_name: NodeProperties.DataModel, new_data):
@@ -1711,10 +1729,14 @@ class Database(metaclass=DatabaseMeta):
 
         Returns:
             list[string, string] or None:
-                - list[string, string] A list of found nodes with ID and NAME combination.
+                - list[string, string, string] A list of found nodes with ID, NAME and DATETIME.iso() combination.
                 - None if nothing was found.
         """
-        return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, NodeProperties.Blueprint.NAME.value)
+        property_list = [
+            NodeProperties.Blueprint.NAME.value,
+            NodeProperties.Blueprint.DATETIME.value,
+            ]
+        return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, property_list)
     
 
     def delete_blueprint(self, id_value):
@@ -2088,7 +2110,7 @@ class Database(metaclass=DatabaseMeta):
     
     def add_result_blueprint_node(self):
         """
-        Create Result-blueprint node. Also adding property DATETIME for it.
+        Create Result-blueprint node. Also set DATETIME as creation time.
         
         Raises:
             RuntimeError: If database query error.
@@ -2175,7 +2197,10 @@ class Database(metaclass=DatabaseMeta):
                 - None if nothing was found.
         """ 
         project_info = { "node_type" : self.__project_type, "id_type" : self.__project_id, "id_value" : project_id }
-        return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, NodeProperties.ResultBlueprint.DATETIME.value, project_info)
+        property_list = [
+            NodeProperties.ResultBlueprint.DATETIME.value,
+            ]
+        return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, property_list, project_info)
 
     def delete_result_blueprint(self, id_value):
         """
