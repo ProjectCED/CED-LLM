@@ -195,33 +195,32 @@ function Sidebar({
               <h2>Analyze Result</h2>
 
               <div className="result-details-content">
+                <div className="result-data">
                 <h3>Project: {projects[selectedResult.projectIndex]?.name}</h3>
                 <h3>Details for result: {selectedResult.result}</h3>
-
+                <h3>Blueprint: blueprint here</h3>
+                </div>
                 <p>
-                Text text text text text text text text text text text text text text text text text.
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
                 </p>
 
                 <p>
-                Text text text text text text text text text text text text text text text text text.
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
                 </p>
 
                 <p>
-                Text text text text text text text text text text text text text text text text text.
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
                 </p>
 
                 <p>
-                Text text text text text text text text text text text text text text text text text.
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
                 </p>
 
                 <p>
-                Text text text text text text text text text text text text text text text text text.
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
                 </p>
-
-                
 
               </div>
-  
 
               {/* Download button */}
               <button className="download-pdf-button" onClick={downloadPDF}>

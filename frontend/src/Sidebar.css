@@ -216,6 +216,9 @@
 .result-details-content {
     flex: 1; /* Varmistaa, että sisältö ottaa kaiken ylimääräisen tilan */
     overflow-y: auto;
+    text-align: left; /* Pakottaa tekstin vasemmalle */
+    padding-left: 3vh;
+    padding-right: 3vh;
 }
 
 /* Show result details when there is a selected result */
@@ -240,16 +243,20 @@
     transform: scale(1.2);
 }
 
+.result-data {
+    margin-bottom: 30px;
+}
+
 .result-details h2 {
     font-size: 1.9rem;
     margin-bottom: 60px;
-    margin-top: 30px;
+    margin-top: 20px;
     color: #2B3034;
 }
 
 /* Header style within the result details */
 .result-details h3 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-bottom: 10px;
     color: #2B3034;
 }
@@ -258,8 +265,7 @@
 .result-details p {
     font-size: 1rem;
     line-height: 1.6;
-    margin-top: 40px;
-    margin-bottom: 20px;
+    margin-top: 10px;
     color: #2B3034;
 }
 
@@ -284,4 +290,3 @@
 .download-pdf-button:hover {
 background-color: #117DB9;
 }
-
