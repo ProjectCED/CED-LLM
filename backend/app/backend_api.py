@@ -3,6 +3,7 @@ from flask_cors import CORS
 from app.api_handler import ApiHandler
 from app.database import Database, NodeProperties
 import os
+from app.models.blueprint import Blueprint as BP
 
 main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
@@ -63,11 +64,8 @@ def analyze_file():
 # Database handling
 @main.route('/get_blueprints', methods=['GET'])
 def get_blueprints():
-    """return jsonify([
-        {"id": 1, "name": "Blueprint 1", "description": "bp1_desc", "questions": ["Q1", "Q2"]},
-        {"id": 2, "name": "Blueprint 2", "description": "bp2_desc", "questions": ["Q3", "Q4"]}])"""
     blueprints = database.lookup_blueprint_nodes() # [[ID, NAME]]
-    blueprints_with_all_properties = [{}]
+    blueprints_with_all_properties = []
     for bp in blueprints:
         id = bp[0]
         name = bp[1]
@@ -75,6 +73,25 @@ def get_blueprints():
         questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
         blueprints_with_all_properties.append({"id": id, "name": name, "description": desc, "questions": questions})
     return jsonify(blueprints_with_all_properties)
+
+
+@main.route('/save_blueprint', methods=['POST'])
+def save_blueprint():
+    data = request.json
+    name = data['name']
+    description = data['description']
+
+    # On the frontend, questions are divided in the "main" question and additional questions
+    question = data['question']
+    addedQuestions = data['addedQuestions']
+
+    # Merge questions to one list
+    questions = [question] + addedQuestions
+
+    bp = BP(name, description, questions)
+
+    # Returns the ID
+    return bp.save_blueprint()
 
 if __name__ == '__main__':
     main.run(debug=True)
