@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
+import jsPDF from "jspdf"; 
 import './Sidebar.css';
 
 function Sidebar({ 
@@ -89,7 +90,31 @@ function Sidebar({
     setOverlayActive(false);
   };
 
- 
+  const downloadPDF = () => {
+    if (!selectedResult) return;
+
+    const doc = new jsPDF();
+    const projectName = projects[selectedResult.projectIndex]?.name;
+    const resultName = selectedResult.result;
+
+    // Add content to the PDF
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("Analyze Result", 20, 20);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Project: ${projectName}`, 20, 40);
+    doc.text(`Result: ${resultName}`, 20, 50);
+    doc.text("Details for the result:", 20, 70);
+
+    // Add example content
+    const exampleText = `
+      Result details here. This could include any relevant data about the result.`;
+    doc.text(exampleText, 20, 90, { maxWidth: 170 });
+
+    // Save the PDF
+    doc.save(`${resultName}.pdf`);
+  };
 
   return (
     <div className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}>
@@ -169,11 +194,40 @@ function Sidebar({
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
               <h2>Analyze Result</h2>
 
-            
-              <h3>Project: {projects[selectedResult.projectIndex]?.name}</h3>
-              <h3>Details for result: {selectedResult.result}</h3>
+              <div className="result-details-content">
+                <h3>Project: {projects[selectedResult.projectIndex]?.name}</h3>
+                <h3>Details for result: {selectedResult.result}</h3>
 
-            
+                <p>
+                Text text text text text text text text text text text text text text text text text.
+                </p>
+
+                <p>
+                Text text text text text text text text text text text text text text text text text.
+                </p>
+
+                <p>
+                Text text text text text text text text text text text text text text text text text.
+                </p>
+
+                <p>
+                Text text text text text text text text text text text text text text text text text.
+                </p>
+
+                <p>
+                Text text text text text text text text text text text text text text text text text.
+                </p>
+
+                
+
+              </div>
+  
+
+              {/* Download button */}
+              <button className="download-pdf-button" onClick={downloadPDF}>
+                Download to PDF
+              </button>
+
             </div>
           )}
         </>
