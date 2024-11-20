@@ -4,21 +4,26 @@ import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import './Sidebar.css';
 
-function Sidebar({ setOverlayActive, projects, setProjects }) {
+function Sidebar({ 
+  setOverlayActive, 
+  projects, 
+  setProjects, 
+  expanded, 
+  setExpanded, 
+  selectedResult, 
+  setSelectedResult  
+  }) {
 
   // State to manage sidebar expansion
-  const [expanded, setExpanded] = useState(false);
-  
   const [newProjectName, setNewProjectName] = useState('');
   const [hoveredProject, setHoveredProject] = useState(null);
   const [hoveredResult, setHoveredResult] = useState({ projectIndex: null, resultIndex: null });
-  const [selectedResult, setSelectedResult] = useState(null);
 
-  // Toggles sidebar between expanded and collapsed states
+  // Toggle sidebar between expanded and collapsed states
   const toggleSidebar = () => {
     setExpanded(!expanded);
-    if (expanded) {
-      closeResultDetails();
+    if (!expanded) {
+      setSelectedResult(null); // Collapse closes result details
     }
   };
 
@@ -83,6 +88,8 @@ function Sidebar({ setOverlayActive, projects, setProjects }) {
     setSelectedResult(null);
     setOverlayActive(false);
   };
+
+ 
 
   return (
     <div className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}>

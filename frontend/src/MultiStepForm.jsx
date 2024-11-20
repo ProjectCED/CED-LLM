@@ -7,7 +7,7 @@ import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
 
-const MultiStepForm = ({ projects, setProjects }) => {
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult}) => {
   // State variables to track the current step and selections
   const [currentStep, setCurrentStep] = useState(1); 
   const [selectedFiles, setSelectedFiles] = useState([]); 
@@ -82,26 +82,33 @@ const MultiStepForm = ({ projects, setProjects }) => {
       (project) => project.name === selectedExistingProject
     );
 
-    // Update projects
+    // Luo uusi tulos ja päivitä projekti
+    let newResultName;
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {
-          const newResultName = generateUniqueResultName(project.results, formattedDate);
-          console.log("New result name:", newResultName); // Tarkista luodun tuloksen nimi
-          return { ...project, results: [...project.results, newResultName] };
+          newResultName = generateUniqueResultName(project.results, formattedDate);
+          return { ...project, results: [...project.results, newResultName], open: true };
         }
         return project;
       });
-      console.log("Updated projects:", updatedProjects); // Tarkista päivitetty tila
       return updatedProjects;
     });
 
-    // Reset form
+    // Avaa Sidebar ja aseta valituksi tulokseksi luotu tulos
+    if (newResultName) {
+      setSelectedResult({
+        projectIndex: existingProjectIndex,
+        result: newResultName,
+      });
+      setExpanded(true); // Avaa Sidebar
+    }
+
+    // Lopuksi resetoi lomaketila
     resetFormState();
 
     alert("Analysis completed! The result has been added to the selected project.");
-
-  }
+  };
 
   // Funktio generoi uniikin tulosnimen, jos samannimisiä on jo olemassa
   const generateUniqueResultName = (results, baseName) => {

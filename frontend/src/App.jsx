@@ -10,7 +10,9 @@ import MultiStepForm from './MultiStepForm';
 
 function App() {
   const [overlayActive, setOverlayActive] = useState(false);
-
+  // State for Sidebar control and selected result
+  const [expanded, setExpanded] = useState(false);
+  const [selectedResult, setSelectedResult] = useState(null);
   // State for project list, with each project containing results
   const [projects, setProjects] = useState([
     { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
@@ -28,22 +30,58 @@ function App() {
           <Route path="/" element={<StartPage />} />
 
           {/* Views that have Header */}
-          <Route path="/app/*" element={<MainLayout setOverlayActive={setOverlayActive} projects={projects} setProjects={setProjects} />} />
+          <Route path="/app/*" element={
+            <MainLayout 
+            setOverlayActive={setOverlayActive} 
+            projects={projects} 
+            setProjects={setProjects} 
+            expanded={expanded}
+            setExpanded={setExpanded}
+            selectedResult={selectedResult}
+            setSelectedResult={setSelectedResult}
+          />
+          } 
+        />
         </Routes>
       </Router>
     </div>
   );
 }
 
-function MainLayout({ setOverlayActive, projects, setProjects }) {
+function MainLayout({ 
+  setOverlayActive, 
+  projects, 
+  setProjects, 
+  expanded, 
+  setExpanded, 
+  selectedResult, 
+  setSelectedResult  
+}) {
   return (
     <div className="main-layout">
       <Header />
       <div className="content-container">
-        <Sidebar setOverlayActive={setOverlayActive} projects={projects} setProjects={setProjects} />
+        <Sidebar
+          setOverlayActive={setOverlayActive} 
+          projects={projects} 
+          setProjects={setProjects} 
+          expanded={expanded} 
+          setExpanded={setExpanded} 
+          selectedResult={selectedResult} 
+          setSelectedResult={setSelectedResult} 
+         />
         <div className="main-content"> {/* Tämä tummentuu, kun overlay on aktiivinen */}
           <Routes>
-            <Route path="classification" element={<MultiStepForm projects={projects} setProjects={setProjects} />} />
+            <Route path="classification" 
+              element={
+                <MultiStepForm 
+                  projects={projects} 
+                  setProjects={setProjects} 
+                  setExpanded={setExpanded} 
+                  setSelectedResult={setSelectedResult}
+                />
+                } 
+                />
             <Route path="projects" element={<Projects />} />
             <Route path="blueprints" element={<Blueprints />} />
           </Routes>
