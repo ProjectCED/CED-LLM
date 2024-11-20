@@ -3,16 +3,16 @@ const BlueprintDropdown = ({ blueprints, selectedBlueprint, onSelectBlueprint })
     <div className="dropdown-container">
       <select
         id="blueprint-select"
-        value={selectedBlueprint}
+        value={selectedBlueprint && selectedBlueprint.name}
         onChange={(e) => {
           const index = parseInt(e.target.value);
           onSelectBlueprint(index);
         }}
       >
         <option value="">-- Select a saved blueprint --</option>
-        {blueprints.map(([id, name], index) => (
+        {blueprints.map((blueprint, index) => (
           <option key={index} value={index}>
-            {name}
+            {blueprint.name}
           </option>
         ))}
       </select>

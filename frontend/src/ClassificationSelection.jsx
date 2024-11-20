@@ -7,15 +7,15 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   // Local state to keep track of the currently selected classification,
   // selected blueprint and custom input text
   const [localSelectedClassification, setLocalSelectedClassification] = useState(selectedClassification || '');
-  const [selectedBlueprint, setSelectedBlueprint] = useState([]);
-  const [blueprints, setBlueprints] = useState([[]]);
+  const [selectedBlueprint, setSelectedBlueprint] = useState(null);
+  const [blueprints, setBlueprints] = useState([]);
   const [customText, setCustomText] = useState('');
 
   // Update localSelectedClassification if selectedClassification prop changes
   useEffect(() => {
     setLocalSelectedClassification(selectedClassification);
-    getBlueprints().then((blueprints) => {
-      setBlueprints(blueprints);
+    getBlueprints().then((bps) => {
+      setBlueprints(bps);
     });
   }, [selectedClassification]);
 
@@ -26,8 +26,8 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   
     // If classification is not 'Saved Classification', clears selected blueprint
   if (classification !== 'Saved Blueprint') {
-    setSelectedBlueprint([]);
-    onSelectBlueprint([]); 
+    setSelectedBlueprint(null);
+    onSelectBlueprint(null); 
   }
 
   if (classification !== 'Created Blueprint') {
@@ -85,7 +85,7 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
         <BlueprintDropdown
           key={localSelectedClassification} 
           blueprints={blueprints}
-          selectedBlueprint={selectedBlueprint[1]}
+          selectedBlueprint={selectedBlueprint}
           onSelectBlueprint={handleBlueprintSelect}
         />
       )}

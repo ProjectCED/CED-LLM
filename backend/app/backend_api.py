@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint, request
 from flask_cors import CORS
 from app.api_handler import ApiHandler
-from app.database import Database
+from app.database import Database, NodeProperties
 import os
 
 main = Blueprint('main', __name__)
@@ -63,8 +63,18 @@ def analyze_file():
 # Database handling
 @main.route('/get_blueprints', methods=['GET'])
 def get_blueprints():
-    blueprints = database.lookup_blueprint_nodes()
-    return jsonify(blueprints)
+    """return jsonify([
+        {"id": 1, "name": "Blueprint 1", "description": "bp1_desc", "questions": ["Q1", "Q2"]},
+        {"id": 2, "name": "Blueprint 2", "description": "bp2_desc", "questions": ["Q3", "Q4"]}])"""
+    blueprints = database.lookup_blueprint_nodes() # [[ID, NAME]]
+    blueprints_with_all_properties = [{}]
+    for bp in blueprints:
+        id = bp[0]
+        name = bp[1]
+        desc = database.lookup_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION)
+        questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
+        blueprints_with_all_properties.append({"id": id, "name": name, "description": desc, "questions": questions})
+    return jsonify(blueprints_with_all_properties)
 
 if __name__ == '__main__':
     main.run(debug=True)
