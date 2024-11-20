@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AddBlueprint from './AddBlueprint'; 
 import './Blueprints.css';
-import { getBlueprints, saveBlueprint } from './utils';
+import { getBlueprints, saveBlueprint, deleteBlueprint } from './utils';
 
 const Blueprints = () => {
   // State to hold the array of blueprints. Each blueprint has properties: 
@@ -69,7 +69,10 @@ const Blueprints = () => {
   const handleDeleteClick = (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this blueprint?');
     if (confirmDelete) {
-      setBlueprints(blueprints.filter(bp => bp.id !== id));
+      const success = deleteBlueprint(id);
+      if (success) {
+        setBlueprints(blueprints.filter(bp => bp.id !== id));
+      }
     }
   };
 

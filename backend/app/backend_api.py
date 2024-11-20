@@ -93,5 +93,14 @@ def save_blueprint():
     # Returns the ID
     return bp.save_blueprint()
 
+@main.route('/delete_blueprint', methods=['POST'])
+def delete_blueprint():
+    data = request.json
+    id = data['id']
+
+    # True/false
+    success = database.delete_blueprint(id)
+    return jsonify({"success": success})
+
 if __name__ == '__main__':
     main.run(debug=True)
