@@ -1,4 +1,11 @@
 version: '3'
+# Networks for backend and frontend are separated
+networks:
+  backend:
+    external: false
+  frontend: 
+    external: false
+
 services:
   frontend:
     build: ./frontend
@@ -7,7 +14,11 @@ services:
     environment:
       - REACT_APP_API_URL=http://localhost:5000/api
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    networks:
+      - frontend
+
 
   backend:
     build: ./backend
@@ -19,7 +30,16 @@ services:
       - JWT_SECRET_KEY=your_jwt_secret_key
       - NEO4J_URL=bolt://neo4j:7687
     depends_on:
-      - neo4j
+      neo4j:
+        condition: service_healthy
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+
 
   neo4j:
     image: neo4j:latest
@@ -27,4 +47,17 @@ services:
       - "7474:7474"
       - "7687:7687"
     environment:
-      - NEO4J_AUTH=neo4j/password
+      - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD}
+    healthcheck:
+      test: "cypher-shell -u ${NEO4J_USER} -p ${NEO4J_PASSWORD} 'RETURN 1'"
+      interval: 10s
+      retries: 5
+    volumes:
+      - neo4j_data:/data   # Persist database data
+      - neo4j_logs:/logs   # Persist logs
+      - neo4j_plugins:/plugins  # Directory for plugins (optional)
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_plugins:
