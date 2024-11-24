@@ -1,23 +1,23 @@
-version: '3'
 # Networks for backend and frontend are separated
-networks:
-  backend:
-    external: false
-  frontend: 
-    external: false
+#networks:
+#  backend:
+#    external: false
+#  frontend: 
+#    external: false
 
 services:
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
+      - "5173:5173"
     environment:
       - REACT_APP_API_URL=http://localhost:5000/api
     depends_on:
       backend:
         condition: service_healthy
-    networks:
-      - frontend
+#    networks:
+#      - frontend
 
 
   backend:
@@ -29,27 +29,35 @@ services:
     environment:
       - JWT_SECRET_KEY=your_jwt_secret_key
       - NEO4J_URL=bolt://neo4j:7687
+      - NEO4J_DB_NAME=neo4j
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      - OPENAI_KEY=DUMMY
     depends_on:
       neo4j:
         condition: service_healthy
-    networks:
-      - backend
+#    networks:
+#      - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 3s
       timeout: 3s
       retries: 3
+      start_period: 5s
 
 
   neo4j:
-    image: neo4j:latest
+    image: neo4j:5.25-community
     ports:
-      - "7474:7474"
+      - "7433:7433" #changed from normal 7474
       - "7687:7687"
     environment:
-      - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD}
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD}
+#      - NEO4J_AUTH=neo4j/password
     healthcheck:
-      test: "cypher-shell -u ${NEO4J_USER} -p ${NEO4J_PASSWORD} 'RETURN 1'"
+      #test: "cypher-shell -u neo4j -p $NEO4J_PASSWORD 'RETURN 1'"
+      test: "cypher-shell -u neo4j -p ${NEO4J_PASSWORD} 'RETURN 1'"
       interval: 10s
       retries: 5
     volumes:
