@@ -88,6 +88,7 @@ function MainLayout({
                   setExpanded={setExpanded} 
                   setSelectedResult={setSelectedResult}
                   setBlueprint={setBlueprint}
+                  setOverlayActive={setOverlayActive} 
                 />
                 } 
                 />
@@ -101,5 +102,3 @@ function MainLayout({
 }
 
 export default App;
-
-
