@@ -19,7 +19,6 @@ function App() {
     { name: 'Dog show data', open: false, results: ['28042023'] },
     { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
   ]);
-
   // State for selected blueprint
   const [blueprint, setBlueprint] = useState('');
 
@@ -78,7 +77,7 @@ function MainLayout({
           setSelectedResult={setSelectedResult} 
           blueprint={blueprint}
          />
-        <div className="main-content"> {/* Tämä tummentuu, kun overlay on aktiivinen */}
+        <div className="main-content">
           <Routes>
             <Route path="classification" 
               element={
