@@ -24,8 +24,8 @@ services:
     build: ./backend
     ports:
       - "5000:5000"
-    volumes:
-      - ./backend:/app
+#    volumes:
+#      - ./backend:/app
     environment:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - NEO4J_URL=${NEO4J_URL}
