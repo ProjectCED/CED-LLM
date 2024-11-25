@@ -114,7 +114,7 @@ class Database(metaclass=DatabaseMeta):
           - relationship types
         """
 
-        self.__driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
+        self.__driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USERNAME'), os.getenv('NEO4J_USERPASSWORD')))
         self.__name = os.getenv('NEO4J_DB_NAME')
 
         self.__global_settings_type = 'Settings'

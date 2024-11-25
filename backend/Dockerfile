@@ -15,7 +15,8 @@ RUN echo "conda activate ced-backend" >> ~/.bashrc
 ENV PATH /opt/conda/envs/ced-backend/bin:$PATH
 
 # for health check in docker-compose
-RUN apt-get update && apt-get install -y curl
+#RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y netcat-openbsd
 
 # Copy the rest of the code
 COPY . /app

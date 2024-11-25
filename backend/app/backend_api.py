@@ -9,19 +9,6 @@ apiHandler = ApiHandler()
 
 CORS(main)  # Allows connections between domains
 
-# TODO: Maybe more proper health check
-@main.route('/health')
-def health():
-    # You can add more checks if needed, like database connectivity
-    return jsonify({"status": "healthy"}), 200
-
-# TODO: Testing purpose, remove for release
-@main.route('/dbtest')
-def dbtest():
-    # You can add more checks if needed, like database connectivity
-    DatabaseDummy()
-    return jsonify({"status": "healthy"}), 200
-
 @main.route('/analyze', methods=['POST']) 
 def analyze():
     file = request.files['file']
