@@ -2,7 +2,6 @@ from flask import Flask, jsonify, Blueprint, request
 from flask_cors import CORS
 from app.api_handler import ApiHandler
 import os
-from app.database_dummy import DatabaseDummy
 
 main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
