@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Form, useNavigate } from 'react-router-dom';
 import FileDownload from './FileDownload'; // Step 1 component
 import ClassificationSelection from './ClassificationSelection'; // Step 2 component
 import AISelection from './AISelection'; // Step 3 component
@@ -7,7 +6,7 @@ import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
 
-const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint}) => {
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint, setOverlayActive}) => {
   // State variables to track the current step and selections
   const [currentStep, setCurrentStep] = useState(1); 
   const [selectedFiles, setSelectedFiles] = useState([]); 
@@ -24,7 +23,6 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   
   console.log('Projects in MultiStepForm:', projects);
 
-  const navigate = useNavigate(); // Hook for navigation
 
   // Function to reset form state
   const resetFormState = () => {
@@ -129,6 +127,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
         result: newResultName,
       });
       setExpanded(true); // Avaa Sidebar
+      setOverlayActive(true);
     }
   }
 
