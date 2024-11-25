@@ -7,7 +7,7 @@ import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
 
-const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult}) => {
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint}) => {
   // State variables to track the current step and selections
   const [currentStep, setCurrentStep] = useState(1); 
   const [selectedFiles, setSelectedFiles] = useState([]); 
@@ -219,11 +219,13 @@ const allStepsCompleted = stepCompleted > 4;
   // Function to update selected blueprint in step 2
   const handleBlueprintSelection = (blueprint) => {
     setSelectedBlueprint(blueprint);
+    setBlueprint(blueprint);
   };
 
   // Function to custom blueprint text
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
+    setBlueprint(text);
   };
 
   // Function to update selected project option (New or Existing)
