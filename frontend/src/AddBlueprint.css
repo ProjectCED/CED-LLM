@@ -33,6 +33,7 @@ input[type="text"],
 
 .input-with-button button:hover {
     background-color: #2980b9;
+    transform: translateY(-2px);
 }
 
 /* Container styling for the form */
