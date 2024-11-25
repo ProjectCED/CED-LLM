@@ -143,7 +143,7 @@ const Blueprints = () => {
                           className="remove-button" 
                           onClick={() => handleRemoveQuestionClick(blueprint.id, index)}
                         >
-                          &#10005; {/* X mark */} 
+                          &#10005;  
                         </span>
                       </li>
                     ))}

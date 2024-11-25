@@ -27,7 +27,6 @@
 .ai-option {
   background-color: grey;
   color: #e8f1f2;
-  border: none;
   padding: 15px 70px;
   font-size: 18px;
   border-radius: 20px;
@@ -35,7 +34,7 @@
   transition: background-color 0.3s ease;
   flex: 1 1 auto; 
   min-width: 250px; 
-  max-width: 100%; 
+  border: none;
 }
 
 /* Styling for AI option button hover state */

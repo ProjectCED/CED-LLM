@@ -16,7 +16,6 @@ const AISelection = () => {
   const handleAnalyze = () => {
     if (selectedAI) {
       console.log(`Analyzing with ${selectedAI}`);
-      // Lisää  navigointia tähän!!
       navigate('/app/projects');
     } else {
       alert('Please select an AI option!');
