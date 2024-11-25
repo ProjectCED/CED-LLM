@@ -1,5 +1,5 @@
-/* Wrapper for the input and button */
-.input-with-button {
+ /* Wrapper for the input and button */
+ .input-with-button {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -10,11 +10,10 @@
 input[type="text"],
 .input-with-button input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #dcdde1;
-    border-radius: 4px;
+    padding: 1vh;
+    border: 0.2vh solid #dcdde1;
+    border-radius: 0.4vh;
     font-size: 1rem;
-    outline: none;
     box-sizing: border-box;
     height: 40px;
 }
@@ -24,7 +23,7 @@ input[type="text"],
     background-color: #3498db;
     color: #e8f1f2;
     border: none;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 0.4vh 0.4vh 0;
     padding: 0 12px;
     cursor: pointer;
     font-size: 1rem;
@@ -39,29 +38,31 @@ input[type="text"],
 /* Container styling for the form */
 .new-blueprint-form {
     background-color: #1a334a;
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
+    border-radius: 0.8vh;
+    padding: 4vh 2vw;
+    width: 80vw;
     max-width: 1000px;
+    height: 50vh;
     margin: auto;
+    overflow-y: auto;
 }
 
 /* Header styling */
 .new-blueprint-form h2 {
     font-size: 2rem;
     color: lightgray;
-    margin-bottom: 20px;
+    margin-bottom: 2vh;
 }
 
 /* Input group styling */
 .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 1vh;
     display: flex;
     flex-direction: column;
 }
 
 .input-group span {
-    margin-bottom: 5px;
+    margin-bottom: 1vh;
     color: lightgray;
     text-align: left;
     font-size: 1.2rem;
@@ -69,7 +70,7 @@ input[type="text"],
 
 /* Question list styling */
 .questions-list {
-    margin-top: 10px;
+    margin-top: 1vh;
 }
 
 /* Updated .question-item to match input-field size */
@@ -78,7 +79,7 @@ input[type="text"],
     border-radius: 4px;
     padding: 10px;
     display: inline-block;
-    margin: 5px 0;
+    margin: 1.5vh 0;
     width: 100%;
     height: 40px;
     font-size: 1rem;
@@ -93,7 +94,7 @@ input[type="text"],
     color: #dff9fb;
     font-weight: bold;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1rem;
     position: absolute;
     right: -10px;
     top: 50%;
@@ -102,6 +103,7 @@ input[type="text"],
 
 .question-item button:hover {
     color: #d9534f;
+    background: none;
 }
 
 /* Button group styling for vertical alignment */
@@ -118,7 +120,7 @@ input[type="text"],
 .cancel-button {
     background-color: #1a334a;
     color: #fff;
-    border: 1px solid #E8F1F2;
+    border: 0.2vh solid #E8F1F2;
     border-radius: 4px;
     padding: 10px 20px;
     cursor: pointer;
@@ -137,7 +139,6 @@ input[type="text"],
 
 /* Required fields notice styling */
 .required-note {
-    margin-top: 0px;
     font-size: 1rem; 
     color: lightgray;
     text-align: left;
