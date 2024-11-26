@@ -50,6 +50,12 @@ class TestAddNode:
         result = db.add_blueprint_node()
         assert result != None
 
+    def test_blueprint_2(self,db:Database):
+        id = db.add_blueprint_node()
+        used_id = db.copy_to_used_blueprint_node(id)
+        result = db.copy_to_blueprint_node(used_id)
+        assert result != None
+
     def test_result_blueprint(self,db:Database):
         result = db.add_result_blueprint_node()
         assert result != None
@@ -57,7 +63,9 @@ class TestAddNode:
     def test_used_blueprint(self,db:Database):
         id = db.add_blueprint_node()
         result = db.copy_to_used_blueprint_node(id)
-        assert result != None       
+        assert result != None
+
+       
 
 
 class TestSetProperty:
