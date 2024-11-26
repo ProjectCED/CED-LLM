@@ -36,7 +36,6 @@
 
   /* Styling for the title of each step when active */
   .step-title.active {
-    color: #E8F1F2;
     border-bottom: 1px solid rgba(184, 201, 204, 0.3);
     padding-bottom: 10px;
     width: 100%;
@@ -94,14 +93,13 @@
     
   }
   
-  /* Ensures all p and div elements inside .step-summary have the specified text color */
-  .step-summary p, .step-summary div {
-    color: #e8f1f2 !important; 
+  /* Ensures all p elements don't have space between them */
+  .step-summary p {
+    margin: 0px;
   }  
   
   /* Styling for the final Analyze button */
-  .analyze-button {
-    margin-top: 15px; 
+  .analyze-button { 
     padding: 15px 30px; 
     border: none; 
     font-size: 20px;

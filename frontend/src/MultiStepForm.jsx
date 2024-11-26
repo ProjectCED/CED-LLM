@@ -5,6 +5,32 @@ import AISelection from './AISelection'; // Step 3 component
 import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
+// EditButton Component
+const EditButton = ({ onEditClick, step }) => {
+  return (
+    <button className="edit-button" onClick={() => onEditClick(step)}>
+      Edit
+    </button>
+  );
+};
+
+// SaveButton Component
+const SaveButton = ({ onSaveClick }) => {
+  return (
+    <button className="multiform-save-button" onClick={onSaveClick}>
+      Save
+    </button>
+  );
+};
+
+// NextButton Component
+const NextButton = ({ onNextClick }) => {
+  return (
+    <button className="next-button" onClick={onNextClick}>
+      Next
+    </button>
+  );
+};
 
 const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint, setOverlayActive}) => {
   // State variables to track the current step and selections
@@ -33,15 +59,13 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   const [tempProjectOption, setTempProjectOption] = useState(null);
   const [tempExistingProject, setTempExistingProject] = useState(null);
   const [tempNewProjectName, setTempNewProjectName] = useState('');
-  
-  console.log('Projects in MultiStepForm:', projects);
 
 
   // Function to reset form state
   const resetFormState = () => {
 
-    // Function to reset form state
-    setCurrentStep(1); // Palaa ensimmäiseen vaiheeseen
+    // Function to reset persistent states
+    setCurrentStep(1); 
     setSelectedFiles([]);
     setCopiedText('');
     setSelectedClassification(null);
@@ -49,12 +73,12 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     setSelectedBlueprint(null);
     setSelectedProjectOption(null);
     setSelectedExistingProject(null);
-    setStepCompleted(0); // Nollaa suoritetut vaiheet
+    setStepCompleted(0); 
     setIsEditing(false);
     setCustomClassificationText('');
     setNewProjectName('');
 
-    // Reset temp states
+    // Reset temporay states
     setTempFiles([]);
     setTempText('');
     setTempClassification(null);
@@ -86,7 +110,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     }
   };
 
-   // Update selected files state
+   // Update selected temporary files state
    const handleTempFileUpload = (files) => {
     if (files.length > 0) {
       setTempFiles(files);
@@ -96,7 +120,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     }
   };
 
-  // Update copied text state
+  // Update temporary copied text state
   const handleTempTextChange = (text) => {
     if (text.trim() !== '') {
       setTempText(text);
@@ -125,6 +149,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   console.log('Selected Classification:', selectedClassification);
   console.log('Selected Blueprint:', selectedBlueprint);
   console.log('Custom Classification Text:', customClassificationText);
+  console.log('Selected project:', selectedProjectOption);
+  console.log('Selected Existing Project:', selectedExistingProject);
+  console.log('Projects:', projects);
 
   // If the user selected "New Project"
   if (selectedProjectOption === 'New Project') {
@@ -149,13 +176,12 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       result: formattedDate,
     });
 
+    // Expand the sidebar and set overlay so other content is unclickable
     setExpanded(true);
     setOverlayActive(true);
 
     // If the user selected "Existing Project"
   } else if (selectedProjectOption === 'Existing Project') {
-    console.log('Selected Existing Project:', selectedExistingProject);
-    console.log('Projects:', projects);
     // Check if chosen project can be found
     const existingProjectIndex = projects.findIndex(
       (project) => project.name === selectedExistingProject
@@ -179,24 +205,21 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       return updatedProjects;
     });
 
-    console.log('after setProjects');
-
     // Open the Sidebar and set the created result as selected
     if (newResultName) {
-      console.log('inside if newResultName');
       setSelectedResult({
         projectIndex: existingProjectIndex,
         result: newResultName,
       });
 
-      console.log('expanding');
-      setExpanded(true); // Avaa Sidebar
+      // Expand the sidebar and set overlay so other content is unclickable
+      setExpanded(true); 
       setOverlayActive(true);
     }
       
   }
 
-    // Finally, reset the form state
+    // Reset the form state
     resetFormState();
 
     alert("Analysis completed! The result has been added to the selected project.");
@@ -204,8 +227,6 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Function to generate a unique result name if duplicates exist
   const generateUniqueResultName = (results, baseName) => {
-    console.log('Existing results:', results);
-    console.log('Base name for new result:', baseName);
     let name = baseName;
     let counter = 1;
     while (results.includes(name)) {
@@ -217,81 +238,81 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   const allStepsCompleted = stepCompleted > 4;
 
-  
-  // Function to go to the next step with validation
+  // Combined validation and saving function
+  const validateAndSaveStep = (step) => {
+    switch (step) {
+      case 1:
+        if (tempFiles.length === 0 && tempText.trim() === '') {
+          alert('Please upload one file or enter some text.');
+          return false;
+        }
+        handleFileUpload(tempFiles);
+        handleTextChange(tempText);
+        break;
+
+      case 2:
+        if (!tempClassification) {
+          alert('Please select a classification option.');
+          return false;
+        }
+        if (tempClassification === 'Saved Blueprint' && !tempBlueprint) {
+          alert('Please select a saved blueprint.');
+          return false;
+        }
+        if (tempClassification === 'Created Blueprint' && tempCustomText.trim() === '') {
+          alert('Please enter a blueprint for "Created Blueprint".');
+          return false;
+        }
+        handleClassificationSelection(tempClassification);
+        if (tempClassification === 'Saved Blueprint') {
+          handleBlueprintSelection(tempBlueprint);
+        } else if (tempClassification === 'Created Blueprint') {
+          handleCustomTextChange(tempCustomText);
+        } else {
+          setBlueprint(null);
+        }
+        break;
+
+      case 3:
+        if (!tempAI) {
+          alert('Please select an AI option.');
+          return false;
+        }
+        handleAISelection(tempAI);
+        break;
+
+      case 4:
+        if (!tempProjectOption) {
+          alert('Please choose a project option.');
+          return false;
+        }
+        if (tempProjectOption === 'New Project' && !tempNewProjectName.trim()) {
+          alert('Please enter a new project name.');
+          return false;
+        }
+        if (tempProjectOption === 'Existing Project' && !tempExistingProject) {
+          alert('Please select an existing project to continue.');
+          return false;
+        }
+        if (tempProjectOption === 'Existing Project' && tempExistingProject) {
+          handleExistingProjectSelection(tempExistingProject);
+        }
+        handleProjectOptionSelection(tempProjectOption);
+        setNewProjectName(tempNewProjectName);
+        break;
+
+      default:
+        console.error('Invalid step');
+        return false;
+    }
+    return true;
+  };
+
+  // Function to go to the next step with validation and save selections
   const nextStep = () => {
-    // Validation for step 1: Check if files or text are provided
-    if (currentStep === 1) {
-      if (tempFiles.length === 0 && tempText.trim() === '') {
-        alert('Please upload one file or enter some text.');
-        return;
-      }
-
-      handleFileUpload(tempFiles);
-      handleTextChange(tempText);
+    if (!validateAndSaveStep(currentStep)) {
+      return; 
     }
-
-    // Validation for step 2: Ensure a classification option is selected
-    if (currentStep === 2) {
-      if (!tempClassification) {
-        alert('Please select a classification option.');
-        return;
-      }
-      // Check if "Saved Blueprint" requires a blueprint selection
-      if (tempClassification === 'Saved Blueprint' && !tempBlueprint) {
-        alert('Please select a saved blueprint.');
-        return;
-      }
-
-      // Check if "Created Blueprint" requires custom blueprint text input
-      if (tempClassification === 'Created Blueprint' && tempCustomText.trim() === '') {
-        alert('Please enter a blueprint for "Created Blueprint".');
-        return;
-      }
-
-
-      handleClassificationSelection(tempClassification);
-
-      if (tempClassification === 'Saved Blueprint') {
-        handleBlueprintSelection(tempBlueprint);
-      } else if (tempClassification === 'Created Blueprint') {
-        handleCustomTextChange(tempCustomText);
-      } else {
-        setBlueprint(null);
-      }
-      
-    }
-
-    // Validation for step 3: Ensure an AI option is selected
-    if (currentStep === 3) {
-      if (!tempAI) {
-        alert('Please select an AI option.');
-        return;
-      }
-
-      handleAISelection(tempAI);
-    }
-
-    // Validation for step 4: Ensure a project is selected
-    if (currentStep === 4) {
-      if (!tempProjectOption) {
-        alert('Please select a project option.');
-        return;
-      }
-      if (tempProjectOption === 'Existing Project' && !tempExistingProject) {
-        alert('Please select an existing project.');
-        return;
-      }
-
-      if (tempProjectOption === 'Existing Project' && tempExistingProject) {
-        handleExistingProjectSelection(tempExistingProject);
-      }
-
-      handleProjectOptionSelection(tempProjectOption);
-      setNewProjectName(tempNewProjectName);
-    }
-
-    // Move to the next step and update the step completion status
     const newStep = currentStep + 1;
     setCurrentStep(newStep);
     setStepCompleted(Math.max(stepCompleted, newStep));
@@ -300,7 +321,6 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   // Function to update selected classification in step 2
   const handleClassificationSelection = (classification) => {
     setSelectedClassification(classification);
-    console.log('Classification selected:', classification);
   };
 
   // Function to update selected AI in step 3
@@ -346,85 +366,18 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       alert('Please save or cancel the current editing step before editing another step.');
       return;
     }
-
     setCurrentStep(step);
     setIsEditing(true);
   };
 
   // Function to handle the "Save" button click
   const handleSaveClick = () => {
-    if (currentStep === 1) {
-
-      if (tempFiles.length === 0 && tempText.trim() === '') {
-        alert('Please upload one file or enter some text.');
-        return;
-      }
-
-      handleFileUpload(tempFiles);
-      handleTextChange(tempText);
+    if (!validateAndSaveStep(currentStep)) {
+      return; 
     }
-
-    // Validation for step 2: Ensure a classification option is selected
-    if (currentStep === 2) {
-      if (!tempClassification) {
-        alert('Please select a classification option.');
-        return;
-      }
-      // Check if "Saved Blueprint" requires a blueprint selection
-      if (tempClassification === 'Saved Blueprint' && !tempBlueprint) {
-        alert('Please select a a saved blueprint.');
-        return;
-      }
-      // Check if "Created Blueprint" requires custom blueprint text input
-      if (tempClassification === 'Created Blueprint' && tempCustomText.trim() === '') {
-        alert('Please enter a blueprint for "Created Blueprint".');
-        return;
-      }
-
-      handleClassificationSelection(tempClassification);
-      if (tempClassification === 'Saved Blueprint') {
-        handleBlueprintSelection(tempBlueprint);
-      } else if (tempClassification === 'Created Blueprint') {
-        handleCustomTextChange(tempCustomText);
-      } else {
-        setBlueprint(null);
-      }
-    }
-
-    if (currentStep === 3) {
-      handleAISelection(tempAI);
-    }  
-
-    // Validation for step 4
-    if (currentStep === 4) {
-      if (!tempProjectOption) {
-        alert('Please choose a project option.');
-        return;
-      }
-
-      if (tempProjectOption === 'New Project' && !tempNewProjectName.trim()) {
-        alert('Please enter a new project name.');
-        return;
-      }
-      
-      if (tempProjectOption === 'Existing Project' && !tempExistingProject) {
-        alert('Please select an existing project to continue.');
-        return;
-      }
-
-      if (tempProjectOption === 'Existing Project' && tempExistingProject) {
-        handleExistingProjectSelection(tempExistingProject);
-      }
-
-      handleProjectOptionSelection(tempProjectOption);
-      setNewProjectName(tempNewProjectName);
-    }
-
-    setIsEditing(false); // Close the edit mode
-    setCurrentStep(5);
+    setIsEditing(false); 
+    setCurrentStep(5); 
   };
-
-
 
   return (
     <div className="multi-step-form">
@@ -438,9 +391,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
             1. File Upload or Copy Paste Text
           </h2>
           {allStepsCompleted && currentStep !== 1 && (
-            <button className="edit-button" onClick={() => handleEditClick(1)}>
-              Edit
-            </button>
+            <EditButton onEditClick={handleEditClick} step={1} />
           )}
         </div>
         {currentStep === 1 && (
@@ -451,9 +402,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
               isEditing={isEditing} 
             />
             {isEditing ? (
-              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
+              <SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <button className="next-button" onClick={nextStep}>Next</button>
+              <NextButton onNextClick={nextStep} />
             )}
           </div>
         )}
@@ -483,9 +434,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
             2. Blueprint Selection
           </h2>
           {allStepsCompleted && currentStep !== 2 && (
-            <button className="edit-button" onClick={() => handleEditClick(2)}>
-              Edit
-            </button>
+            <EditButton onEditClick={handleEditClick} step={2} />
           )}
         </div>
         {currentStep === 2 && (
@@ -498,9 +447,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
               onCustomTextChange={setTempCustomText}
             />
             {isEditing ? (
-              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
+              <SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <button className="next-button" onClick={nextStep}>Next</button>
+              <NextButton onNextClick={nextStep} />
             )}
           </div>
         )}
@@ -520,18 +469,16 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
             3. AI Selection
           </h2>
           {allStepsCompleted && currentStep !== 3 && (
-            <button className="edit-button" onClick={() => handleEditClick(3)}>
-              Edit
-            </button>
+            <EditButton onEditClick={handleEditClick} step={3} />
           )}
         </div>
         {currentStep === 3 && (
           <div className="step-content">
             <AISelection selectedAI={tempAI} onSelectAI={setTempAI} isLocked={isEditing} />
             {isEditing ? (
-              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
+              <SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <button className="next-button" onClick={nextStep}>Next</button>
+              <NextButton onNextClick={nextStep} />
             )}
           </div>
         )}
@@ -549,9 +496,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
             4. Choose a Project for Displaying Results
           </h2>
           {allStepsCompleted && currentStep !== 4 && (
-            <button className="edit-button" onClick={() => handleEditClick(4)}>
-              Edit
-            </button>
+            <EditButton onEditClick={handleEditClick} step={4} />
           )}
         </div>
         {currentStep === 4 && (
@@ -568,9 +513,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
               onNewProjectNameChange={setTempNewProjectName}
             />
             {isEditing ? (
-              <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
+              <SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <button className="next-button" onClick={nextStep}>Next</button>
+              <NextButton onNextClick={nextStep} />
             )}
           </div>
         )}
