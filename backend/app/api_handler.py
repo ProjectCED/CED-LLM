@@ -48,13 +48,7 @@ class ApiHandler():
         if text is None:
             return None
         return self.analyze_text(text, model)
-    
-    def test_file_read(self, filepath: str) -> str:
-        text = utils.extract_text_from_file(filepath)
-        if text is None:
-            return None
-        return text
-        
+            
 
 def main():
     #apiHandler = ApiHandler()
