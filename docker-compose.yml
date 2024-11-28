@@ -13,11 +13,14 @@ services:
     build: ./frontend
     ports:
 #      - "3000:3000" # TODO: label this
-      - "5173:5173" # primary user access to application
+#      - "5173:5173" # primary user access to application
+      - "${VITE_PORT:-5173}:${VITE_PORT:-5173}"
 #    expose:
 #      - '3000' # TODO: label this
     environment:
-      - REACT_APP_API_URL=http://localhost:5000/api
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - VITE_PORT=${VITE_PORT}
     depends_on:
       backend:
         condition: service_healthy
@@ -28,8 +31,8 @@ services:
   backend:
     container_name: backend
     build: ./backend
-    ports:
-      - "5000:5000" # Communication with frontend
+#    ports:
+#      - "5000:5000" # Communication with frontend
     expose:
       - "5000" # Communication with frontend
     environment:
@@ -39,6 +42,7 @@ services:
       - DB_USERNAME=neo4j #locked to 'neo4j' in community version
       - DB_PASSWORD=${DB_PASSWORD}
       - OPENAI_KEY=${OPENAI_KEY}
+      - VITE_PORT=${VITE_PORT}
     depends_on:
       neo4j:
         

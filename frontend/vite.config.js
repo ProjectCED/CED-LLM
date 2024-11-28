@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:5000',
+      '/api': {
+        target: process.env.VITE_BACKEND_URL,
+        rewrite: (path) => path.replace(/^\/api/, ''), // Remove `/api` prefix
+      },
     },
+    port: process.env.VITE_PORT || 5173,
   },
 })
