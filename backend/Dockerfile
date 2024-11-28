@@ -21,7 +21,4 @@ RUN apt-get update && apt-get install -y netcat-openbsd
 # Copy the rest of the code
 COPY . /app
 
-# Expose the application port
-EXPOSE 5000
-
 CMD ["flask", "run", "--host=0.0.0.0"]
