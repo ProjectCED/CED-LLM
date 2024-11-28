@@ -35,7 +35,7 @@ def test_analyze_text_primary_model(mock_openai):
 
     mock_openai.return_value.chat.completions.create.return_value = mock_response
     api_handler = ApiHandler()
-    api_handler._ApiHandler__client = mock_openai.return_value
+    api_handler._ApiHandler__client = mock_openai.return_value ## mock __client variable
     
     result = api_handler.analyze_text("Sample text")
     assert result == "Analyzed text result."
