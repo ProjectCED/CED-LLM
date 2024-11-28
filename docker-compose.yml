@@ -1,6 +1,6 @@
 # Backend related ports are commented out, comment them back in if needed during development
 
-# Networks for backend and frontend are separated
+# Networks for backend and database are separated
 networks:
  backend: 
    external: false
