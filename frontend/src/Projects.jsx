@@ -1,37 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import './Projects.css';
 import { useLocation } from 'react-router-dom';
+import { analyzeUploadedFile } from './utils';
 
 const Projects = () => {
   const { state } = useLocation();
   const [ result, setResult ] = useState(null);
   const [ loading, setLoading ] = useState(true);
 
-  const analyzeFile = async () => {
+  const loadAnalysisResults = async () => {
+    // If state isn't set, try loading from local storage
     if (state === undefined || state === null) {
+      /*
+        Even if no file has been picked for analysis,
+        we can still display the results from the last analysis
+        from local storage.
+      */
       const storedResult = localStorage.getItem('result');
       if (storedResult !== null) {
         setResult(storedResult);
         setLoading(false);
       }
+      /* 
+        At this point, either there is a file to analyze or
+        it has been loaded from local storage, either way,
+        we can't analyze files at this point.
+      */
       return;
     }
+
+    // If state IS set, then we have a new file to analyze
     const filename = state['filename'];
 
-    const response = await fetch('http://127.0.0.1:5000/analyze_file', {
-      method: 'POST',
-      body: filename,
-    });
+    const data = await analyzeUploadedFile(filename);
 
-    let data = await response.json();
-    data = data.replace(/\\n/g, '<br />')
     localStorage.setItem('result', data);
     setResult(data);
     setLoading(false);
   }
 
   useEffect(() => {
-    analyzeFile();
+    loadAnalysisResults();
   }, []);
 
   return (

@@ -1,13 +1,17 @@
-from flask import Flask, jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request
 from flask_cors import CORS
 from app.api_handler import ApiHandler
+from app.database import Database, NodeProperties
 import os
+from app.models.blueprint import Blueprint as BP
 
 main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
+database = Database()
 
 CORS(main)  # Allows connections between domains
 
+# File management
 @main.route('/analyze', methods=['POST']) 
 def analyze():
     file = request.files['file']
@@ -56,6 +60,47 @@ def analyze_file():
     
 
     return jsonify(results)
+
+# Database handling
+@main.route('/get_blueprints', methods=['GET'])
+def get_blueprints():
+    blueprints = database.lookup_blueprint_nodes() # [[ID, NAME]]
+    blueprints_with_all_properties = []
+    for bp in blueprints:
+        id = bp[0]
+        name = bp[1]
+        desc = database.lookup_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION)
+        questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
+        blueprints_with_all_properties.append({"id": id, "name": name, "description": desc, "questions": questions})
+    return jsonify(blueprints_with_all_properties)
+
+
+@main.route('/save_blueprint', methods=['POST'])
+def save_blueprint():
+    data = request.json
+    name = data['name']
+    description = data['description']
+
+    # On the frontend, questions are divided in the "main" question and additional questions
+    question = data['question']
+    addedQuestions = data['addedQuestions']
+
+    # Merge questions to one list
+    questions = [question] + addedQuestions
+
+    bp = BP(name, description, questions)
+
+    # Returns the ID
+    return bp.save_blueprint()
+
+@main.route('/delete_blueprint', methods=['POST'])
+def delete_blueprint():
+    data = request.json
+    id = data['id']
+
+    # True/false
+    success = database.delete_blueprint(id)
+    return jsonify({"success": success})
 
 if __name__ == '__main__':
     main.run(debug=True)
