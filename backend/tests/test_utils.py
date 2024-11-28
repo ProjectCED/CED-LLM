@@ -2,7 +2,7 @@ import pytest
 import os
 from app.utils import extract_text_from_file
 from unittest.mock import patch, MagicMock
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 
 
 @pytest.fixture
@@ -68,4 +68,25 @@ def test_extract_text_with_invalid_extension(tmp_path):
             # Tarkista, että funktio palauttaa oikean tekstin
             assert result == expected_text
 """
+
+def test_extract_text_from_pdf_file():
+    expected_text = "This is a sample PDF file."
+    # mock text
+    mock_page = MagicMock()
+    mock_page.get_text.return_value = expected_text
+    # mock file
+    mock_file = MagicMock()
+    mock_file.__enter__.return_value = [mock_page] # Simulate that iterating over the document returns the mock page
+    mock_file.__exit__.return_value = None # Simulate proper exit behavior
+
+    # Mock pymupdf.open() to return a mock document object that behaves like a context manager
+    with patch("pymupdf.open", return_value=mock_file) as mock_extra_check:
+        # Mock os.path.isfile to return True, simulating that the file exists
+        with patch("os.path.isfile", return_value=True):
+            
+            result = extract_text_from_file("mocked_file.pdf")
+
+            mock_extra_check.assert_called_once_with("mocked_file.pdf") # Ensure pymupdf.open was called correctly
+            mock_file.__enter__.assert_called_once() # Ensure __enter__ was called on the mock document
+            assert result == expected_text
 
