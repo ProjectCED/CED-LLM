@@ -19,7 +19,7 @@ const AISelection = ({ selectedAI, onSelectAI }) => {
 
   return (
     <div className="ai-selection-container">
-      <h2>Choose AI for analysis</h2>
+      <h2>Choose the appropriate AI solution to carry out the analysis.</h2>
       <div className="ai-options">
         <button
           className={`ai-option ${localSelectedAI === 'Mistral' ? 'selected' : ''}`}

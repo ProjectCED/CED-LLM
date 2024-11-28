@@ -194,10 +194,10 @@
 
 /* Result details box */
 .result-details {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 240px;
-    width: 1000px;
+    width: 70vh;
     height: 60vh;  
     transform: translateY(-50%);
     background-color: #AEAEAE;
@@ -206,6 +206,19 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
     opacity: 0;
     z-index: 1100;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sisältö, joka skrollaa */
+.result-details-content {
+    flex: 1; 
+    overflow-y: auto;
+    text-align: left; 
+    padding-left: 3vh;
+    padding-right: 3vh;
 }
 
 /* Show result details when there is a selected result */
@@ -230,24 +243,59 @@
     transform: scale(1.2);
 }
 
-/* Header style within the result details */
-.result-details h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #2B3034;
+.result-data {
+    margin-bottom: 30px;
+    margin-right: 30px;
+    margin-left: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 30px; 
 }
 
 .result-details h2 {
-    font-size: 1.8rem;
-    margin-bottom: 100px;
-    margin-top: 30px;
-    color: #2B3034;
+    font-size: 1.9rem;
+    margin-bottom: 60px;
+    margin-top: 20px;
 }
 
 /* Text paragraph style within the result details */
 .result-details p {
     font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 20px;
+    margin-top: 10px;
     color: #2B3034;
+}
+
+/* Header style within the result details */
+.result-data p {
+    font-size: 0.8rem;
+    padding: 10px 15px 10px;
+    margin: 10px;
+    color: #ddd;
+    background-color: #818386;
+    border-radius: 4px;
+    box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.2);
+}
+
+.download-pdf-button {
+    position: sticky; 
+    bottom: 5px; 
+    margin-left: auto; 
+    margin-right: 30px; 
+    padding: 8px 20px;
+    background-color: #1B98E0;
+    color: #e8f1f2;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.download-pdf-button:hover {
+    background-color: #117DB9;
+}
+  
+.download-pdf-button:hover {
+background-color: #117DB9;
 }

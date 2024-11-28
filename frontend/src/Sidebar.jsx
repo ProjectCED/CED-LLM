@@ -2,28 +2,29 @@ import React, { useState } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
+import jsPDF from "jspdf"; 
 import './Sidebar.css';
 
-function Sidebar({ setOverlayActive }) {
+function Sidebar({ 
+  setOverlayActive, 
+  projects, 
+  setProjects, 
+  expanded, 
+  setExpanded, 
+  selectedResult, 
+  setSelectedResult  
+  }) {
 
   // State to manage sidebar expansion
-  const [expanded, setExpanded] = useState(false);
-  // State for project list, with each project containing results
-  const [projects, setProjects] = useState([
-    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
-    { name: 'Dog show data', open: false, results: ['28042023'] },
-    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
-  ]);
   const [newProjectName, setNewProjectName] = useState('');
   const [hoveredProject, setHoveredProject] = useState(null);
   const [hoveredResult, setHoveredResult] = useState({ projectIndex: null, resultIndex: null });
-  const [selectedResult, setSelectedResult] = useState(null);
 
-  // Toggles sidebar between expanded and collapsed states
+  // Toggle sidebar between expanded and collapsed states
   const toggleSidebar = () => {
     setExpanded(!expanded);
-    if (expanded) {
-      closeResultDetails();
+    if (!expanded) {
+      setSelectedResult(null); // Collapse closes result details
     }
   };
 
@@ -63,13 +64,18 @@ function Sidebar({ setOverlayActive }) {
 
   // Deletes a specific result from a project
   const deleteResult = (projectIndex, resultIndex) => {
-    setProjects(prevProjects =>
-      prevProjects.map((project, i) =>
-        i === projectIndex
-          ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
-          : project
-      )
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this result?"
     );
+    if (confirmDelete) {
+      setProjects(prevProjects =>
+        prevProjects.map((project, i) =>
+          i === projectIndex
+            ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
+            : project
+        )
+      );
+    }
   };
 
   // Opens detailed view for a specific result
@@ -82,6 +88,32 @@ function Sidebar({ setOverlayActive }) {
   const closeResultDetails = () => {
     setSelectedResult(null);
     setOverlayActive(false);
+  };
+
+  const downloadPDF = () => {
+    if (!selectedResult) return;
+
+    const doc = new jsPDF();
+    const projectName = projects[selectedResult.projectIndex]?.name;
+    const resultName = selectedResult.result;
+
+    // Add content to the PDF
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("Analyze Result", 20, 20);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Project: ${projectName}`, 20, 40);
+    doc.text(`Result: ${resultName}`, 20, 50);
+    doc.text("Details for the result:", 20, 70);
+
+    // Add example content
+    const exampleText = `
+      Result details here. This could include any relevant data about the result.`;
+    doc.text(exampleText, 20, 90, { maxWidth: 170 });
+
+    // Save the PDF
+    doc.save(`${resultName}.pdf`);
   };
 
   return (
@@ -120,7 +152,9 @@ function Sidebar({ setOverlayActive }) {
                     {project.results.map((result, resultIndex) => (
                       <div
                         key={resultIndex}
-                        className={`project-result ${selectedResult?.result === result ? 'selected' : ''}`}
+                        className={`project-result ${
+                          selectedResult?.projectIndex === projectIndex && selectedResult?.result === result ? 'selected' : ''
+                        }`}
                         onMouseEnter={() => setHoveredResult({ projectIndex, resultIndex })}
                         onMouseLeave={() => setHoveredResult({ projectIndex: null, resultIndex: null })}
                         onClick={() => openResultDetails(projectIndex, result)}
@@ -160,25 +194,41 @@ function Sidebar({ setOverlayActive }) {
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
               <h2>Analyze Result</h2>
 
-              <h3>Header 1</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
+              <div className="result-details-content">
 
-              <h3>Header 2</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
+              <div className="result-data">
+                <p>Project: {projects[selectedResult.projectIndex]?.name}</p>
+                <p>Details for result: {selectedResult.result}</p>
+                <p>Blueprint: blueprint here</p>
+              </div>
+                
+                <p>
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
+                </p>
 
-              <h3>Header 3</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
+                <p>
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
+                </p>
 
-              <h3>Header 4</h3>
-              <p>
-              Text text text text text text text text text text text text text text text text text.
-              </p>
+                <p>
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
+                </p>
+
+                <p>
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
+                </p>
+
+                <p>
+                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
+                </p>
+
+              </div>
+
+              {/* Download button */}
+              <button className="download-pdf-button" onClick={downloadPDF}>
+                Download to PDF
+              </button>
+
             </div>
           )}
         </>
