@@ -7,7 +7,7 @@ import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
 
-const MultiStepForm = () => {
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult}) => {
   // State variables to track the current step and selections
   const [currentStep, setCurrentStep] = useState(1); 
   const [selectedFiles, setSelectedFiles] = useState([]); 
@@ -20,8 +20,26 @@ const MultiStepForm = () => {
   const [stepCompleted, setStepCompleted] = useState(0); 
   const [isEditing, setIsEditing] = useState(false);
   const [customClassificationText, setCustomClassificationText] = useState('');
+  const [newProjectName, setNewProjectName] = useState('');
   
+  console.log('Projects in MultiStepForm:', projects);
+
   const navigate = useNavigate(); // Hook for navigation
+
+  // Function to reset form state
+  const resetFormState = () => {
+    setCurrentStep(1); // Palaa ensimmäiseen vaiheeseen
+    setSelectedFiles([]);
+    setCopiedText('');
+    setSelectedClassification(null);
+    setSelectedAI(null);
+    setSelectedBlueprint(null);
+    setSelectedProjectOption(null);
+    setSelectedExistingProject(null);
+    setStepCompleted(0); // Nollaa suoritetut vaiheet
+    setIsEditing(false);
+    setCustomClassificationText('');
+  };
 
   // Update selected files state
   const handleFileUpload = (files) => {
@@ -45,17 +63,93 @@ const MultiStepForm = () => {
 
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = async () => {
-    const formdata = new FormData();
-    formdata.append('file', selectedFiles[0]);
-    const response = await fetch('http://127.0.0.1:5000/upload_file', {
-      method: 'POST',
-      body: formdata,
+  //const formdata = new FormData();
+  //formdata.append('file', selectedFiles[0]);
+  //const response = await fetch('http://127.0.0.1:5000/upload_file', {
+    //method: 'POST',
+    //body: formdata,
+  //});
+  //const data = await response.json();
+  //navigate('/app/projects', { state : data});
+
+  // Create new result 
+  const today = new Date();
+  const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
+  console.log("Formatted date (DDMMYYYY):", formattedDate);
+
+  // If the user selected "New Project"
+  if (selectedProjectOption === 'New Project') {
+    if (!newProjectName.trim()) {
+      alert('Please enter a new project name.');
+      return;
+    }
+
+    // Create a new project object
+    const newProject = {
+      name: newProjectName,
+      results: [formattedDate],
+      open: true
+    };
+
+    // Add the new project to the projects list
+    setProjects((prevProjects) => [...prevProjects, newProject]);
+
+    // Set the new project as the selected one and open the Sidebar
+    setSelectedResult({
+      projectIndex: projects.length,
+      result: formattedDate,
     });
-    const data = await response.json();
-    navigate('/app/projects', { state : data});
+
+    setExpanded(true);
+
+    // If the user selected "Existing Project"
+  } else if (selectedProjectOption === 'Existing Project') {
+    // Check if chosen project can be found
+    const existingProjectIndex = projects.findIndex(
+      (project) => project.name === selectedExistingProject
+    );
+
+    // Create a new result and update the project
+    let newResultName;
+    setProjects((prevProjects) => {
+      const updatedProjects = prevProjects.map((project, index) => {
+        if (index === existingProjectIndex) {
+          newResultName = generateUniqueResultName(project.results, formattedDate);
+          return { ...project, results: [...project.results, newResultName], open: true };
+        }
+        return project;
+      });
+      return updatedProjects;
+    });
+
+    // Open the Sidebar and set the created result as selected
+    if (newResultName) {
+      setSelectedResult({
+        projectIndex: existingProjectIndex,
+        result: newResultName,
+      });
+      setExpanded(true); // Avaa Sidebar
+    }
   }
 
-  const allStepsCompleted = stepCompleted > 4;
+  // Finally, reset the form state
+  resetFormState();
+
+  alert("Analysis completed! The result has been added to the selected project.");
+};
+
+// Function to generate a unique result name if duplicates exist
+const generateUniqueResultName = (results, baseName) => {
+  let name = baseName;
+  let counter = 1;
+  while (results.includes(name)) {
+    name = `${baseName} (${counter++})`;
+  }
+  return name;
+};
+
+const allStepsCompleted = stepCompleted > 4;
+
   
   // Function to go to the next step with validation
   const nextStep = () => {
@@ -97,11 +191,16 @@ const MultiStepForm = () => {
     // Validation for step 4: Ensure a project is selected
     if (currentStep === 4) {
       if (!selectedProjectOption) {
-        alert('Please choose a project option.');
+        alert('Please select a project option.');
+        return;
+      }
+      if (selectedProjectOption === 'Existing Project' && !selectedExistingProject) {
+        alert('Please select an existing project.');
         return;
       }
     }
 
+    // Move to the next step and update the step completion status
     const newStep = currentStep + 1;
     setCurrentStep(newStep);
     setStepCompleted(Math.max(stepCompleted, newStep));
@@ -122,20 +221,34 @@ const MultiStepForm = () => {
     setSelectedBlueprint(blueprint);
   };
 
+  // Function to custom blueprint text
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
   };
 
+  // Function to update selected project option (New or Existing)
   const handleProjectOptionSelection = (option) => {
     setSelectedProjectOption(option);
-    setSelectedExistingProject(null); // Reset existing project selection when option changes
+    if (option === 'New Project') {
+      setNewProjectName(''); 
+    }
+    if (option !== 'Existing Project') {
+      setSelectedExistingProject(null); 
+    }
   };
 
+  // Function to update the new project name
+  const handleNewProjectNameChange = (name) => {
+    setNewProjectName(name); 
+  };
+  
+  // Function to update selected existing project
   const handleExistingProjectSelection = (project) => {
     setSelectedExistingProject(project);
-    setSelectedProjectOption('Existing Project'); // Update the project option when an existing project is selected
+    setSelectedProjectOption('Existing Project'); 
   };
 
+  // Function to handle clicking the "Edit" button for a specific step
   const handleEditClick = (step) => {
     // Prevent editing another step if currently in editing mode
     if (isEditing) {
@@ -147,6 +260,7 @@ const MultiStepForm = () => {
     setIsEditing(true);
   };
 
+  // Function to handle the "Save" button click
   const handleSaveClick = () => {
     // Validation for step 2: Ensure a classification option is selected
     if (currentStep === 2) {
@@ -166,20 +280,35 @@ const MultiStepForm = () => {
       }
     }
 
+    // Validation for step 4
+    if (currentStep === 4) {
+      if (!selectedProjectOption) {
+        alert('Please choose a project option.');
+        return;
+      }
+
+      if (selectedProjectOption === 'New Project' && !newProjectName.trim()) {
+        alert('Please enter a new project name.');
+        return;
+      }
+      
+      if (selectedProjectOption === 'Existing Project' && !selectedExistingProject) {
+        alert('Please select an existing project to continue.');
+        return;
+      }
+    }
+
     setIsEditing(false); // Close the edit mode
     setCurrentStep(5);
   };
 
-  const resetSelections = () => {
-    setSelectedFiles([]); 
-    setCopiedText(''); 
-    setSelectedClassification(null);
-    setSelectedAI(null);
-    setSelectedBlueprint(null);
-  };
+
 
   return (
     <div className="multi-step-form">
+      <p className="classification-heading">
+        CED-LLM offers a streamlined process for classifying text data using AI technology. The interface provides four key steps to guide you through the classification process.
+      </p>
       {/* Step 1: File upload or copy-paste text */}
       <div className="step">
         <div className="step-header">
@@ -197,7 +326,7 @@ const MultiStepForm = () => {
             <FileDownload 
               onFileUpload={handleFileUpload}
               onTextChange={handleTextChange}
-              isEditing={isEditing} // Pass isEditing prop to FileDownload
+              isEditing={isEditing} 
             />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
@@ -243,7 +372,7 @@ const MultiStepForm = () => {
               selectedClassification={selectedClassification}
               onSelectClassification={handleClassificationSelection} 
               onSelectBlueprint={handleBlueprintSelection}
-              isLocked={isEditing} // Pass isLocked prop to ClassificationSelection
+              isLocked={isEditing} 
               onCustomTextChange={handleCustomTextChange}
             />
             {isEditing ? (
@@ -306,11 +435,15 @@ const MultiStepForm = () => {
         {currentStep === 4 && (
           <div className="step-content">
             <ProjectSelection
-              existingProjects={['Project A', 'Project B', 'Project C']}
+              existingProjects={projects?.map((project) => project.name) || []}
               selectedProjectOption={selectedProjectOption}
               onSelectProjectOption={handleProjectOptionSelection}
-              onSelectExistingProject={handleExistingProjectSelection} // Pass the handler for existing project
+              onSelectExistingProject={handleExistingProjectSelection}
               isLocked={isEditing}
+              uploadedFileName={selectedFiles.length > 0 ? selectedFiles[0].name : ''}
+              copiedText={copiedText}
+              newProjectName={newProjectName}
+              onNewProjectNameChange={handleNewProjectNameChange}
             />
             {isEditing ? (
               <button className="multiform-save-button" onClick={handleSaveClick}>Save</button>
@@ -324,6 +457,9 @@ const MultiStepForm = () => {
             <p>{selectedProjectOption}</p>
             {selectedProjectOption === 'Existing Project' && selectedExistingProject && (
               <p>{selectedExistingProject}</p>
+            )}
+            {selectedProjectOption === 'New Project' && newProjectName && (
+              <p>The given name: {newProjectName}</p>
             )}
           </div>
         )}

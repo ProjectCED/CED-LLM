@@ -17,7 +17,7 @@
     border: none;
     border-radius: 8px;
     padding: 10px 20px;
-    font-size: 20px;
+    font-size: 1.2rem;  /* Use rem for responsiveness */
     cursor: pointer;
     margin-bottom: 20px;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -42,7 +42,6 @@
     z-index: 1000; 
 }
 
-
 /* Close button in the modal */
 .modal-close-button {
     background-color: #1B98E0;
@@ -50,7 +49,7 @@
     border: none;
     border-radius: 5px;
     padding: 5px 10px;
-    font-size: 18px;
+    font-size: 1rem;
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.3s ease;
@@ -67,7 +66,8 @@
     color: #E8F1F2;
     border: 2px solid #E8F1F2;
     border-radius: 8px;
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     margin-bottom: 20px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -84,7 +84,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
-    font-size: 28px;
+    font-size: 1.6rem;
 }
 
 /* Styles for the "Edit" and "Close" buttons */
@@ -94,7 +94,7 @@
     border: 1px solid #E8F1F2;
     border-radius: 5px;
     padding: 5px 10px;
-    font-size: 20px;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -105,7 +105,7 @@
 
 /* Styling for simple text (paragraphs) */
 .blueprint-body p {
-    font-size: 20px;
+    font-size: 1.2rem;
     color: #E8F1F2;
     margin-bottom: 10px;
     text-align: left;
@@ -126,20 +126,21 @@ input[type="text"] {
     padding: 10px;
     border: 1px solid #13293D;
     border-radius: 5px;
-    font-size: 16px;
-    
+    font-size: 1rem;
 }
 
 /* Button to add a question */
 .add-question-button {
-    background-color: #1B98E0;
-    color: white;
+    background-color: #3498db;
+    color: #e8f1f2;
     border: none;
-    border-radius: 5px;
-    padding: 7px;
-    font-size: 20px;
+    border-radius: 0 4px 4px 0;
+    padding: 0 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 16px;
+    
+    height: 40px;
+    box-sizing: border-box;
 }
 
 .add-question-button:hover {
@@ -162,7 +163,7 @@ input[type="text"] {
 /* Styling for each question list item */
 .question-item {
     background-color: gray; 
-    font-size: 20px; 
+    font-size: 1rem;
     padding: 5px; 
     margin-bottom: 5px; 
     border-radius: 5px; 
@@ -178,7 +179,7 @@ input[type="text"] {
     color: #dff9fb; 
     font-weight: bold;
     cursor: pointer;
-    font-size: 20px; 
+    font-size: 1rem;
     position: absolute;
     right: 15px; 
     top: 50%;
@@ -188,7 +189,6 @@ input[type="text"] {
 .remove-button:hover {
     color: #d9534f;
 }
-
 
 /* Container for blueprint actions (delete and save buttons) */
 .blueprint-actions {
@@ -203,7 +203,7 @@ input[type="text"] {
     border-radius: 5px;
     padding: 5px 10px;
     margin-left: 10px;
-    font-size: 20px;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -225,14 +225,59 @@ input[type="text"] {
     text-align: center;
     border-radius: 5px; 
     animation: fadeIn 0.5s, fadeOut 0.5s 2.5s; 
-  }
-  
-  @keyframes fadeIn {
+}
+
+@keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
-  
-  @keyframes fadeOut {
+}
+
+@keyframes fadeOut {
     from { opacity: 1; }
     to { opacity: 0; }
-  }
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+    .blueprint-card {
+        width: 90%;
+    }
+
+    .blueprint-header {
+        font-size: 1.4rem;
+    }
+
+    .add-button {
+        font-size: 1rem;
+    }
+
+    .edit-button, .delete-button, .save-button {
+        font-size: 1rem;
+    }
+
+    input[type="text"] {
+        font-size: 1rem;
+    }
+
+    .blueprint-body p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .blueprint-card {
+        width: 100%;
+    }
+
+    .blueprint-header {
+        font-size: 1.2rem;
+    }
+
+    .add-button, .edit-button, .delete-button, .save-button {
+        font-size: 1rem;
+    }
+
+    .blueprint-body p {
+        font-size: 1rem;
+    }
+}

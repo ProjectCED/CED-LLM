@@ -1,7 +1,9 @@
 import pytest
 from app.database import Database, NodeProperties
 from datetime import datetime
+from uuid import UUID
 
+pytestmark = pytest.mark.database
 
 @pytest.fixture(scope="module")
 def db():
@@ -33,7 +35,6 @@ class TestAddNode:
     1. create node
     check returned id-string
     """
-
     def test_global_settings(self,db:Database):
         result = db.add_global_settings_node()
         assert result == 'Global'
@@ -44,20 +45,28 @@ class TestAddNode:
 
     def test_project(self,db:Database):
         result = db.add_project_node()
-        assert result != None
+        assert UUID(result,version=4)
 
     def test_blueprint(self,db:Database):
         result = db.add_blueprint_node()
-        assert result != None
+        assert UUID(result,version=4)
 
+    def test_blueprint_2(self,db:Database):
+        id = db.add_blueprint_node()
+        used_id = db.copy_to_used_blueprint_node(id)
+        result = db.copy_to_blueprint_node(used_id)
+        assert UUID(result,version=4)
+        
     def test_result_blueprint(self,db:Database):
         result = db.add_result_blueprint_node()
-        assert result != None
+        assert UUID(result,version=4)
 
     def test_used_blueprint(self,db:Database):
         id = db.add_blueprint_node()
         result = db.copy_to_used_blueprint_node(id)
-        assert result != None       
+        assert UUID(result,version=4)
+
+       
 
 
 class TestSetProperty:
@@ -654,9 +663,16 @@ class TestNodeLookups:
     """Node lookups
     
     1. add nodes
-    2. add names or dates
-    check lookup nodes result
+    2. add names
+    check lookup nodes result (NAME and/or DATETIME)
     """
+    def helper_datetime_checker(self,date_string):
+        try:
+            print(datetime.fromisoformat(date_string))
+            return True
+        except:
+            return False
+
     def test_lookup_project_nodes(self,db:Database):
         id_1 = db.add_project_node()
         db.set_project_property(id_1,NodeProperties.Project.NAME,'foo_1')
@@ -666,10 +682,12 @@ class TestNodeLookups:
         result = db.lookup_project_nodes()
 
         assert (
-            result[0][0] != None 
-            and result[1][0] != None 
+            UUID(result[0][0],version=4)
+            and UUID(result[1][0],version=4)
             and result[0][1] == 'foo_1' 
             and result[1][1] == 'foo_2'
+            and self.helper_datetime_checker(result[0][2]) == True 
+            and self.helper_datetime_checker(result[1][2]) == True
         )
 
     def test_lookup_blueprint_nodes(self,db:Database):
@@ -681,18 +699,13 @@ class TestNodeLookups:
         result = db.lookup_blueprint_nodes()
 
         assert (
-            result[0][0] != None 
-            and result[1][0] != None 
+            UUID(result[0][0],version=4)
+            and UUID(result[1][0],version=4)
             and result[0][1] == 'foo_1' 
             and result[1][1] == 'foo_2'
+            and self.helper_datetime_checker(result[0][2]) == True 
+            and self.helper_datetime_checker(result[1][2]) == True
         )
-
-    def helper_datetime_checker(self,date_string):
-        try:
-            print(datetime.fromisoformat(date_string))
-            return True
-        except:
-            return False
 
     def test_lookup_result_blueprint_nodes(self,db:Database):
         id = db.add_project_node()
@@ -705,8 +718,8 @@ class TestNodeLookups:
         result = db.lookup_result_blueprint_nodes(id)
 
         assert (
-            result[0][0] != None 
-            and result[1][0] != None 
+            UUID(result[0][0],version=4)
+            and UUID(result[1][0],version=4)
             and self.helper_datetime_checker(result[0][1]) == True 
             and self.helper_datetime_checker(result[1][1]) == True
         )
