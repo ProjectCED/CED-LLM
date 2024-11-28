@@ -298,12 +298,12 @@ class DatabaseDummy:
 
             # search blueprint id
             blueprint_id = None
-            for blue_id, blue_name in blueprints:
+            for blue_id, blue_name, blue_datetime in blueprints:
                 if blue_name == result[1]:
                     blueprint_id = blue_id
 
             # connect results to specific projects
-            for project_id, project_name in projects:
+            for project_id, project_name, project_datetime in projects:
                 if project_name == result[0]:
                     # result -> project
                     self.db.connect_result_blueprint_to_project(result_id, project_id)
