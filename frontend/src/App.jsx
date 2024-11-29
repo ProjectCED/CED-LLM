@@ -20,7 +20,7 @@ function App() {
     { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
   ]);
   // State for selected blueprint
-  const [blueprint, setBlueprint] = useState('');
+  const [blueprint, setBlueprint] = useState(null);
 
   console.log('Projects in App:', projects);
   
@@ -41,7 +41,7 @@ function App() {
             setExpanded={setExpanded}
             selectedResult={selectedResult}
             setSelectedResult={setSelectedResult}
-            blueprint={blueprint}
+            blueprint={blueprint ? blueprint.name : "Automatic Blueprint"}
             setBlueprint={setBlueprint}
           />
           } 
