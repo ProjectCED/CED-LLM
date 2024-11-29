@@ -16,7 +16,6 @@ class ApiHandler():
     def analyze_text(self, text, blueprint, model=PRIMARY_MODEL) -> str:
         # TODO: Create separate file for instructions in both Finnish and English
         instructions = "Analyze the themes and key points of the text"
-        print(blueprint)
         if blueprint is not None and "questions" in blueprint:
             instructions += " using the following questions:\n"  + "\n".join(blueprint["questions"])
 
@@ -50,4 +49,4 @@ class ApiHandler():
         text = utils.extract_text_from_file(filepath)
         if text is None:
             return None
-        return self.analyze_text(text, model)
+        return self.analyze_text(text, blueprint, model)

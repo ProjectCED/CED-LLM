@@ -4,6 +4,7 @@ import ClassificationSelection from './ClassificationSelection'; // Step 2 compo
 import AISelection from './AISelection'; // Step 3 component
 import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
+import { uploadFile, analyzeUploadedFile, analyzeText } from './utils';
 
 // EditButton Component
 const EditButton = ({ onEditClick, step }) => {
@@ -132,14 +133,13 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = async () => {
-  //const formdata = new FormData();
-  //formdata.append('file', selectedFiles[0]);
-  //const response = await fetch('http://127.0.0.1:5000/upload_file', {
-    //method: 'POST',
-    //body: formdata,
-  //});
-  //const data = await response.json();
-  //navigate('/app/projects', { state : data});
+  let result;
+  if (selectedFiles.length > 0) {
+    const uploadedFile = await uploadFile(selectedFiles[0]);
+    result = await analyzeUploadedFile(uploadedFile, selectedBlueprint);
+  } else {
+    result = await analyzeText(copiedText, selectedBlueprint);
+  }
 
   // Create new result 
   const today = new Date();
