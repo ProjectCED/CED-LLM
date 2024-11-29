@@ -13,3 +13,4 @@ class Blueprint:
         self.__database.set_blueprint_property(self.__blueprint_id, NodeProperties.Blueprint.NAME, self.__name)
         self.__database.set_blueprint_property(self.__blueprint_id, NodeProperties.Blueprint.DESCRIPTION, self.__description)
         self.__database.set_blueprint_property(self.__blueprint_id, NodeProperties.Blueprint.QUESTIONS, self.__questions)
+        return self.__blueprint_id

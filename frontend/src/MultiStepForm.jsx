@@ -456,7 +456,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
         {stepCompleted >= 2 && (
           <div className="step-summary">
             <p>{selectedClassification}</p>
-            {selectedBlueprint && <p>{selectedBlueprint}</p>}
+            {selectedBlueprint && <p>{selectedBlueprint.name}</p>}
             {customClassificationText && <p>{customClassificationText}</p>}
           </div>
         )}

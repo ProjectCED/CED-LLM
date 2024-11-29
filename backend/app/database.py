@@ -114,8 +114,8 @@ class Database(metaclass=DatabaseMeta):
           - relationship types
         """
 
-        self.__driver = GraphDatabase.driver(os.getenv('NEO4J_URL'), auth=(os.getenv('NEO4J_USER'), os.getenv('NEO4J_PASSWORD')))
-        self.__name = os.getenv('NEO4J_DB_NAME')
+        self.__driver = GraphDatabase.driver(os.getenv('DB_URL'), auth=(os.getenv('DB_USERNAME'), os.getenv('DB_PASSWORD')))
+        self.__name = os.getenv('DB_NAME')
 
         self.__global_settings_type = 'Settings'
         self.__global_settings_id = 'name'
@@ -1660,6 +1660,22 @@ class Database(metaclass=DatabaseMeta):
         id = self.__add_node(self.__blueprint_type, self.__blueprint_id)
         self.set_blueprint_property(id, NodeProperties.Blueprint.DATETIME, datetime.now().isoformat())
         return id
+    
+    def copy_to_blueprint_node(self, used_blueprint_id_value):
+        """
+        Copies used blueprint node back to blueprint.
+
+        Args:
+            id_value (string): Value for the used blueprint id
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            string: string containing ID value for the blueprint node. 
+        """
+        return self.__copy_node(self.__used_blueprint_type, self.__used_blueprint_id, used_blueprint_id_value, self.__blueprint_type, self.__blueprint_id)
+
 
 
     def set_blueprint_property(self, id_value, property_name: NodeProperties.DataModel, new_data):
