@@ -13,9 +13,11 @@ class ApiHandler():
         OPENAI_KEY = os.getenv("OPENAI_KEY")
         self.__client = OpenAI(api_key=OPENAI_KEY)
 
-    def analyze_text(self, text, model=PRIMARY_MODEL) -> str:
+    def analyze_text(self, text, blueprint, model=PRIMARY_MODEL) -> str:
         # TODO: Create separate file for instructions in both Finnish and English
-        instructions = "Analyze the themes and key points of the text."
+        instructions = "Analyze the themes and key points of the text"
+        if blueprint is not None:
+            instructions += " using the following questions:\n" + blueprint['questions'].join("\n")
 
         # Try to get the response from the chat completions API
         try:
@@ -43,24 +45,8 @@ class ApiHandler():
             else:
                 return None
             
-    def analyze_file(self, filepath, model=PRIMARY_MODEL) -> str:
+    def analyze_file(self, filepath, blueprint, model=PRIMARY_MODEL) -> str:
         text = utils.extract_text_from_file(filepath)
         if text is None:
             return None
         return self.analyze_text(text, model)
-    
-    def test_file_read(self, filepath: str) -> str:
-        text = utils.extract_text_from_file(filepath)
-        if text is None:
-            return None
-        return text
-        
-
-def main():
-    #apiHandler = ApiHandler()
-    #result = apiHandler.analyze_file("PTK_102+2024.pdf", PRIMARY_MODEL)
-    #print(result)
-    pass
-
-if __name__ == "__main__":
-    main()

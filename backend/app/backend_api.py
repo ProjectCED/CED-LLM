@@ -26,7 +26,8 @@ def upload_file():
 @main.route('/analyze_file', methods=['POST'])
 def analyze_file():
     filename = request.json['filename']
-    results = apiHandler.analyze_file(filename)
+    blueprint = request.json['blueprint']
+    results = apiHandler.analyze_file(filename, blueprint)
 
     try:
         os.remove(filename)
@@ -41,7 +42,8 @@ def analyze_file():
 @main.route('/analyze_text', methods=['POST'])
 def analyze_text():
     text = request.json['text']
-    results = apiHandler.analyze_text(text)
+    blueprint = request.json['blueprint']
+    results = apiHandler.analyze_text(text, blueprint)
 
     return jsonify(results)
 

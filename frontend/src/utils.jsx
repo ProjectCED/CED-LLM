@@ -9,10 +9,10 @@ export const uploadFile = async (file) => {
     return filename;
 };
 
-export const analyzeUploadedFile = async (filename) => {
+export const analyzeUploadedFile = async (filename, blueprint) => {
 const response = await fetch('/api/analyze_file', {
         method: 'POST',
-        body: JSON.stringify({ filename }),
+        body: JSON.stringify({ filename, blueprint }),
     });
 
     let data = await response.json();
@@ -20,13 +20,10 @@ const response = await fetch('/api/analyze_file', {
     return data;
 };
 
-export const analyzeText = async (text) => {
+export const analyzeText = async (text, blueprint) => {
     const response = await fetch('/api/analyze_text', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text, blueprint }),
     });
     let data = await response.json();
     data = data.replace(/\\n/g, '<br />');
