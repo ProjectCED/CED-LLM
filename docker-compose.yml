@@ -78,6 +78,22 @@ services:
       - neo4j_plugins:/plugins  # Directory for plugins (optional)
     networks:
       - database
+  
+  ollama:
+    image: ollama/ollama:latest
+    runtime: ${GPU_RUNTIME:-nvidia}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: ${GPU_DRIVER:-nvidia}
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "11434:11434" # Default port for Ollama
+    environment:
+      - ${GPU_VISIBLE_DEVICES:-NVIDIA_VISIBLE_DEVICES}=all
+      - ${GPU_DRIVER_CAPABILITIES:-NVIDIA_DRIVER_CAPABILITIES}=compute,utility
 
 volumes:
   neo4j_data:
