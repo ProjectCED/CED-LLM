@@ -194,13 +194,12 @@ function Sidebar({
           {selectedResult && (
             <div className={`result-details ${selectedResult ? 'show' : ''}`}>
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
-              <h2>Analyze Result</h2>
+              <h2>Details for result: {selectedResult.result}</h2>
 
               <div className="result-details-content">
 
               <div className="result-data">
                 <p>Project: {projects[selectedResult.projectIndex]?.name}</p>
-                <p>Details for result: {selectedResult.result}</p>
                 <p>Blueprint: {blueprint || 'Automatic blueprint'}</p>
               </div>
                 

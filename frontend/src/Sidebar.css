@@ -200,7 +200,7 @@
     width: 130vh;
     height: 71vh;  
     transform: translateY(-50%);
-    background-color: #d7d7d8;
+    background-color: #1a334a;
     color: #0b0c0c;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
@@ -210,8 +210,15 @@
     overflow-x: hidden; 
     display: flex;
     flex-direction: column;
+    border: 1px solid #E8F1F2;
+    border-left: none;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
+}
+
+/* Show result details when there is a selected result */
+.result-details.show {
+    opacity: 1;
 }
 
 /* Sisältö, joka skrollaa */
@@ -223,18 +230,13 @@
     padding-right: 3vh;
 }
 
-/* Show result details when there is a selected result */
-.result-details.show {
-    opacity: 1;
-}
-
 /* Result details close button */
 .close-icon {
     position: absolute;
     top: 10px;
     right: 10px;
     cursor: pointer;
-    color: #2B3034;
+    color: #E8F1F2;
     font-size: 30px;
     opacity: 0.7;
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -259,7 +261,10 @@
     font-size: 1.9rem;
     margin-bottom: 60px;
     margin-top: 20px;
-    color: #464545;
+    color: #E8F1F2;
+    border-bottom: 1px solid rgba(184, 201, 204, 0.3);
+    padding-bottom: 10px;
+    width: 100%;
 }
 
 /* Text paragraph style within the result details */
@@ -267,7 +272,7 @@
     font-size: 1rem;
     line-height: 1.6;
     margin-top: 10px;
-    color: #2B3034;
+    color: #E8F1F2;
     text-align:center;
 }
 
