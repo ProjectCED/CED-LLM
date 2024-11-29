@@ -144,14 +144,6 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   // Create new result 
   const today = new Date();
   const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
-  console.log("Formatted date (DDMMYYYY):", formattedDate);
-  
-  console.log('Selected Classification:', selectedClassification);
-  console.log('Selected Blueprint:', selectedBlueprint);
-  console.log('Custom Classification Text:', customClassificationText);
-  console.log('Selected project:', selectedProjectOption);
-  console.log('Selected Existing Project:', selectedExistingProject);
-  console.log('Projects:', projects);
 
   // If the user selected "New Project"
   if (selectedProjectOption === 'New Project') {
