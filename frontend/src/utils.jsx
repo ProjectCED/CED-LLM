@@ -13,6 +13,9 @@ export const analyzeUploadedFile = async (filename, blueprint) => {
 const response = await fetch('/api/analyze_file', {
         method: 'POST',
         body: JSON.stringify({ filename, blueprint }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 
     let data = await response.json();
@@ -24,6 +27,9 @@ export const analyzeText = async (text, blueprint) => {
     const response = await fetch('/api/analyze_text', {
         method: 'POST',
         body: JSON.stringify({ text, blueprint }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
     let data = await response.json();
     data = data.replace(/\\n/g, '<br />');

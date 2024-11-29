@@ -16,8 +16,9 @@ class ApiHandler():
     def analyze_text(self, text, blueprint, model=PRIMARY_MODEL) -> str:
         # TODO: Create separate file for instructions in both Finnish and English
         instructions = "Analyze the themes and key points of the text"
-        if blueprint is not None:
-            instructions += " using the following questions:\n" + blueprint['questions'].join("\n")
+        print(blueprint)
+        if blueprint is not None and "questions" in blueprint:
+            instructions += " using the following questions:\n"  + "\n".join(blueprint["questions"])
 
         # Try to get the response from the chat completions API
         try:
