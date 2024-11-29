@@ -12,7 +12,8 @@ function Sidebar({
   expanded, 
   setExpanded, 
   selectedResult, 
-  setSelectedResult  
+  setSelectedResult,
+  blueprint  
   }) {
 
   // State to manage sidebar expansion
@@ -106,6 +107,7 @@ function Sidebar({
     doc.text(`Project: ${projectName}`, 20, 40);
     doc.text(`Result: ${resultName}`, 20, 50);
     doc.text("Details for the result:", 20, 70);
+    doc.text(`Blueprint: ${blueprint || "Automatic blueprint"}`, 20, 60);
 
     // Add example content
     const exampleText = `
@@ -192,14 +194,13 @@ function Sidebar({
           {selectedResult && (
             <div className={`result-details ${selectedResult ? 'show' : ''}`}>
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
-              <h2>Analyze Result</h2>
+              <h2>Details for result: {selectedResult.result}</h2>
 
               <div className="result-details-content">
 
               <div className="result-data">
                 <p>Project: {projects[selectedResult.projectIndex]?.name}</p>
-                <p>Details for result: {selectedResult.result}</p>
-                <p>Blueprint: blueprint here</p>
+                <p>Blueprint: {blueprint || 'Automatic blueprint'}</p>
               </div>
                 
                 <p>

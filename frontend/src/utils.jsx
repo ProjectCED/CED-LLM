@@ -1,5 +1,5 @@
 export const getBlueprints = async () => {
-    const response = await fetch('http://127.0.0.1:5000/get_blueprints', {
+    const response = await fetch('/api/get_blueprints', {
       method: 'GET'
     }); 
     const blueprints = await response.json();
@@ -7,7 +7,7 @@ export const getBlueprints = async () => {
 };
 
 export const analyzeUploadedFile = async (filename) => {
-const response = await fetch('http://127.0.0.1:5000/analyze_file', {
+const response = await fetch('/api/analyze_file', {
     method: 'POST',
     body: filename,
     });
@@ -18,7 +18,7 @@ const response = await fetch('http://127.0.0.1:5000/analyze_file', {
 };
 
 export const saveBlueprint = async (blueprint) => {
-    const response = await fetch('http://127.0.0.1:5000/save_blueprint', {
+    const response = await fetch('/api/save_blueprint', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -30,7 +30,7 @@ export const saveBlueprint = async (blueprint) => {
 };
 
 export const deleteBlueprint = async (id) => {
-  const response = await fetch('http://127.0.0.1:5000/delete_blueprint', {
+  const response = await fetch('/api/delete_blueprint', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'

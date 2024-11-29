@@ -77,7 +77,7 @@ const AddBlueprint = ({ onAdd, onCancel }) => {
             onClick={handleAddQuestion} 
             aria-label="Add question"
           >
-            + {/* Plus symbol for the button */}
+            +
           </button>
         </div>
       </div>
@@ -89,7 +89,7 @@ const AddBlueprint = ({ onAdd, onCancel }) => {
               onClick={() => handleRemoveQuestion(index)} 
               aria-label={`Remove question ${question}`}
             >
-              &#10005; {/* X symbol (cross) for the remove button */}
+              &#10005;
             </button>
           </div>
         ))}
@@ -103,7 +103,6 @@ const AddBlueprint = ({ onAdd, onCancel }) => {
           CANCEL
         </button>
       </div>
-      {/* Note indicating required fields */}
       <p className="required-note">Fields marked with * are required</p>
     </div>
   );

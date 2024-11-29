@@ -2,6 +2,7 @@ from flask import jsonify, Blueprint, request
 from flask_cors import CORS
 from app.api_handler import ApiHandler
 from app.database import Database, NodeProperties
+from dotenv import load_dotenv
 import os
 from app.models.blueprint import Blueprint as BP
 
@@ -9,7 +10,8 @@ main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
 database = Database()
 
-CORS(main)  # Allows connections between domains
+frontend_port = os.getenv('VITE_PORT', '5173')
+CORS(main, resources={r"/*": {"origins": "http://localhost:{frontend_port}"}})  # Allows connections between domains
 
 # File management
 @main.route('/analyze', methods=['POST']) 

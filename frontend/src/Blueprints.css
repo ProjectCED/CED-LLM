@@ -14,10 +14,9 @@
 .add-button {
     background-color: #1B98E0;
     color: white;
-    border: none;
     border-radius: 8px;
     padding: 10px 20px;
-    font-size: 1.2rem;  /* Use rem for responsiveness */
+    font-size: 1.2rem;  
     cursor: pointer;
     margin-bottom: 20px;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -174,8 +173,6 @@ input[type="text"] {
 
 /* Remove button for each question (shown as an "X") */
 .remove-button {
-    background: none;
-    border: none;
     color: #dff9fb; 
     font-weight: bold;
     cursor: pointer;
