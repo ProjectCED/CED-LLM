@@ -13,44 +13,19 @@ database = Database()
 frontend_port = os.getenv('VITE_PORT', '5173')
 CORS(main, resources={r"/*": {"origins": "http://localhost:{frontend_port}"}})  # Allows connections between domains
 
-# File management
-@main.route('/analyze', methods=['POST']) 
-def analyze():
-    file = request.files['file']
-    file.save(file.filename)
-
-    results = apiHandler.test_file_read(file.filename)
-
-    return jsonify(results)
-
+# File management & analysis
 @main.route('/upload_file', methods=['POST'])
 def upload_file():
     file = request.files.get('file')
     filename = file.filename
     file.save(filename)
 
-    return jsonify({'filename': f"{filename}"})
+    return filename
 
-# For testing file analysis without using OpenAI
-@main.route('/test_analyze', methods=['POST'])
-def test_analyze():
-    filename = request.data.decode('utf-8')
-    results = apiHandler.test_file_read(filename)
-
-    try:
-        os.remove(filename)
-    except FileNotFoundError:
-        pass
-    except PermissionError:
-        pass
-    
-
-    return jsonify(results)
-
-# For ACTUALLY analyzing files using OpenAI
+# For analyzing files using OpenAI
 @main.route('/analyze_file', methods=['POST'])
 def analyze_file():
-    filename = request.data.decode('utf-8')
+    filename = request.json['filename']
     results = apiHandler.analyze_file(filename)
 
     try:
@@ -60,6 +35,13 @@ def analyze_file():
     except PermissionError:
         pass
     
+
+    return jsonify(results)
+
+@main.route('/analyze_text', methods=['POST'])
+def analyze_text():
+    text = request.json['text']
+    results = apiHandler.analyze_text(text)
 
     return jsonify(results)
 

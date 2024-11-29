@@ -1,20 +1,44 @@
+export const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch('/api/upload_file', {
+        method: 'POST',
+        body: formData
+    });
+    const filename = await response.text();
+    return filename;
+};
+
+export const analyzeUploadedFile = async (filename) => {
+const response = await fetch('/api/analyze_file', {
+        method: 'POST',
+        body: JSON.stringify({ filename }),
+    });
+
+    let data = await response.json();
+    data = data.replace(/\\n/g, '<br />');
+    return data;
+};
+
+export const analyzeText = async (text) => {
+    const response = await fetch('/api/analyze_text', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text })
+    });
+    let data = await response.json();
+    data = data.replace(/\\n/g, '<br />');
+    return data;
+}
+
 export const getBlueprints = async () => {
     const response = await fetch('/api/get_blueprints', {
       method: 'GET'
     }); 
     const blueprints = await response.json();
     return blueprints;
-};
-
-export const analyzeUploadedFile = async (filename) => {
-const response = await fetch('/api/analyze_file', {
-    method: 'POST',
-    body: filename,
-    });
-
-    let data = await response.json();
-    data = data.replace(/\\n/g, '<br />');
-    return data;
 };
 
 export const saveBlueprint = async (blueprint) => {
