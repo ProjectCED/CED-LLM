@@ -37,8 +37,8 @@ services:
       - "5000" # Communication with frontend
     environment:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - DB_URL=${DB_URL}
-      - DB_NAME=${DB_NAME}
+      - DB_URL=bolt://neo4j:7687
+      - DB_NAME=neo4j
       - DB_USERNAME=neo4j #locked to 'neo4j' in community version
       - DB_PASSWORD=${DB_PASSWORD}
       - OPENAI_KEY=${OPENAI_KEY}
