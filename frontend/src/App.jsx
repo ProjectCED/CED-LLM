@@ -19,6 +19,8 @@ function App() {
     { name: 'Dog show data', open: false, results: ['28042023'] },
     { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
   ]);
+  // State for selected blueprint
+  const [blueprint, setBlueprint] = useState('');
 
   console.log('Projects in App:', projects);
   
@@ -39,6 +41,8 @@ function App() {
             setExpanded={setExpanded}
             selectedResult={selectedResult}
             setSelectedResult={setSelectedResult}
+            blueprint={blueprint}
+            setBlueprint={setBlueprint}
           />
           } 
         />
@@ -55,7 +59,9 @@ function MainLayout({
   expanded, 
   setExpanded, 
   selectedResult, 
-  setSelectedResult  
+  setSelectedResult,
+  blueprint,  
+  setBlueprint
 }) {
   return (
     <div className="main-layout">
@@ -69,8 +75,9 @@ function MainLayout({
           setExpanded={setExpanded} 
           selectedResult={selectedResult} 
           setSelectedResult={setSelectedResult} 
+          blueprint={blueprint}
          />
-        <div className="main-content"> {/* Tämä tummentuu, kun overlay on aktiivinen */}
+        <div className="main-content">
           <Routes>
             <Route path="classification" 
               element={
@@ -79,6 +86,8 @@ function MainLayout({
                   setProjects={setProjects} 
                   setExpanded={setExpanded} 
                   setSelectedResult={setSelectedResult}
+                  setBlueprint={setBlueprint}
+                  setOverlayActive={setOverlayActive} 
                 />
                 } 
                 />
@@ -92,5 +101,3 @@ function MainLayout({
 }
 
 export default App;
-
-
