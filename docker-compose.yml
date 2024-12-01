@@ -13,8 +13,7 @@ services:
     build: ./frontend
     ports:
 #      - "3000:3000" # TODO: label this
-#      - "5173:5173" # primary user access to application
-      - "${VITE_PORT:-5173}:${VITE_PORT:-5173}"
+      - "${VITE_PORT:-5173}:${VITE_PORT:-5173}" # defaults to 5173
 #    expose:
 #      - '3000' # TODO: label this
     environment:
