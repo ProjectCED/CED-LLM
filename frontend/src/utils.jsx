@@ -1,3 +1,4 @@
+// Files & analysis
 export const uploadFile = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -36,6 +37,7 @@ export const analyzeText = async (text, blueprint) => {
     return data;
 }
 
+// Blueprints
 export const getBlueprints = async () => {
     const response = await fetch('/api/get_blueprints', {
       method: 'GET'
@@ -66,6 +68,27 @@ export const deleteBlueprint = async (id) => {
   });
   const data = await response.json();
   return data.success;
+};
+
+// Projects & results
+export const saveProject = async (project_name) => {
+    const response = await fetch('/api/save_project', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(project_name)
+    });
+    const id = await response.text();
+    return id;
+}
+
+export const getProjects = async () => {
+    const response = await fetch('/api/get_projects', {
+        method: 'GET'
+    });
+    const projects = await response.json();
+    return projects;
 };
 
 export const getResults = async (project_id) => {

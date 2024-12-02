@@ -5,6 +5,7 @@ from app.database import Database, NodeProperties
 from dotenv import load_dotenv
 import os
 from app.models.blueprint import Blueprint as BP
+from app.models.project import Project
 
 main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
@@ -94,10 +95,26 @@ def delete_blueprint():
     success = database.delete_blueprint(id)
     return jsonify({"success": success})
 
+# Projects
+@main.route('/save_project', methods=['POST'])
+def save_project():
+    name = request.json['project_name']
+    project = Project(name, [])
+    return project.save_project()
+
+@main.route('/get_projects', methods=['GET'])
+def get_projects():
+    projects = database.lookup_project_nodes() # [[ID, NAME, DATETIME]]
+    projects_with_all_properties = []
+    for proj in projects:
+        id = proj[0]
+        name = proj[1]
+        results = __get_results_for_project(id)
+        projects_with_all_properties.append({"id": id, "open": False, "name": name, "results": results})
+    return jsonify(projects_with_all_properties)
+
 # Results
-@main.route('/get_results', methods=['POST'])
-def get_results():
-    project_id = request.json['project_id']
+def __get_results_for_project(project_id):
     results = database.lookup_result_blueprint_nodes(project_id)
     results_with_all_properties = []
     for res in results:
@@ -107,7 +124,13 @@ def get_results():
         used_blueprint_id = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.USED_BLUEPRINT)
         blueprint = __get_whole_blueprint(used_blueprint_id)
         results_with_all_properties.append({"id": id, "filename": filename, "result": result, "blueprint": blueprint})
-    return jsonify(results_with_all_properties)
+    return results_with_all_properties
+
+@main.route('/get_results', methods=['POST'])
+def get_results():
+    project_id = request.json['project_id']
+    results = __get_results_for_project(project_id)
+    return jsonify(results)
 
 if __name__ == '__main__':
     main.run(debug=True)
