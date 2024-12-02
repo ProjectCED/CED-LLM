@@ -48,16 +48,23 @@ def analyze_text():
     return jsonify(results)
 
 # Database handling
+# Blueprints
+
+def __get_whole_blueprint(id):
+    name = database.lookup_blueprint_property(id, NodeProperties.Blueprint.NAME)
+    description = database.lookup_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION)
+    questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
+    return {"id": id, "name": name, "description": description, "questions": questions}
+
+
 @main.route('/get_blueprints', methods=['GET'])
 def get_blueprints():
     blueprints = database.lookup_blueprint_nodes() # [[ID, NAME]]
     blueprints_with_all_properties = []
     for bp in blueprints:
         id = bp[0]
-        name = bp[1]
-        desc = database.lookup_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION)
-        questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
-        blueprints_with_all_properties.append({"id": id, "name": name, "description": desc, "questions": questions})
+        blueprint = __get_whole_blueprint(id)
+        blueprints_with_all_properties.append(blueprint)
     return jsonify(blueprints_with_all_properties)
 
 
@@ -81,12 +88,26 @@ def save_blueprint():
 
 @main.route('/delete_blueprint', methods=['POST'])
 def delete_blueprint():
-    data = request.json
-    id = data['id']
+    id = request.json['id']
 
     # True/false
     success = database.delete_blueprint(id)
     return jsonify({"success": success})
+
+# Results
+@main.route('/get_results', methods=['POST'])
+def get_results():
+    project_id = request.json['project_id']
+    results = database.lookup_result_blueprint_nodes(project_id)
+    results_with_all_properties = []
+    for res in results:
+        id = res[0]
+        filename = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.FILENAME)
+        result = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.RESULT)
+        used_blueprint_id = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.USED_BLUEPRINT)
+        blueprint = __get_whole_blueprint(used_blueprint_id)
+        results_with_all_properties.append({"id": id, "filename": filename, "result": result, "blueprint": blueprint})
+    return jsonify(results_with_all_properties)
 
 if __name__ == '__main__':
     main.run(debug=True)

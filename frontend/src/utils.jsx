@@ -67,3 +67,12 @@ export const deleteBlueprint = async (id) => {
   const data = await response.json();
   return data.success;
 };
+
+export const getResults = async (project_id) => {
+    const response = await fetch('/api/get_results_under_project', {
+        method: 'POST',
+        body: JSON.stringify({ project_id }),
+    });
+    const results = await response.json();
+    return results;
+    }
