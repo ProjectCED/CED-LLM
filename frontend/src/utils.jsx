@@ -70,14 +70,14 @@ export const deleteBlueprint = async (id) => {
   return data.success;
 };
 
-// Projects & results
+// Projects
 export const saveProject = async (project_name) => {
     const response = await fetch('/api/save_project', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(project_name)
+        body: JSON.stringify({ project_name })
     });
     const id = await response.text();
     return id;
@@ -91,6 +91,8 @@ export const getProjects = async () => {
     return projects;
 };
 
+// Results
+/*
 export const getResults = async (project_id) => {
     const response = await fetch('/api/get_results_under_project', {
         method: 'POST',
@@ -98,4 +100,5 @@ export const getResults = async (project_id) => {
     });
     const results = await response.json();
     return results;
-    }
+};
+*/

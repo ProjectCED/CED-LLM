@@ -4,6 +4,7 @@ import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import jsPDF from "jspdf"; 
 import './Sidebar.css';
+import { saveProject } from './utils';
 
 function Sidebar({ 
   setOverlayActive, 
@@ -42,10 +43,14 @@ function Sidebar({
   const addProject = () => {
     if (newProjectName.trim()) {
       const newProject = {
+        id: null,
         name: newProjectName,
         open: false,
         results: []
       };
+      const id = saveProject(newProjectName);
+      newProject.id = id;
+      
       setProjects([...projects, newProject]);
       setNewProjectName('');
     } else {

@@ -10,6 +10,7 @@ class Project:
     def save_project(self):
         self.__project_id = self.__database.add_project_node()
         self.__database.set_project_property(self.__project_id, NodeProperties.Project.NAME, self.__name)
+        return self.__project_id
 
     def add_result(self, result: Result):
         if self.__project_id is None:

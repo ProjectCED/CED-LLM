@@ -7,7 +7,7 @@ import Blueprints from './Blueprints';
 import Header from './Header';
 import Sidebar from './Sidebar'; 
 import MultiStepForm from './MultiStepForm';
-import { getProjects, saveProject } from './utils';
+import { getProjects } from './utils';
 
 function App() {
   const [overlayActive, setOverlayActive] = useState(false);

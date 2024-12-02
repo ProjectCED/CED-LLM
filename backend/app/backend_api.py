@@ -99,7 +99,7 @@ def delete_blueprint():
 @main.route('/save_project', methods=['POST'])
 def save_project():
     name = request.json['project_name']
-    project = Project(name, [])
+    project = Project(name)
     return project.save_project()
 
 @main.route('/get_projects', methods=['GET'])
@@ -109,11 +109,13 @@ def get_projects():
     for proj in projects:
         id = proj[0]
         name = proj[1]
-        results = __get_results_for_project(id)
+        results = ["A", "B", "C"]
+        #results = __get_results_for_project(id)
         projects_with_all_properties.append({"id": id, "open": False, "name": name, "results": results})
     return jsonify(projects_with_all_properties)
 
 # Results
+'''
 def __get_results_for_project(project_id):
     results = database.lookup_result_blueprint_nodes(project_id)
     results_with_all_properties = []
@@ -126,11 +128,12 @@ def __get_results_for_project(project_id):
         results_with_all_properties.append({"id": id, "filename": filename, "result": result, "blueprint": blueprint})
     return results_with_all_properties
 
+
 @main.route('/get_results', methods=['POST'])
 def get_results():
     project_id = request.json['project_id']
     results = __get_results_for_project(project_id)
     return jsonify(results)
-
+'''
 if __name__ == '__main__':
     main.run(debug=True)
