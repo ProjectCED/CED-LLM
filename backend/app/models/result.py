@@ -1,6 +1,5 @@
 from app.database import Database
 from app.database import NodeProperties
-from blueprint import Blueprint
 
 class Result:
     def __init__(self, filename: str, used_blueprint_id, result):
