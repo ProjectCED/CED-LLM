@@ -4,7 +4,7 @@ import ClassificationSelection from './ClassificationSelection'; // Step 2 compo
 import AISelection from './AISelection'; // Step 3 component
 import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
-import { uploadFile, analyzeUploadedFile, analyzeText } from './utils';
+import { uploadFile, analyzeUploadedFile, analyzeText, saveProject } from './utils';
 
 // EditButton Component
 const EditButton = ({ onEditClick, step }) => {
@@ -154,10 +154,13 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
     // Create a new project object
     const newProject = {
+      id: null,
       name: newProjectName,
       results: [formattedDate],
       open: true
     };
+    const project_id = saveProject(newProjectName);
+    newProject.id = project_id;
 
     // Add the new project to the projects list
     setProjects((prevProjects) => [...prevProjects, newProject]);
