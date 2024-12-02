@@ -71,13 +71,13 @@ export const deleteBlueprint = async (id) => {
 };
 
 // Projects
-export const saveProject = async (project_name) => {
+export const saveProject = async (projectName) => {
     const response = await fetch('/api/save_project', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ project_name })
+        body: JSON.stringify({ projectName })
     });
     const id = await response.text();
     return id;

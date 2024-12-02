@@ -98,7 +98,7 @@ def delete_blueprint():
 # Projects
 @main.route('/save_project', methods=['POST'])
 def save_project():
-    name = request.json['project_name']
+    name = request.json['projectName']
     project = Project(name)
     return project.save_project()
 

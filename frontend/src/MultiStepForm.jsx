@@ -159,8 +159,8 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       results: [formattedDate],
       open: true
     };
-    const project_id = saveProject(newProjectName);
-    newProject.id = project_id;
+    const projectId = saveProject(newProjectName);
+    newProject.id = projectId;
 
     // Add the new project to the projects list
     setProjects((prevProjects) => [...prevProjects, newProject]);
