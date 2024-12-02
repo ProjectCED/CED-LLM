@@ -82,6 +82,7 @@ class NodeProperties:
         FILENAME = "filename"
         RESULT = "result"
         DATETIME = "datetime"
+        USED_BLUEPRINT = "used_blueprint"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"

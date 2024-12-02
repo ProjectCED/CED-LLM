@@ -14,4 +14,5 @@ class Result:
         self.__result_id = self.__database.add_result_blueprint_node()
         self.__database.set_result_blueprint_property(self.__result_id, NodeProperties.ResultBlueprint.FILENAME, self.__filename)
         self.__database.set_result_blueprint_property(self.__result_id, NodeProperties.ResultBlueprint.RESULT, self.__result)
+        self.__database.set_result_blueprint_property(self.__result_id, NodeProperties.ResultBlueprint.USED_BLUEPRINT, self.__used_blueprint_id)
         self.__database.connect_used_blueprint_to_result_blueprint(self.__used_blueprint_id, self.__result_id)
