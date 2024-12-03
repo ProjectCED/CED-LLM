@@ -993,7 +993,7 @@ class Database(metaclass=DatabaseMeta):
 
         Raises:
             RuntimeError: If database query error.
-            ValueError: If the property_name is invalid for the given node_label
+            ValueError: If the property_name is invalid for the given node_label.
 
         Returns:
             bool:
@@ -1011,10 +1011,13 @@ class Database(metaclass=DatabaseMeta):
         Return data of specific property from settings
         
         Args:
-            property_name (string): property name to return it's value
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+            property_name (Enum): property name for removing
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label.
 
         Returns:
             Any or None:
@@ -1026,6 +1029,31 @@ class Database(metaclass=DatabaseMeta):
 
         return self.__lookup_node_property(node_label.label, node_label.id, id, property_name.value)
 
+    def delete_node(self, id:UUID, node_label:NodeLabels):
+        """
+        Delete node. For Project, ResultBlueprint and UserSettings, also all the connected nodes are deleted.
+
+        Args:
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+        
+        Raises:
+            RuntimeError: If database query error.
+            
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist.
+        """
+        # Also delete connected nodes connected to it
+        if node_label in [
+            NodeLabels.USER_SETTINGS, # everything related to this user is deleted and anything beyond
+            NodeLabels.PROJECT, # results also deleted and anything beyond
+            NodeLabels.RESULT_BLUEPRINT, # used_blueprints also deleted
+        ]:
+            return self.__delete_node_with_connections(node_label.label, node_label.id, id)
+        else:
+            return self.__delete_node(node_label.label, node_label.id, id)
 
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
