@@ -1125,7 +1125,7 @@ class Database(metaclass=DatabaseMeta):
 
     def copy_node_to_node(self, from_id:UUID, from_label:NodeLabels, to_label:NodeLabels):
         """
-        Copies node into another node.
+        Copies node into another node. Only supports copies between Blueprint <-> Used_Blueprint.
 
         Args:
             id_value (string): Value for the "active" blueprint id
@@ -1144,9 +1144,18 @@ class Database(metaclass=DatabaseMeta):
             pass
         else:
             raise RuntimeError( "Unsupported copy attempt: " + from_label.label + " to " + to_label.label)
+        
+        result = self.__copy_node(from_label.label, from_label.id, from_id, to_label.label, to_label.id)
 
-        return self.__copy_node(from_label.label, from_label.id, from_id, to_label.label, to_label.id)
-    
+        # give "_used" tag when copying back to blueprint
+        if from_label == NodeLabels.USED_BLUEPRINT and to_label == NodeLabels.BLUEPRINT:
+            name = self.lookup_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME)
+            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, name + "_used")
+
+        return result
+        
+
+
 
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
