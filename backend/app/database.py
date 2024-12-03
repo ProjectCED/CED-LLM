@@ -21,10 +21,10 @@ class NodeLabels(Enum):
         
 
 class NodeRelationships(Enum):
-    BELONGS_TO = (NodeLabels.RESULT_BLUEPRINT, NodeLabels.PROJECT, "BELONGS_TO")
-    USED_IN_ANALYSIS = (NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, "USED_IN_ANALYSIS")
-    OWNED_BY = (NodeLabels.PROJECT, NodeLabels.USER_SETTINGS, "OWNED_BY")
-    OWNED_BY = (NodeLabels.BLUEPRINT, NodeLabels.USER_SETTINGS, "OWNED_BY")
+    RESULT_BLUEPRINT_TO_PROJECT = (NodeLabels.RESULT_BLUEPRINT, NodeLabels.PROJECT, "BELONGS_TO")
+    USED_BLUEPRINT_TO_RESULT_BLUEPRINT = (NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, "USED_IN_ANALYSIS")
+    PROJECT_TO_USER_SETTINGS = (NodeLabels.PROJECT, NodeLabels.USER_SETTINGS, "OWNED_BY")
+    BLUEPRINT_TO_USER_SETTINGS = (NodeLabels.BLUEPRINT, NodeLabels.USER_SETTINGS, "OWNED_BY")
 
     def __init__(self, from_node, to_node, relationship):
         self.from_node = from_node
@@ -1154,6 +1154,33 @@ class Database(metaclass=DatabaseMeta):
 
         return result
         
+
+    def connect_node_to_node(self, from_id:UUID, from_label:NodeLabels, to_id:UUID, to_label:NodeLabels):
+        """
+        Connect node to node with pre-defined relationship.
+
+        Args:
+            dataset_id_value (string): Value for the Dataset id
+            data_model_id_value (string): Value for the DataModel id
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If relationship was not found between nodes.
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
+        """
+        relationship_string = ''
+        try:
+            for relationship in NodeRelationships:
+                if relationship.from_node == from_label and relationship.to_node == to_label:
+                    relationship_string = relationship.relationship
+        except:
+            raise ValueError(f"No relationship found between {from_label.label} and {to_label.label}")
+        
+        return self.__connect_with_relationship(from_label.label, from_label.id, from_id, to_label.label, to_label.id, to_id, relationship_string)
 
 
 
