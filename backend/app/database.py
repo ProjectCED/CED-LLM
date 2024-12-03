@@ -880,7 +880,50 @@ class Database(metaclass=DatabaseMeta):
             error_string = str(e)
             raise RuntimeError( "Neo4j does_node_exist() query failed: " + error_string )
 
-    ### add node
+
+    def __helper_get_property_enum_and_validate(node_label:NodeLabels, property_name:Enum):
+        """
+        Helper function to dynamically get the property enum class for a node_label and validate the property_name.
+
+        Parameters:
+            node_label (NodeLabels): The node label to get the corresponding property enum class for.
+            property_name (Enum): The property name to validate.
+
+        Raises:
+            ValueError: If the property enum class doesn't exist or the property_name is invalid.
+
+        Returns:
+            properties_enum_class (Enum): The corresponding property enum class for the node_label.
+        """
+        # Dynamically get the corresponding property enum class
+        properties_enum_class = getattr(NodeProperties, node_label.label, None)
+
+        if not properties_enum_class:
+            raise ValueError(f"No properties defined for node label {node_label.label}")
+        
+        # If property_name is passed as a string, we will dynamically retrieve the property
+        if isinstance(property_name, str):
+            # Check if the property exists in the enum class
+            property_enum = getattr(properties_enum_class, property_name, None)
+
+            if not property_enum:
+                raise ValueError(
+                    f"Invalid property '{property_name}' for node label '{node_label.label}'. "
+                    f"Expected one of: {[e.name for e in properties_enum_class]}"
+                )
+        
+            return property_enum
+        
+        # Check if the property_name is valid for the given node_label
+        if not isinstance(property_name, properties_enum_class):
+            raise ValueError(
+                f"Invalid property '{property_name}' for node label '{node_label.label}'. "
+                f"Expected one of: {[e.name for e in properties_enum_class]}"
+            )
+
+        return properties_enum_class
+
+    ### Add node
     def add_node(self, node_label:NodeLabels):
         
         """
@@ -907,14 +950,9 @@ class Database(metaclass=DatabaseMeta):
             NodeLabels.PROJECT,
             NodeLabels.RESULT_BLUEPRINT,
         ]:
-
-            # Be sure that Enums match
-            properties_enum_class = getattr(NodeProperties, node_label.label, None)
-            if not properties_enum_class:
-                raise ValueError(f"No properties defined for node label {node_label.label}")
-            datetime_property = getattr(properties_enum_class, 'DATETIME', None)
-            if not datetime_property:
-                raise ValueError(f"DATETIME property not defined for node label {node_label.label}")
+            # Make sure DATETIME is found for node_label
+            datetime_property = self.__helper_get_property_enum_and_validate(node_label, 'DATETIME')
+           
             self.set_node_property(id, node_label, datetime_property, datetime.now().isoformat())
 
         return id
@@ -939,19 +977,32 @@ class Database(metaclass=DatabaseMeta):
                 - False if node was not found.
         """ 
 
-        # Dynamically get the corresponding property enum class
-        properties_enum_class = getattr(NodeProperties, node_label.label, None)
-
-        if not properties_enum_class:
-            raise ValueError(f"No properties defined for node label {node_label.label}")
-        # Check if the property_name is valid for the given node_label
-        if not isinstance(property_name, properties_enum_class):
-            raise ValueError(
-                f"Invalid property '{property_name}' for node label '{node_label.label}'. "
-                f"Expected one of: {[e.name for e in properties_enum_class]}"
-            )
+        # Check that node_label has property_name
+        self.__helper_get_property_enum_and_validate(node_label, property_name)
 
         return self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
+
+    def remove_node_property(self, id:UUID, node_label:NodeLabels, property_name:Enum):
+        """
+        Removes specific node property data (and property)
+
+        Args:
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+            property_name (Enum): property name for removing
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
+        """
+        self.__helper_get_property_enum_and_validate(node_label,property_name)
+
+        return self.__remove_property(node_label.label, node_label.id, id, property_name.value)
 
 
     ### Connections
