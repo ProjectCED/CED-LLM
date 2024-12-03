@@ -720,6 +720,8 @@ class TestNodeLookups:
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
+            and result[0][0] == id_2 # order matters
+            and result[1][0] == id_1
             and self.helper_datetime_checker(result[0][1]) == True 
             and self.helper_datetime_checker(result[1][1]) == True
         )
