@@ -28,7 +28,6 @@ def test_analyze_text_primary_model(mock_openai):
     result = api_handler.analyze_text("Sample text")
     assert result == "Analyzed text result."
 
-
 @patch("app.api_handler.utils.extract_text_from_file")
 def test_analyze_file_with_no_text(mock_extract_text, api_handler):
      # Simulate no text extracted from the file
@@ -37,5 +36,3 @@ def test_analyze_file_with_no_text(mock_extract_text, api_handler):
      result = api_handler.analyze_file("empty.txt")
      assert result is None
      mock_extract_text.assert_called_once_with("empty.txt")
-
-
