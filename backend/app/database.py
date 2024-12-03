@@ -9,7 +9,7 @@ from typing import Any
 
 class NodeLabels(Enum):
     GLOBAL_SETTINGS = ("Settings", 'id')
-    USER_SETTINGS = ("UserSettings", 'user_name')
+    USER_SETTINGS = ("UserSettings", 'id')
     BLUEPRINT = ("Blueprint", 'id')
     PROJECT = ("Project", 'id')
     RESULT_BLUEPRINT = ("ResultBlueprint", 'id')
@@ -930,7 +930,8 @@ class Database(metaclass=DatabaseMeta):
         Create a node. Also DATETIME is set as creation time for Blueprints, Projects and results.
 
         Args:
-            node_label (string): Node label
+            node_label (NodeLabels): Node label
+            user_name (string, optional): Used with creating UserSettings node
 
         Raises:
             RuntimeError: If database query error.
@@ -940,8 +941,7 @@ class Database(metaclass=DatabaseMeta):
             string or None:
                 - string containing ID value for the created node.
                 - None if node already exists.
-        """        
-
+        """
         id = self.__add_node(node_label.label, node_label.id)
 
         # only add DATETIME on following
@@ -1000,9 +1000,31 @@ class Database(metaclass=DatabaseMeta):
                 - True when query succeeded.
                 - False when property doesn't exist.
         """
-        self.__helper_get_property_enum_and_validate(node_label,property_name)
+        # Check that node_label has property_name
+        self.__helper_get_property_enum_and_validate(node_label, property_name)
 
         return self.__remove_property(node_label.label, node_label.id, id, property_name.value)
+
+
+    def lookup_node_property(self, id:UUID, node_label:NodeLabels, property_name:Enum):
+        """
+        Return data of specific property from settings
+        
+        Args:
+            property_name (string): property name to return it's value
+
+        Raises:
+            RuntimeError: If database query error.   
+
+        Returns:
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
+        """ 
+        # Check that node_label has property_name
+        self.__helper_get_property_enum_and_validate(node_label, property_name)
+
+        return self.__lookup_node_property(node_label.label, node_label.id, id, property_name.value)
 
 
     ### Connections
