@@ -5,7 +5,14 @@ import AISelection from './AISelection'; // Step 3 component
 import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
 
-// EditButton Component
+/**
+ * EditButton component renders a button to enable editing a specific step.
+ *
+ * @param {Object} props - The props object.
+ * @param {function} props.onEditClick - Callback to handle edit action for a step.
+ * @param {number} props.step - The step number to edit.
+ * @returns {JSX.Element} The EditButton component.
+ */
 const EditButton = ({ onEditClick, step }) => {
   return (
     <button className="edit-button" onClick={() => onEditClick(step)}>
@@ -14,7 +21,13 @@ const EditButton = ({ onEditClick, step }) => {
   );
 };
 
-// SaveButton Component
+/**
+ * SaveButton component renders a button to save changes made in a step.
+ *
+ * @param {Object} props - The props object.
+ * @param {function} props.onSaveClick - Callback to handle save action.
+ * @returns {JSX.Element} The SaveButton component.
+ */
 const SaveButton = ({ onSaveClick }) => {
   return (
     <button className="multiform-save-button" onClick={onSaveClick}>
@@ -23,7 +36,13 @@ const SaveButton = ({ onSaveClick }) => {
   );
 };
 
-// NextButton Component
+/**
+ * NextButton component renders a button to proceed to the next step.
+ *
+ * @param {Object} props - The props object.
+ * @param {function} props.onNextClick - Callback to handle proceeding to the next step.
+ * @returns {JSX.Element} The NextButton component.
+ */
 const NextButton = ({ onNextClick }) => {
   return (
     <button className="next-button" onClick={onNextClick}>
@@ -32,39 +51,159 @@ const NextButton = ({ onNextClick }) => {
   );
 };
 
+/**
+ * MultiStepForm component guides users through a multi-step process for 
+ * classifying text data with AI, uploading files, selecting blueprints, 
+ * and associating results with a project.
+ *
+ * @component
+ * @param {Object} props - The props object.
+ * @param {Array} props.projects - List of existing projects.
+ * @param {function} props.setProjects - Callback to update projects.
+ * @param {function} props.setExpanded - Callback to expand the project sidebar.
+ * @param {function} props.setSelectedResult - Callback to set the selected result.
+ * @param {function} props.setBlueprint - Callback to set the selected blueprint.
+ * @param {function} props.setOverlayActive - Callback to toggle the overlay state.
+ * @returns {JSX.Element} The MultiStepForm component.
+ */
 const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint, setOverlayActive}) => {
   // State variables to track the current step and selections
+  
+  /**
+   * @type {number}
+   * @description The current step in the multi-step form.
+   */
   const [currentStep, setCurrentStep] = useState(1); 
+
+  /**
+   * @type {boolean}
+   * @description Tracks whether the form is in editing mode.
+   */
   const [isEditing, setIsEditing] = useState(false);
-  const [stepCompleted, setStepCompleted] = useState(0); 
 
-  // Persistent state
-  const [selectedFiles, setSelectedFiles] = useState([]); 
-  const [copiedText, setCopiedText] = useState(''); 
-  const [selectedClassification, setSelectedClassification] = useState(null); 
-  const [selectedAI, setSelectedAI] = useState(null); 
-  const [selectedBlueprint, setSelectedBlueprint] = useState(null);
-  const [selectedProjectOption, setSelectedProjectOption] = useState(null); 
-  const [selectedExistingProject, setSelectedExistingProject] = useState(null);
-  const [customClassificationText, setCustomClassificationText] = useState('');
-  const [newProjectName, setNewProjectName] = useState('');
+  /**
+   * @type {number}
+   * @description Tracks the number of completed steps.
+   */
+  const [stepCompleted, setStepCompleted] = useState(0);
 
-  // Temporary state for current step changes
+  // Persistent states for current step changes
+   /**
+   * @type {Array<File>}
+   * @description List of selected files for upload.
+   */
+   const [selectedFiles, setSelectedFiles] = useState([]);
+
+   /**
+    * @type {string}
+    * @description Stores text that the user has copied for classification.
+    */
+   const [copiedText, setCopiedText] = useState('');
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected classification for the current step.
+    */
+   const [selectedClassification, setSelectedClassification] = useState(null);
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected AI model for the current step.
+    */
+   const [selectedAI, setSelectedAI] = useState(null);
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected blueprint for the current step.
+    */
+   const [selectedBlueprint, setSelectedBlueprint] = useState(null);
+ 
+   /**
+    * @type {?string}
+    * @description Stores the selected project option (either new or existing).
+    */
+   const [selectedProjectOption, setSelectedProjectOption] = useState(null);
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected existing project, if any.
+    */
+   const [selectedExistingProject, setSelectedExistingProject] = useState(null);
+ 
+   /**
+    * @type {string}
+    * @description Stores custom classification text provided by the user.
+    */
+   const [customClassificationText, setCustomClassificationText] = useState('');
+ 
+   /**
+    * @type {string}
+    * @description Stores the name of a new project if the user chooses to create one.
+    */
+   const [newProjectName, setNewProjectName] = useState('');
+ 
+
+  // Temporary states for current step changes
+  /**
+   * @type {Array<File>}
+   * @description Temporarily stores files during the current step.
+   */
   const [tempFiles, setTempFiles] = useState([]);
+
+  /**
+   * @type {string}
+   * @description Temporarily stores text input during the current step.
+   */
   const [tempText, setTempText] = useState('');
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores classification selection during the current step.
+   */
   const [tempClassification, setTempClassification] = useState(null);
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores blueprint selection during the current step.
+   */
   const [tempBlueprint, setTempBlueprint] = useState(null);
+
+  /**
+   * @type {string}
+   * @description Temporarily stores custom classification text input during the current step.
+   */
   const [tempCustomText, setTempCustomText] = useState('');
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores AI selection during the current step.
+   */
   const [tempAI, setTempAI] = useState(null);
+
+  /**
+   * @type {?string}
+   * @description Temporarily stores the selected project option during the current step.
+   */
   const [tempProjectOption, setTempProjectOption] = useState(null);
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores the selected existing project during the current step.
+   */
   const [tempExistingProject, setTempExistingProject] = useState(null);
+
+  /**
+   * @type {string}
+   * @description Temporarily stores the new project name during the current step.
+   */
   const [tempNewProjectName, setTempNewProjectName] = useState('');
 
-
-  // Function to reset form state
+  /**
+   * Resets the form state to its initial values.
+   */
   const resetFormState = () => {
 
-    // Function to reset persistent states
+    // Reset persistent states
     setCurrentStep(1); 
     setSelectedFiles([]);
     setCopiedText('');
@@ -90,7 +229,11 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     setTempNewProjectName('');
   };
 
-  // Update selected files state
+  /**
+   * Handles file upload and updates the selected files state.
+   *
+   * @param {FileList} files - The uploaded files.
+   */
   const handleFileUpload = (files) => {
     if (files.length > 0) {
       setSelectedFiles(files);
@@ -100,7 +243,11 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     }
   };
 
-  // Update copied text state
+  /**
+   * Handles changes in the copied text input field.
+   *
+   * @param {string} text - The entered text.
+   */
   const handleTextChange = (text) => {
     if (text.trim() !== '') {
       setCopiedText(text);
@@ -110,7 +257,10 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     }
   };
 
-   // Update selected temporary files state
+   /**
+   * Handles temporary file uploads during editing.
+   * @param {File[]} files - Array of temporary files uploaded.
+   */
    const handleTempFileUpload = (files) => {
     if (files.length > 0) {
       setTempFiles(files);
@@ -120,7 +270,10 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     }
   };
 
-  // Update temporary copied text state
+   /**
+   * Handles changes in the temporary copied text input during editing.
+   * @param {string} text - The temporary text input.
+   */
   const handleTempTextChange = (text) => {
     if (text.trim() !== '') {
       setTempText(text);
@@ -130,7 +283,10 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     }
   };
 
-  // Handle analyze button click, navigate to the projects page
+  /**
+   * Handles the "Analyze" button click, processing the final step 
+   * and associating results with a project.
+   */
   const handleAnalyze = async () => {
   //const formdata = new FormData();
   //formdata.append('file', selectedFiles[0]);
@@ -225,7 +381,12 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     alert("Analysis completed! The result has been added to the selected project.");
   };
 
-  // Function to generate a unique result name if duplicates exist
+  /**
+   * Generates a unique result name if duplicates exist.
+   * @param {string[]} results - List of existing result names.
+   * @param {string} baseName - The base name for the result.
+   * @returns {string} - A unique result name.
+   */
   const generateUniqueResultName = (results, baseName) => {
     let name = baseName;
     let counter = 1;
@@ -238,7 +399,11 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   const allStepsCompleted = stepCompleted > 4;
 
-  // Combined validation and saving function
+  /**
+   * Validates and saves the current step's data.
+   * @param {number} step - The step to validate and save.
+   * @returns {boolean} - True if the step data is valid, false otherwise.
+   */
   const validateAndSaveStep = (step) => {
     switch (step) {
       case 1:
@@ -308,7 +473,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     return true;
   };
 
-  // Function to go to the next step with validation and save selections
+  /**
+   * Navigates to the next step after validation and saving.
+   */
   const nextStep = () => {
     if (!validateAndSaveStep(currentStep)) {
       return; 
@@ -318,30 +485,45 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     setStepCompleted(Math.max(stepCompleted, newStep));
   };
 
-  // Function to update selected classification in step 2
+  /**
+   * Updates the selected classification in Step 2.
+   * @param {string} classification - The selected classification option.
+   */
   const handleClassificationSelection = (classification) => {
     setSelectedClassification(classification);
   };
 
-  // Function to update selected AI in step 3
+  /**
+   * Updates the selected AI in Step 3.
+   * @param {string} ai - The selected AI option.
+   */
   const handleAISelection = (ai) => {
     setSelectedAI(ai);
   };
 
-  // Function to update selected blueprint in step 2
+  /**
+   * Updates the selected blueprint in Step 2.
+   * @param {string} blueprint - The selected blueprint option.
+   */
   const handleBlueprintSelection = (blueprint) => {
     setSelectedBlueprint(blueprint);
     setBlueprint(blueprint);
     
   };
 
-  // Function to custom blueprint text
+  /**
+   * Updates the custom classification text for the blueprint.
+   * @param {string} text - The custom text input for classification.
+   */
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
     setBlueprint(text)
   };
 
-  // Function to update selected project option (New or Existing)
+  /**
+   * Updates the selected project option (New or Existing).
+   * @param {string} option - The selected project option ('New Project' or 'Existing Project').
+   */
   const handleProjectOptionSelection = (option) => {
     setSelectedProjectOption(option);
     if (option === 'New Project') {
@@ -353,13 +535,19 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   };
 
   
-  // Function to update selected existing project
+  /**
+   * Updates the selected existing project.
+   * @param {Object} project - The selected existing project.
+   */
   const handleExistingProjectSelection = (project) => {
     setSelectedExistingProject(project);
     setSelectedProjectOption('Existing Project'); 
   };
 
-  // Function to handle clicking the "Edit" button for a specific step
+  /**
+   * Handles clicking the "Edit" button for a specific step.
+   * @param {number} step - The step number to edit.
+   */
   const handleEditClick = (step) => {
     // Prevent editing another step if currently in editing mode
     if (isEditing) {
@@ -370,7 +558,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     setIsEditing(true);
   };
 
-  // Function to handle the "Save" button click
+  /**
+   * Saves the current step's data and exits editing mode.
+   */
   const handleSaveClick = () => {
     if (!validateAndSaveStep(currentStep)) {
       return; 
