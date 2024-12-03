@@ -9,6 +9,8 @@ class NodeProperties:
     """All allowed property names for each node label.
 
     Add more properties here when needed, but check Database class init for reserved names for identifier usage before adding new property names.
+
+    When adding properties that should be used with sorting the lists. They also need to be added to 'sorting_properties'-variable in __lookup_nodes().
     """
     class GlobalSettings(Enum):
         # Settings
