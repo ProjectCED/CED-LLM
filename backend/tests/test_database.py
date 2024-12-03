@@ -1,3 +1,23 @@
+"""
+Database testing. Combined unit- and integration-testing. 
+
+Tests is done by using database() public functions and it's queries instead of creating new connection in this module.
+
+Modules tested:
+- Database public functions
+- Partially Database private functions (that used by public functions)
+- Communication with real database.
+
+Usage:
+- "$env:PYTHONPATH = (Get-Location).Path" command in backend-folder (windows11)
+- "pytest -m database -p no:warnings" command in backend-folder
+
+Note: make sure database is up and running either:
+- Through Neo4j Desktop (official app)
+- Editing neo4j ports back in in docker-compose.yml and launching with "docker-compose up neo4j --build"
+
+"""
+
 import pytest
 from app.database import Database, NodeProperties
 from datetime import datetime
@@ -10,9 +30,6 @@ def db():
     """
     Fixture that sets up a real database connection for the entire module.
     This connection will be shared across all tests in this module.
-
-    Tests is done by using database() public functions and it's queries,
-    instead of making separate queries from here.
 
     Returns:
         database object
