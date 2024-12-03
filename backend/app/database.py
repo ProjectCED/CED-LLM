@@ -50,6 +50,7 @@ class NodeProperties:
         # User settings
         # example FOO = "foo"
         NAME = "name"
+        USER_NAME = "user_name"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -1054,6 +1055,73 @@ class Database(metaclass=DatabaseMeta):
             return self.__delete_node_with_connections(node_label.label, node_label.id, id)
         else:
             return self.__delete_node(node_label.label, node_label.id, id)
+
+
+    def lookup_nodes(self, node_label:NodeLabels, parent_label:NodeLabels = None, parent_id:UUID = None):
+        """
+        Lookup nodes and return list of them in a [[ID, NAME, DATETIME,...]] combo. Sorting the result by DATETIME DESC when present.
+
+        Args:
+            node_label (NodeLabels): Node label
+            parent_label (NodeLabels, optional): Parent label for searching under specific node
+            parent_id (UUID, optional): Id value of parent node
+
+        Raises:
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
+
+        Returns:
+            list[list[string]] or None:
+                - list[list[string]] A list of found nodes with ID, NAME, DATETIME.iso()... etc combination.
+                - None if nothing was found.
+        """
+        property_list = []
+        parent_info = None
+        sort_property = None
+        sort_direction = 'DESC'
+
+        if node_label == NodeLabels.PROJECT:
+            property_list = [
+                NodeProperties.Project.NAME.value,
+                NodeProperties.Project.DATETIME.value,
+                ]
+            sort_property = NodeProperties.Project.DATETIME.value
+
+        elif node_label == NodeLabels.RESULT_BLUEPRINT:
+            parent_info = { "node_type" : parent_label.label, "id_type" : parent_label.id, "id_value" : parent_id }
+            property_list = [
+                NodeProperties.ResultBlueprint.DATETIME.value,
+                ]
+            sort_property = NodeProperties.ResultBlueprint.DATETIME.value
+
+        elif node_label == NodeLabels.BLUEPRINT:
+            property_list = [
+                NodeProperties.Blueprint.NAME.value,
+                NodeProperties.Blueprint.DATETIME.value,
+                ]
+            
+        elif node_label == NodeLabels.USER_SETTINGS:
+            property_list = [
+                NodeProperties.UserSettings.NAME.value,
+                NodeProperties.UserSettings.USER_NAME.value,
+                ]
+            sort_property = NodeProperties.UserSettings.USER_NAME.value
+            sort_direction = 'ASC'
+        
+        elif node_label == NodeLabels.USED_BLUEPRINT:
+            parent_info = { "node_type" : parent_label.label, "id_type" : parent_label.id, "id_value" : parent_id }
+            property_list = [
+                NodeProperties.Blueprint.NAME.value,
+                NodeProperties.Blueprint.DATETIME.value,
+                ]
+            sort_property = NodeProperties.Blueprint.DATETIME.value
+        
+        elif node_label == NodeLabels.GLOBAL_SETTINGS:
+            # just to get id
+            pass
+
+        return self.__lookup_nodes(node_label.label, node_label.id, property_list, parent_info, sort_property, sort_direction)
+    
 
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
