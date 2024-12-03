@@ -1377,7 +1377,8 @@ class Database(metaclass=DatabaseMeta):
         Lookup Projects and return list of them in a [[ID, NAME, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
 
         Returns:
             list[string, string, string] or None:
@@ -1754,7 +1755,8 @@ class Database(metaclass=DatabaseMeta):
         Lookup Blueprints and return list of them in a [[ID, NAME, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
 
         Returns:
             list[string, string] or None:
@@ -2221,7 +2223,8 @@ class Database(metaclass=DatabaseMeta):
             project_id (string): Value for the id
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
 
         Returns:
             list[string, DATETIME.ISO] or None:
