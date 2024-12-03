@@ -79,6 +79,7 @@ class NodeProperties:
     class ResultBlueprint(Enum):
         # Result
         # example <FOO> = "foo"
+        NAME = "name"
         FILENAME = "filename"
         RESULT = "result"
         DATETIME = "datetime"

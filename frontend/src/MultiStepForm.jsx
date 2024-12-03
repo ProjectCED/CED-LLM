@@ -4,7 +4,7 @@ import ClassificationSelection from './ClassificationSelection'; // Step 2 compo
 import AISelection from './AISelection'; // Step 3 component
 import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
-import { uploadFile, analyzeUploadedFile, analyzeText, saveProject } from './utils';
+import { uploadFile, analyzeUploadedFile, analyzeText, saveProject, saveResult } from './utils';
 
 // EditButton Component
 const EditButton = ({ onEditClick, step }) => {
@@ -133,12 +133,13 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = async () => {
-  let result;
+  let analysisResult = null;
+  let filename = null;
   if (selectedFiles.length > 0) {
-    const uploadedFile = await uploadFile(selectedFiles[0]);
-    result = await analyzeUploadedFile(uploadedFile, selectedBlueprint);
+    filename = await uploadFile(selectedFiles[0]);
+    analysisResult = await analyzeUploadedFile(filename, selectedBlueprint);
   } else {
-    result = await analyzeText(copiedText, selectedBlueprint);
+    analysisResult = await analyzeText(copiedText, selectedBlueprint);
   }
 
   // Create new result 
@@ -151,6 +152,17 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       alert('Please enter a new project name.');
       return;
     }
+
+    // TODO: Avoid duplicate code (result is already present in the other if branch)
+    const newResult = {
+      id: null,
+      name: formattedDate,
+      filename: filename,
+      blueprint: selectedBlueprint,
+      result: analysisResult
+    };
+    const resultId = saveResult(newResult);
+    newResult.id = resultId;
 
     // Create a new project object
     const newProject = {
@@ -190,6 +202,18 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
     // Create a new result and update the project
     let newResultName = generateUniqueResultName(projects[existingProjectIndex]?.results || [], formattedDate);
+
+    // TODO: Avoid duplicate code (result is already present in the other if branch)
+    const newResult = {
+      id: null,
+      name: formattedDate,
+      filename: filename,
+      blueprint: selectedBlueprint,
+      result: analysisResult
+    };
+    const resultId = saveResult(newResult);
+    newResult.id = resultId;
+
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {

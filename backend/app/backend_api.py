@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 from app.models.blueprint import Blueprint as BP
 from app.models.project import Project
+from app.models.result import Result
 
 main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
@@ -135,5 +136,20 @@ def get_results():
     results = __get_results_for_project(project_id)
     return jsonify(results)
 '''
+
+@main.route('/save_result', methods=['POST'])
+def save_result():
+    data = request.json
+    name = data['name']
+    filename = data['filename']
+
+    blueprint = data['blueprint']
+    blueprint_id = blueprint.get('id') if blueprint else None
+    
+    result = data['result']
+
+    res = Result(name, filename, blueprint_id, result)
+    return res.save_result()
+
 if __name__ == '__main__':
     main.run(debug=True)

@@ -92,6 +92,19 @@ export const getProjects = async () => {
 };
 
 // Results
+export const saveResult = async (result) => {
+    const response = await fetch('/api/save_result', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(result)
+    });
+    // TODO: Should contain result id and copied blueprint (used variant) id
+    const id = await response.text();
+    return id;
+}
+
 /*
 export const getResults = async (project_id) => {
     const response = await fetch('/api/get_results_under_project', {
