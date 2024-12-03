@@ -4,6 +4,33 @@ from dotenv import load_dotenv
 from enum import Enum
 from datetime import datetime
 import os
+from uuid import UUID
+from typing import Any
+
+class NodeLabels(Enum):
+    GLOBAL_SETTINGS = ("Settings", 'id')
+    USER_SETTINGS = ("UserSettings", 'user_name')
+    BLUEPRINT = ("Blueprint", 'id')
+    PROJECT = ("Project", 'id')
+    RESULT_BLUEPRINT = ("ResultBlueprint", 'id')
+    USED_BLUEPRINT = ("UsedBlueprint", 'id')
+
+    def __init__(self, label, id):
+        self.label = label
+        self.id = id
+        
+
+class NodeRelationships(Enum):
+    BELONGS_TO = (NodeLabels.RESULT_BLUEPRINT, NodeLabels.PROJECT, "BELONGS_TO")
+    USED_IN_ANALYSIS = (NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, "USED_IN_ANALYSIS")
+    OWNED_BY = (NodeLabels.PROJECT, NodeLabels.USER_SETTINGS, "OWNED_BY")
+    OWNED_BY = (NodeLabels.BLUEPRINT, NodeLabels.USER_SETTINGS, "OWNED_BY")
+
+    def __init__(self, from_node, to_node, relationship):
+        self.from_node = from_node
+        self.to_node = to_node
+        self.relationship = relationship
+
 
 class NodeProperties:
     """All allowed property names for each node label.
@@ -853,8 +880,80 @@ class Database(metaclass=DatabaseMeta):
             error_string = str(e)
             raise RuntimeError( "Neo4j does_node_exist() query failed: " + error_string )
 
+    ### add node
+    def add_node(self, node_label:NodeLabels):
+        
+        """
+        Create a node. Also DATETIME is set as creation time for Blueprints, Projects and results.
 
-    
+        Args:
+            node_label (string): Node label
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label (from DATETIME set)
+
+        Returns:
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
+        """        
+
+        id = self.__add_node(node_label.label, node_label.id)
+
+        # only add DATETIME on following
+        if node_label in [
+            NodeLabels.BLUEPRINT,
+            NodeLabels.PROJECT,
+            NodeLabels.RESULT_BLUEPRINT,
+        ]:
+
+            # Be sure that Enums match
+            properties_enum_class = getattr(NodeProperties, node_label.label, None)
+            if not properties_enum_class:
+                raise ValueError(f"No properties defined for node label {node_label.label}")
+            datetime_property = getattr(properties_enum_class, 'DATETIME', None)
+            if not datetime_property:
+                raise ValueError(f"DATETIME property not defined for node label {node_label.label}")
+            self.set_node_property(id, node_label, datetime_property, datetime.now().isoformat())
+
+        return id
+
+    def set_node_property(self, id:UUID, node_label:NodeLabels, property_name: Enum, new_data: Any):
+        """
+        Create/modify node property data with new data.
+
+        Args:
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+            property_name (Enum): property name to create/modify
+            new_data (Any): value for the property
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False if node was not found.
+        """ 
+
+        # Dynamically get the corresponding property enum class
+        properties_enum_class = getattr(NodeProperties, node_label.label, None)
+
+        if not properties_enum_class:
+            raise ValueError(f"No properties defined for node label {node_label.label}")
+        # Check if the property_name is valid for the given node_label
+        if not isinstance(property_name, properties_enum_class):
+            raise ValueError(
+                f"Invalid property '{property_name}' for node label '{node_label.label}'. "
+                f"Expected one of: {[e.name for e in properties_enum_class]}"
+            )
+
+        return self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
+
+
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
         """
