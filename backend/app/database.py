@@ -402,14 +402,12 @@ class Database(metaclass=DatabaseMeta):
         """
         # sorting string
         sorting_string = '' # this will be used if no sorting property detected
-        # sorting_properties = ['datetime'] # add more here when adding more properties that you want to sort by TODO: perhaps do some form of ENUM from this
-        # sorting_property = next((prop for prop in sorting_properties if prop in property_list), None) # first hit chosen
         if (sort_direction != 'DESC' and sort_direction != 'ASC'):
             raise RuntimeError( "__lookup_nodes() sort_direction invalid value: " + sort_direction )
-        
         if sort_property:
             sorting_string = f"WITH n ORDER BY n.{sort_property} {sort_direction} "
 
+        # make string from property list
         property_list_string = ''
         for item in property_list:
             property_list_string = property_list_string + ", n." + item
