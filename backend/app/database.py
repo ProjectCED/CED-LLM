@@ -373,7 +373,7 @@ class Database(metaclass=DatabaseMeta):
             raise RuntimeError( "Neo4j lookup_node_property query failed: " + error_string )
 
 
-    def __lookup_nodes(self, type, id_type, property_list, parent_info = None):
+    def __lookup_nodes(self, type, id_type, property_list, parent_info = None, sort_property = None, sort_direction = 'DESC'):
         """
         Lookup nodes and return list of them in a [[ID, property_list]] combo.
         Sorting the result by first found sorting property DESC (compared with sorting_properties). If no sorting property found, defaults to 'id' ASC.
@@ -388,9 +388,12 @@ class Database(metaclass=DatabaseMeta):
                 - 'node_type' (string): Node label
                 - 'id_type' (string): Node id(property)
                 - 'id_value' (string): Value for the id
+            sort_property (string, optional): sorting property
+            sort_direction (string, optional): sorting direction ('DESC' or 'ASC')
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If invalid sort_direction value.
+            RuntimeError: If database query error.
 
         Returns:
             list[string, Any] or None:
@@ -398,14 +401,14 @@ class Database(metaclass=DatabaseMeta):
                 - None if nothing was found.
         """
         # sorting string
-        default_sort_property = 'id'
-        sorting_string = ''
-        sorting_properties = ['datetime'] # add more here when adding more properties that you want to sort by TODO: perhaps do some form of ENUM from this
-        sorting_property = next((prop for prop in sorting_properties if prop in property_list), None) # first hit chosen
-        if sorting_property:
-            sorting_string = f"WITH n ORDER BY n.{sorting_property} DESC "
-        else:
-            sorting_string = f"WITH n ORDER BY n.{default_sort_property} ASC "
+        sorting_string = '' # this will be used if no sorting property detected
+        # sorting_properties = ['datetime'] # add more here when adding more properties that you want to sort by TODO: perhaps do some form of ENUM from this
+        # sorting_property = next((prop for prop in sorting_properties if prop in property_list), None) # first hit chosen
+        if (sort_direction != 'DESC' and sort_direction != 'ASC'):
+            raise RuntimeError( "__lookup_nodes() sort_direction invalid value: " + sort_direction )
+        
+        if sort_property:
+            sorting_string = f"WITH n ORDER BY n.{sort_property} {sort_direction} "
 
         property_list_string = ''
         for item in property_list:
@@ -1387,8 +1390,9 @@ class Database(metaclass=DatabaseMeta):
             NodeProperties.Project.NAME.value,
             NodeProperties.Project.DATETIME.value,
             ]
+        sort_property = NodeProperties.Project.DATETIME.value
         
-        return self.__lookup_nodes(self.__project_type, self.__project_id, property_list)
+        return self.__lookup_nodes(self.__project_type, self.__project_id, property_list, None, sort_property)
     
 
     def delete_project(self, id_value):
@@ -1763,7 +1767,10 @@ class Database(metaclass=DatabaseMeta):
             NodeProperties.Blueprint.NAME.value,
             NodeProperties.Blueprint.DATETIME.value,
             ]
-        return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, property_list)
+        
+        sort_property = NodeProperties.Blueprint.DATETIME.value
+
+        return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, property_list, None, sort_property)
     
 
     def delete_blueprint(self, id_value):
@@ -2227,7 +2234,9 @@ class Database(metaclass=DatabaseMeta):
         property_list = [
             NodeProperties.ResultBlueprint.DATETIME.value,
             ]
-        return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, property_list, project_info)
+        sort_property = NodeProperties.ResultBlueprint.DATETIME.value
+
+        return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, property_list, project_info, sort_property)
 
     def delete_result_blueprint(self, id_value):
         """
