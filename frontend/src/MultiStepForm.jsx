@@ -142,6 +142,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     analysisResult = await analyzeText(copiedText, selectedBlueprint);
   }
 
+  console.log("Analysis result:", analysisResult);
+  console.log("Filename:", filename);
+
   // Create new result 
   const today = new Date();
   const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
@@ -160,7 +163,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       results: [],
       open: true
     };
-    const projectId = saveProject(newProjectName);
+    const projectId = await saveProject(newProjectName);
     newProject.id = projectId;
 
     // TODO: Avoid duplicate code (result is already present in the other if branch)
@@ -172,9 +175,9 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       result: analysisResult,
       projectId: projectId
     };
-    const resultId = saveResult(newResult);
+    const resultId = await saveResult(newResult);
     newResult.id = resultId;
-    newProject.results.push(newResult.name);
+    newProject.results.push(newResult);
 
     // Add the new project to the projects list
     setProjects((prevProjects) => [...prevProjects, newProject]);
@@ -182,7 +185,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     // Set the new project as the selected one and open the Sidebar
     setSelectedResult({
       projectIndex: projects.length,
-      result: formattedDate,
+      result: newResult
     });
 
     // Expand the sidebar and set overlay so other content is unclickable
@@ -219,7 +222,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
           };
           const resultId = saveResult(newResult);
           newResult.id = resultId;
-          return { ...project, results: [...project.results, newResult.name], open: true };
+          return { ...project, results: [...project.results, newResult], open: true };
         }
         return project;
       });
@@ -230,7 +233,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     if (newResultName) {
       setSelectedResult({
         projectIndex: existingProjectIndex,
-        result: newResultName,
+        result: newResult,
       });
 
       // Expand the sidebar and set overlay so other content is unclickable

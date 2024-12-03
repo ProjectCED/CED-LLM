@@ -110,26 +110,26 @@ def get_projects():
     for proj in projects:
         id = proj[0]
         name = proj[1]
-        results = ["A", "B", "C"]
-        #results = __get_results_for_project(id)
+        results = __get_results_for_project(id)
         projects_with_all_properties.append({"id": id, "open": False, "name": name, "results": results})
     return jsonify(projects_with_all_properties)
 
 # Results
-'''
+
 def __get_results_for_project(project_id):
     results = database.lookup_result_blueprint_nodes(project_id)
     results_with_all_properties = []
     for res in results:
         id = res[0]
+        name = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.NAME)
         filename = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.FILENAME)
         result = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.RESULT)
         used_blueprint_id = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.USED_BLUEPRINT)
         blueprint = __get_whole_blueprint(used_blueprint_id)
-        results_with_all_properties.append({"id": id, "filename": filename, "result": result, "blueprint": blueprint})
+        results_with_all_properties.append({"id": id, "name": name, "filename": filename, "result": result, "blueprint": blueprint})
     return results_with_all_properties
 
-
+'''
 @main.route('/get_results', methods=['POST'])
 def get_results():
     project_id = request.json['project_id']

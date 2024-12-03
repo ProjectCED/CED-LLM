@@ -13,8 +13,8 @@ class Result:
     def save_result(self):
         resultId = self.__database.add_result_blueprint_node()
         self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.NAME, self.__name)
-        self.__database.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.FILENAME, self.__filename)
-        self.__database.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.RESULT, self.__result)
+        self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.FILENAME, self.__filename)
+        self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.RESULT, self.__result)
 
         # Set result under a project
         self.__database.connect_result_blueprint_to_project(resultId, self.__projectId)

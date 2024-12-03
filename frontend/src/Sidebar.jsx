@@ -101,7 +101,7 @@ function Sidebar({
 
     const doc = new jsPDF();
     const projectName = projects[selectedResult.projectIndex]?.name;
-    const resultName = selectedResult.result;
+    const resultName = selectedResult.result.name;
 
     // Add content to the PDF
     doc.setFont("helvetica", "bold");
@@ -112,7 +112,7 @@ function Sidebar({
     doc.text(`Project: ${projectName}`, 20, 40);
     doc.text(`Result: ${resultName}`, 20, 50);
     doc.text("Details for the result:", 20, 70);
-    doc.text(`Blueprint: ${blueprint || "Automatic blueprint"}`, 20, 60);
+    doc.text(`Blueprint: ${blueprint?.name || "Automatic blueprint"}`, 20, 60);
 
     // Add example content
     const exampleText = `
@@ -160,13 +160,13 @@ function Sidebar({
                       <div
                         key={resultIndex}
                         className={`project-result ${
-                          selectedResult?.projectIndex === projectIndex && selectedResult?.result === result ? 'selected' : ''
+                          selectedResult?.projectIndex === projectIndex && selectedResult?.result?.id === result?.id ? 'selected' : ''
                         }`}
                         onMouseEnter={() => setHoveredResult({ projectIndex, resultIndex })}
                         onMouseLeave={() => setHoveredResult({ projectIndex: null, resultIndex: null })}
                         onClick={() => openResultDetails(projectIndex, result)}
                       >
-                        {result}
+                        {result?.name}
                         {hoveredResult.projectIndex === projectIndex && hoveredResult.resultIndex === resultIndex && (
                           <FaTrash
                             className="delete-icon"
@@ -199,33 +199,17 @@ function Sidebar({
           {selectedResult && (
             <div className={`result-details ${selectedResult ? 'show' : ''}`}>
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
-              <h2>Details for result: {selectedResult.result}</h2>
+              <h2>Details for result: {selectedResult.result.name}</h2>
 
               <div className="result-details-content">
 
               <div className="result-data">
-                <p>Project: {projects[selectedResult.projectIndex]?.name}</p>
-                <p>Blueprint: {blueprint || 'Automatic blueprint'}</p>
+                <p>Project: {projects[selectedResult?.projectIndex]?.name}</p>
+                <p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic blueprint'}</p>
               </div>
                 
                 <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
+                {selectedResult.result.result}
                 </p>
 
               </div>
