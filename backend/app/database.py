@@ -11,7 +11,7 @@ class NodeLabels(Enum):
     """
     All allowed node labels and their id variable name.
     """
-    GLOBAL_SETTINGS = ("Settings", 'id')
+    GLOBAL_SETTINGS = ("GlobalSettings", 'id')
     USER_SETTINGS = ("UserSettings", 'id')
     BLUEPRINT = ("Blueprint", 'id')
     PROJECT = ("Project", 'id')
