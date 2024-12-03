@@ -153,26 +153,28 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
       return;
     }
 
+    // Create a new project object
+    const newProject = {
+      id: null,
+      name: newProjectName,
+      results: [],
+      open: true
+    };
+    const projectId = saveProject(newProjectName);
+    newProject.id = projectId;
+
     // TODO: Avoid duplicate code (result is already present in the other if branch)
     const newResult = {
       id: null,
       name: formattedDate,
       filename: filename,
       blueprint: selectedBlueprint,
-      result: analysisResult
+      result: analysisResult,
+      projectId: projectId
     };
     const resultId = saveResult(newResult);
     newResult.id = resultId;
-
-    // Create a new project object
-    const newProject = {
-      id: null,
-      name: newProjectName,
-      results: [formattedDate],
-      open: true
-    };
-    const projectId = saveProject(newProjectName);
-    newProject.id = projectId;
+    newProject.results.push(newResult.name);
 
     // Add the new project to the projects list
     setProjects((prevProjects) => [...prevProjects, newProject]);
@@ -203,21 +205,21 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     // Create a new result and update the project
     let newResultName = generateUniqueResultName(projects[existingProjectIndex]?.results || [], formattedDate);
 
-    // TODO: Avoid duplicate code (result is already present in the other if branch)
-    const newResult = {
-      id: null,
-      name: formattedDate,
-      filename: filename,
-      blueprint: selectedBlueprint,
-      result: analysisResult
-    };
-    const resultId = saveResult(newResult);
-    newResult.id = resultId;
-
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {
-          return { ...project, results: [...project.results, newResultName], open: true };
+          // TODO: Avoid duplicate code (result is already present in the other if branch)
+          const newResult = {
+            id: null,
+            name: formattedDate,
+            filename: filename,
+            blueprint: selectedBlueprint,
+            result: analysisResult,
+            projectId: project.id
+          };
+          const resultId = saveResult(newResult);
+          newResult.id = resultId;
+          return { ...project, results: [...project.results, newResult.name], open: true };
         }
         return project;
       });

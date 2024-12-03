@@ -147,8 +147,9 @@ def save_result():
     blueprint_id = blueprint.get('id') if blueprint else None
     
     result = data['result']
+    projectId = data['projectId']
 
-    res = Result(name, filename, blueprint_id, result)
+    res = Result(name, filename, blueprint_id, result, projectId)
     return res.save_result()
 
 if __name__ == '__main__':
