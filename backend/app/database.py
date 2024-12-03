@@ -374,6 +374,7 @@ class Database(metaclass=DatabaseMeta):
     def __lookup_nodes(self, type, id_type, property_list, parent_info = None):
         """
         Lookup nodes and return list of them in a [[ID, property_list]] combo.
+        Sorting the result by first found sorting property DESC (compared with sorting_properties). If no sorting property found, defaults to 'id' ASC.
 
         Args:
             type (string): Node label
@@ -394,22 +395,30 @@ class Database(metaclass=DatabaseMeta):
                 - [ID, property_name value] A list of found nodes with ID and wanted property combination.
                 - None if nothing was found.
         """
+        # sorting string
+        default_sort_property = 'id'
+        sorting_string = ''
+        sorting_properties = ['datetime'] # add more here when adding more properties that you want to sort by TODO: perhaps do some form of ENUM from this
+        sorting_property = next((prop for prop in sorting_properties if prop in property_list), None) # first hit chosen
+        if sorting_property:
+            sorting_string = f"WITH n ORDER BY n.{sorting_property} DESC "
+        else:
+            sorting_string = f"WITH n ORDER BY n.{default_sort_property} ASC "
 
         property_list_string = ''
         for item in property_list:
             property_list_string = property_list_string + ", n." + item
 
-
+        query_string =''
         if parent_info == None:
-            query_string = (
-                "MATCH (n:" + type + " ) "
-                "RETURN COLLECT ([n." + id_type + property_list_string + "]) AS list"
-            )
+            query_string += f"MATCH (n:{type}) "
+            query_string += sorting_string
+            query_string += f"RETURN COLLECT ([n.{id_type}{property_list_string}]) AS list "
+
         else:
-            query_string = (
-                "MATCH (n:" + type + " ) - [] -> (:" + parent_info["node_type"] + " {" + parent_info["id_type"] + ": '" + parent_info["id_value"] + "'}) "
-                "RETURN COLLECT ([n." + id_type + property_list_string + "]) AS list"
-            )
+            query_string += f"MATCH (n:{type}) - [] -> (:{parent_info['node_type']} {{{parent_info['id_type']}: '{parent_info['id_value']}'}}) "
+            query_string += sorting_string
+            query_string += f"RETURN COLLECT ([n.{id_type}{property_list_string}]) AS list "
 
         try:
             records, summary, keys = self.__driver.execute_query(
@@ -1362,7 +1371,7 @@ class Database(metaclass=DatabaseMeta):
 
     def lookup_project_nodes(self):
         """
-        Lookup Projects and return list of them in a [[ID, NAME, DATETIME]] combo.
+        Lookup Projects and return list of them in a [[ID, NAME, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Raises:
             RuntimeError: If database query error.   
@@ -1738,7 +1747,7 @@ class Database(metaclass=DatabaseMeta):
 
     def lookup_blueprint_nodes(self):
         """
-        Lookup Blueprints and return list of them in a [[ID, NAME]] combo.
+        Lookup Blueprints and return list of them in a [[ID, NAME, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Raises:
             RuntimeError: If database query error.   
@@ -2199,7 +2208,7 @@ class Database(metaclass=DatabaseMeta):
     
     def lookup_result_blueprint_nodes(self, project_id):
         """
-        Lookup ResultBlueprints from specific project and return list of them in a [[ID, DATETIME]] combo.
+        Lookup ResultBlueprints from specific project and return list of them in a [[ID, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Args:
             project_id (string): Value for the id

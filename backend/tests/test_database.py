@@ -684,8 +684,8 @@ class TestNodeLookups:
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
-            and result[0][1] == 'foo_1' 
-            and result[1][1] == 'foo_2'
+            and result[0][1] == 'foo_2' # order matters
+            and result[1][1] == 'foo_1'
             and self.helper_datetime_checker(result[0][2]) == True 
             and self.helper_datetime_checker(result[1][2]) == True
         )
@@ -701,8 +701,8 @@ class TestNodeLookups:
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
-            and result[0][1] == 'foo_1' 
-            and result[1][1] == 'foo_2'
+            and result[0][1] == 'foo_2' # order matters
+            and result[1][1] == 'foo_1'
             and self.helper_datetime_checker(result[0][2]) == True 
             and self.helper_datetime_checker(result[1][2]) == True
         )
