@@ -1156,10 +1156,11 @@ class Database(metaclass=DatabaseMeta):
         
         result = self.__copy_node(from_label.label, from_label.id, from_id, to_label.label, to_label.id)
 
-        # give "_used" tag when copying back to blueprint
+        # give "_used" tag and fresh DATETIME when copying back to blueprint
         if from_label == NodeLabels.USED_BLUEPRINT and to_label == NodeLabels.BLUEPRINT:
             name = self.lookup_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME)
             self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, name + "_used")
+            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.DATETIME, datetime.now().isoformat())
 
         return result
         
