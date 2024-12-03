@@ -12,20 +12,28 @@ import { getBlueprints, saveBlueprint, deleteBlueprint } from './utils';
  */
 const Blueprints = () => {
   /**
-   * State to hold the array of blueprints.
-   * Each blueprint has properties:
-   * id, name, description, question, addedQuestions (array), and editing (boolean).
-   */
+  * State to hold the array of blueprints.
+  * Each blueprint contains:
+  * - `id` {number | null}: Unique identifier for the blueprint (null if not yet saved).
+  * - `name` {string}: Name of the blueprint.
+  * - `description` {string}: Description of the blueprint.
+  * - `question` {string}: Current question being added to the blueprint.
+  * - `addedQuestions` {Array<string>}: List of questions already added to the blueprint.
+  * - `editing` {boolean}: Indicates whether the blueprint is in edit mode.
+  * @type {Array<{id: number | null, name: string, description: string, question: string, addedQuestions: Array<string>, editing: boolean}>}
+  */
   const [blueprints, setBlueprints] = useState([]);
 
   /**
-   * State to manage whether the user is adding a new blueprint.
-   */
+  * State to manage whether the user is adding a new blueprint.
+  * @type {boolean}
+  */
   const [isAdding, setIsAdding] = useState(false); 
 
   /**
-   * State to display a success message when a new blueprint is saved.
-   */
+  * State to display a success message when a new blueprint is saved.
+  * @type {boolean}
+  */
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   /**
