@@ -8,6 +8,9 @@ from uuid import UUID
 from typing import Any
 
 class NodeLabels(Enum):
+    """
+    All allowed node labels and their id variable name.
+    """
     GLOBAL_SETTINGS = ("Settings", 'id')
     USER_SETTINGS = ("UserSettings", 'id')
     BLUEPRINT = ("Blueprint", 'id')
@@ -21,6 +24,9 @@ class NodeLabels(Enum):
         
 
 class NodeRelationships(Enum):
+    """
+    All allowed relationships.
+    """
     RESULT_BLUEPRINT_TO_PROJECT = (NodeLabels.RESULT_BLUEPRINT, NodeLabels.PROJECT, "BELONGS_TO")
     USED_BLUEPRINT_TO_RESULT_BLUEPRINT = (NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, "USED_IN_ANALYSIS")
     PROJECT_TO_USER_SETTINGS = (NodeLabels.PROJECT, NodeLabels.USER_SETTINGS, "OWNED_BY")
@@ -108,7 +114,7 @@ class NodeProperties:
 
     class ResultBlueprint(Enum):
         # Result
-        # example <FOO> = "foo"
+        # example FOO = "foo"
         FILENAME = "filename"
         RESULT = "result"
         DATETIME = "datetime"
@@ -1183,6 +1189,7 @@ class Database(metaclass=DatabaseMeta):
         return self.__connect_with_relationship(from_label.label, from_label.id, from_id, to_label.label, to_label.id, to_id, relationship_string)
 
 
+### TODO: all codelines below are older version, everything should be set to use above code instead and then delete below
 
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
