@@ -26,6 +26,8 @@ class NodeLabels(Enum):
 class NodeRelationships(Enum):
     """
     All allowed relationships.
+
+    Enum variables are not used. Just NodeLabels compared.
     """
     RESULT_BLUEPRINT_TO_PROJECT = (NodeLabels.RESULT_BLUEPRINT, NodeLabels.PROJECT, "BELONGS_TO")
     USED_BLUEPRINT_TO_RESULT_BLUEPRINT = (NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, "USED_IN_ANALYSIS")
@@ -39,7 +41,8 @@ class NodeRelationships(Enum):
 
 
 class NodeProperties:
-    """All allowed property names for each node label.
+    """
+    All allowed property names for each node label.
 
     Add more properties here when needed, but check Database class init for reserved names for identifier usage before adding new property names.
 
