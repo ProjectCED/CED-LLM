@@ -1123,6 +1123,31 @@ class Database(metaclass=DatabaseMeta):
         return self.__lookup_nodes(node_label.label, node_label.id, property_list, parent_info, sort_property, sort_direction)
     
 
+    def copy_node_to_node(self, from_id:UUID, from_label:NodeLabels, to_label:NodeLabels):
+        """
+        Copies node into another node.
+
+        Args:
+            id_value (string): Value for the "active" blueprint id
+
+        Raises:
+            RuntimeError: If database query error.
+            RuntimeError: If copy not supported by design.
+
+        Returns:
+            string(UUID): string containing ID value for the created node. 
+        """
+        # allowed cases
+        if from_label == NodeLabels.BLUEPRINT and to_label == NodeLabels.USED_BLUEPRINT:
+            pass
+        elif from_label == NodeLabels.USED_BLUEPRINT and to_label == NodeLabels.BLUEPRINT:
+            pass
+        else:
+            raise RuntimeError( "Unsupported copy attempt: " + from_label.label + " to " + to_label.label)
+
+        return self.__copy_node(from_label.label, from_label.id, from_id, to_label.label, to_label.id)
+    
+
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
         """
