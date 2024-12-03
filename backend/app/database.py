@@ -1996,6 +1996,26 @@ class Database(metaclass=DatabaseMeta):
                 - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__used_blueprint_type, self.__used_blueprint_id, id_value, property_name.value)
+    
+    def lookup_used_blueprint_node(self, result_id_value):
+        """
+        Lookup used_blueprint from specific result and return ID of it.
+
+        Args:
+             result_id_value(string): Value for the id
+
+        Raises:
+            RuntimeError: If database query error.   
+
+        Returns:
+            string or None:
+                - string A id of used_blueprint
+                - None if nothing was found.
+        """ 
+        result_info = { "node_type" : self.__result_blueprint_type, "id_type" : self.__result_blueprint_id, "id_value" : result_id_value }
+
+        return self.__lookup_nodes(self.__used_blueprint_type, self.__used_blueprint_id, [], result_info)[0][0]
+
 
     
     ### Used datamodel
