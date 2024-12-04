@@ -891,7 +891,7 @@ class Database(metaclass=DatabaseMeta):
             raise RuntimeError( "Neo4j does_node_exist() query failed: " + error_string )
 
 
-    def __helper_get_property_enum_and_validate(node_label:NodeLabels, property_name:Enum):
+    def __helper_get_property_enum_and_validate(self, node_label:NodeLabels, property_name:Enum):
         """
         Helper function to dynamically get the property enum class for a node_label and validate the property_name.
 
