@@ -999,6 +999,11 @@ class Database(metaclass=DatabaseMeta):
                 - True when query succeeded.
                 - False if node was not found.
         """ 
+        # not allowed to be modified
+        if node_label in [
+            NodeLabels.USED_BLUEPRINT,
+        ]:
+            return False
 
         # Check that node_label has property_name
         self.__helper_get_property_enum_and_validate(node_label, property_name)
