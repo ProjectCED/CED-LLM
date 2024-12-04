@@ -251,7 +251,7 @@ class DatabaseDummy2:
     def __blueprints(self, blueprints):
         '''Blueprints'''
         for blueprint in blueprints:
-            id = self.db.add_blueprint_node()
+            id = self.db.add_node(NodeLabels.BLUEPRINT)
 
             if not blueprint[0] == None:
                 self.db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, blueprint[0])
@@ -280,7 +280,7 @@ class DatabaseDummy2:
     def __projects(self, projects):
         '''Projects'''
         for project in projects:
-            id = self.db.add_project_node()
+            id = self.db.add_node(NodeLabels.PROJECT)
 
             if not project[0] == None:
                 self.db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.NAME, project[0])
