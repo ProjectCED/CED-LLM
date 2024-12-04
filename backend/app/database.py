@@ -965,6 +965,11 @@ class Database(metaclass=DatabaseMeta):
            
             self.set_node_property(id, node_label, datetime_property, datetime.now().isoformat())
 
+        # this node should only have one instance
+        if node_label == NodeLabels.GLOBAL_SETTINGS:
+            if self.__lookup_nodes(node_label.label, node_label.id, []) != [[]]:
+                return None
+
         return id
 
     def set_node_property(self, id:UUID, node_label:NodeLabels, property_name: Enum, new_data: Any):
