@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ClassificationSelection.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ClassificationSelection.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import './ClassificationSelection.css';
+import BlueprintDropdown from './BlueprintDropdown';
+import { getBlueprints } from './utils';
+
+/**
+ * ClassificationSelection component is responsible for displaying the classification options for selecting 
+ * an automatic blueprint, a saved blueprint, or creating a custom blueprint. It includes handling user input 
+ * and managing the local state related to classifications, blueprints, and custom text.
+ * 
+ * @component
+ * @param {Object} props - The component's props.
+ * @param {string} props.selectedClassification - The currently selected classification (e.g., "Automatic Blueprint", "Saved Blueprint", "Created Blueprint").
+ * @param {Function} props.onSelectClassification - Callback function to handle the selection of a classification.
+ * @param {Function} props.onSelectBlueprint - Callback function to handle the selection of a blueprint.
+ * @param {Function} props.onCustomTextChange - Callback function to handle changes in custom text input.
+ * @returns {JSX.Element} The rendered ClassificationSelection component with buttons for classification selection, 
+ * blueprint dropdown, and custom text input fields.
+ */
+const ClassificationSelection = ({ selectedClassification, onSelectClassification, onSelectBlueprint, onCustomTextChange }) => {
+  /**
+   * Local state to keep track of the currently selected classification.
+   * @type {string}
+   */
+  const [localSelectedClassification, setLocalSelectedClassification] = useState(selectedClassification || '');
+
+   /**
+   * Local state to keep track of the selected blueprint.
+   * @type {Object|null}
+   */
+  const [selectedBlueprint, setSelectedBlueprint] = useState(null);
+
+  /**
+   * Local state to keep track of the available blueprints.
+   * @type {Array&lt;Object>}
+   */
+  const [blueprints, setBlueprints] = useState([]);
+
+  /**
+   * Local state to store the custom text entered for creating a new blueprint.
+   * @type {string}
+   */
+  const [customText, setCustomText] = useState('');
+
+  /**
+   * Effect hook that runs when the `selectedClassification` prop changes. 
+   * It updates the local classification state and fetches available blueprints.
+   */
+  useEffect(() => {
+    setLocalSelectedClassification(selectedClassification);
+    getBlueprints().then((bps) => {
+      setBlueprints(bps);
+    });
+  }, [selectedClassification]);
+
+  /**
+   * Handles button click to select a classification.
+   * 
+   * @param {string} classification - The classification selected by the user (e.g., 'Automatic Blueprint', 'Saved Blueprint', 'Created Blueprint').
+   */
+  const handleButtonClick = (classification) => {
+    setLocalSelectedClassification(classification);
+    onSelectClassification(classification);
+  
+    // If classification is not 'Saved Classification', clears selected blueprint
+  if (classification !== 'Saved Blueprint') {
+    setSelectedBlueprint(null);
+    onSelectBlueprint(null); 
+  }
+
+  if (classification !== 'Created Blueprint') {
+    setCustomText('');
+    onCustomTextChange(''); 
+  }
+
+  };
+
+  /**
+   * Handles blueprint selection in the BlueprintDropdown component.
+   * 
+   * @param {number} blueprintIndex - The index of the selected blueprint in the `blueprints` array.
+   */
+  const handleBlueprintSelect = (blueprintIndex) => {
+    const blueprint = blueprints[blueprintIndex];
+    setSelectedBlueprint(blueprint);
+    onSelectBlueprint(blueprint);
+  };
+
+  /**
+   * Handles changes in the custom text input field for creating a new blueprint.
+   * 
+   * @param {React.ChangeEvent&lt;HTMLInputElement>} event - The change event triggered by the input field.
+   */
+  const handleCustomTextChange = (event) => {
+    const text = event.target.value;
+    setCustomText(text);
+    onCustomTextChange(text); // Pass the text back to the parent component
+  };
+
+  return (
+    &lt;div className="classification-selection">
+      &lt;h2>
+        Next, choose how you would like your dataset to be classified. If you're analyzing
+        this type of data for the first time, it's recommended to try the Automatic blueprint. 
+      &lt;/h2>
+      &lt;h2>
+        Alternatively, you can now use previously saved blueprints or define directly how you want the data to be classified.
+      &lt;/h2>
+      &lt;div className="button-container">
+        &lt;button
+          className={`selection-button ${localSelectedClassification === 'Automatic Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Automatic Blueprint')}
+        >
+          Automatic Blueprint
+        &lt;/button>
+        &lt;button
+          className={`selection-button ${localSelectedClassification === 'Saved Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Saved Blueprint')}
+        >
+          Saved Blueprint
+        &lt;/button>
+        &lt;button
+          className={`selection-button ${localSelectedClassification === 'Created Blueprint' ? 'selected' : ''}`}
+          onClick={() => handleButtonClick('Created Blueprint')}
+        >
+          Create Blueprint
+        &lt;/button>
+      &lt;/div>
+
+      {localSelectedClassification === 'Saved Blueprint' &amp;&amp; (
+        &lt;BlueprintDropdown
+          key={localSelectedClassification} 
+          blueprints={blueprints}
+          selectedBlueprint={selectedBlueprint}
+          onSelectBlueprint={handleBlueprintSelect}
+        />
+      )}
+
+      {localSelectedClassification === 'Created Blueprint' &amp;&amp; (
+        &lt;div className="custom-text-input">
+          &lt;input
+            type="text"
+            placeholder="Enter custom blueprint"
+            value={customText}
+            onChange={handleCustomTextChange}
+          />
+        &lt;/div>
+      )}
+    &lt;/div>
+  );
+};
+
+export default ClassificationSelection;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Dec 03 2024 15:21:53 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

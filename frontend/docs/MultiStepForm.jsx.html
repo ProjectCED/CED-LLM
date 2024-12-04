@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: MultiStepForm.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: MultiStepForm.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+import FileDownload from './FileDownload'; // Step 1 component
+import ClassificationSelection from './ClassificationSelection'; // Step 2 component
+import AISelection from './AISelection'; // Step 3 component
+import ProjectSelection from './ProjectSelection'; // Step 4 component
+import './MultiStepForm.css';
+
+/**
+ * EditButton component renders a button to enable editing a specific step.
+ *
+ * @param {Object} props - The props object.
+ * @param {function} props.onEditClick - Callback to handle edit action for a step.
+ * @param {number} props.step - The step number to edit.
+ * @returns {JSX.Element} The EditButton component.
+ */
+const EditButton = ({ onEditClick, step }) => {
+  return (
+    &lt;button className="edit-button" onClick={() => onEditClick(step)}>
+      Edit
+    &lt;/button>
+  );
+};
+
+/**
+ * SaveButton component renders a button to save changes made in a step.
+ *
+ * @param {Object} props - The props object.
+ * @param {function} props.onSaveClick - Callback to handle save action.
+ * @returns {JSX.Element} The SaveButton component.
+ */
+const SaveButton = ({ onSaveClick }) => {
+  return (
+    &lt;button className="multiform-save-button" onClick={onSaveClick}>
+      Save
+    &lt;/button>
+  );
+};
+
+/**
+ * NextButton component renders a button to proceed to the next step.
+ *
+ * @param {Object} props - The props object.
+ * @param {function} props.onNextClick - Callback to handle proceeding to the next step.
+ * @returns {JSX.Element} The NextButton component.
+ */
+const NextButton = ({ onNextClick }) => {
+  return (
+    &lt;button className="next-button" onClick={onNextClick}>
+      Next
+    &lt;/button>
+  );
+};
+
+/**
+ * MultiStepForm component guides users through a multi-step process for 
+ * classifying text data with AI, uploading files, selecting blueprints, 
+ * and associating results with a project.
+ *
+ * @component
+ * @param {Object} props - The props object.
+ * @param {Array} props.projects - List of existing projects.
+ * @param {function} props.setProjects - Callback to update projects.
+ * @param {function} props.setExpanded - Callback to expand the project sidebar.
+ * @param {function} props.setSelectedResult - Callback to set the selected result.
+ * @param {function} props.setBlueprint - Callback to set the selected blueprint.
+ * @param {function} props.setOverlayActive - Callback to toggle the overlay state.
+ * @returns {JSX.Element} The MultiStepForm component.
+ */
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint, setOverlayActive}) => {
+  // State variables to track the current step and selections
+  
+  /**
+   * @type {number}
+   * @description The current step in the multi-step form.
+   */
+  const [currentStep, setCurrentStep] = useState(1); 
+
+  /**
+   * @type {boolean}
+   * @description Tracks whether the form is in editing mode.
+   */
+  const [isEditing, setIsEditing] = useState(false);
+
+  /**
+   * @type {number}
+   * @description Tracks the number of completed steps.
+   */
+  const [stepCompleted, setStepCompleted] = useState(0);
+
+  // Persistent states for current step changes
+   /**
+   * @type {Array&lt;File>}
+   * @description List of selected files for upload.
+   */
+   const [selectedFiles, setSelectedFiles] = useState([]);
+
+   /**
+    * @type {string}
+    * @description Stores text that the user has copied for classification.
+    */
+   const [copiedText, setCopiedText] = useState('');
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected classification for the current step.
+    */
+   const [selectedClassification, setSelectedClassification] = useState(null);
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected AI model for the current step.
+    */
+   const [selectedAI, setSelectedAI] = useState(null);
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected blueprint for the current step.
+    */
+   const [selectedBlueprint, setSelectedBlueprint] = useState(null);
+ 
+   /**
+    * @type {?string}
+    * @description Stores the selected project option (either new or existing).
+    */
+   const [selectedProjectOption, setSelectedProjectOption] = useState(null);
+ 
+   /**
+    * @type {?Object}
+    * @description Stores the selected existing project, if any.
+    */
+   const [selectedExistingProject, setSelectedExistingProject] = useState(null);
+ 
+   /**
+    * @type {string}
+    * @description Stores custom classification text provided by the user.
+    */
+   const [customClassificationText, setCustomClassificationText] = useState('');
+ 
+   /**
+    * @type {string}
+    * @description Stores the name of a new project if the user chooses to create one.
+    */
+   const [newProjectName, setNewProjectName] = useState('');
+ 
+
+  // Temporary states for current step changes
+  /**
+   * @type {Array&lt;File>}
+   * @description Temporarily stores files during the current step.
+   */
+  const [tempFiles, setTempFiles] = useState([]);
+
+  /**
+   * @type {string}
+   * @description Temporarily stores text input during the current step.
+   */
+  const [tempText, setTempText] = useState('');
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores classification selection during the current step.
+   */
+  const [tempClassification, setTempClassification] = useState(null);
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores blueprint selection during the current step.
+   */
+  const [tempBlueprint, setTempBlueprint] = useState(null);
+
+  /**
+   * @type {string}
+   * @description Temporarily stores custom classification text input during the current step.
+   */
+  const [tempCustomText, setTempCustomText] = useState('');
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores AI selection during the current step.
+   */
+  const [tempAI, setTempAI] = useState(null);
+
+  /**
+   * @type {?string}
+   * @description Temporarily stores the selected project option during the current step.
+   */
+  const [tempProjectOption, setTempProjectOption] = useState(null);
+
+  /**
+   * @type {?Object}
+   * @description Temporarily stores the selected existing project during the current step.
+   */
+  const [tempExistingProject, setTempExistingProject] = useState(null);
+
+  /**
+   * @type {string}
+   * @description Temporarily stores the new project name during the current step.
+   */
+  const [tempNewProjectName, setTempNewProjectName] = useState('');
+
+  /**
+   * Resets the form state to its initial values.
+   */
+  const resetFormState = () => {
+
+    // Reset persistent states
+    setCurrentStep(1); 
+    setSelectedFiles([]);
+    setCopiedText('');
+    setSelectedClassification(null);
+    setSelectedAI(null);
+    setSelectedBlueprint(null);
+    setSelectedProjectOption(null);
+    setSelectedExistingProject(null);
+    setStepCompleted(0); 
+    setIsEditing(false);
+    setCustomClassificationText('');
+    setNewProjectName('');
+
+    // Reset temporay states
+    setTempFiles([]);
+    setTempText('');
+    setTempClassification(null);
+    setTempBlueprint(null);
+    setTempCustomText('');
+    setTempAI(null);
+    setTempProjectOption(null);
+    setTempExistingProject(null);
+    setTempNewProjectName('');
+  };
+
+  /**
+   * Handles file upload and updates the selected files state.
+   *
+   * @param {FileList} files - The uploaded files.
+   */
+  const handleFileUpload = (files) => {
+    if (files.length > 0) {
+      setSelectedFiles(files);
+      setCopiedText('');
+    } else {
+      setSelectedFiles([]);
+    }
+  };
+
+  /**
+   * Handles changes in the copied text input field.
+   *
+   * @param {string} text - The entered text.
+   */
+  const handleTextChange = (text) => {
+    if (text.trim() !== '') {
+      setCopiedText(text);
+      setSelectedFiles([]);
+    } else {
+      setCopiedText('');
+    }
+  };
+
+   /**
+   * Handles temporary file uploads during editing.
+   * @param {File[]} files - Array of temporary files uploaded.
+   */
+   const handleTempFileUpload = (files) => {
+    if (files.length > 0) {
+      setTempFiles(files);
+      setTempText('');
+    } else {
+      setTempFiles([]);
+    }
+  };
+
+   /**
+   * Handles changes in the temporary copied text input during editing.
+   * @param {string} text - The temporary text input.
+   */
+  const handleTempTextChange = (text) => {
+    if (text.trim() !== '') {
+      setTempText(text);
+      setTempFiles([]);
+    } else {
+      setTempText('');
+    }
+  };
+
+  /**
+   * Handles the "Analyze" button click, processing the final step 
+   * and associating results with a project.
+   */
+  const handleAnalyze = async () => {
+  //const formdata = new FormData();
+  //formdata.append('file', selectedFiles[0]);
+  //const response = await fetch('http://127.0.0.1:5000/upload_file', {
+    //method: 'POST',
+    //body: formdata,
+  //});
+  //const data = await response.json();
+  //navigate('/app/projects', { state : data});
+
+  // Create new result 
+  const today = new Date();
+  const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
+  console.log("Formatted date (DDMMYYYY):", formattedDate);
+  
+  console.log('Selected Classification:', selectedClassification);
+  console.log('Selected Blueprint:', selectedBlueprint);
+  console.log('Custom Classification Text:', customClassificationText);
+  console.log('Selected project:', selectedProjectOption);
+  console.log('Selected Existing Project:', selectedExistingProject);
+  console.log('Projects:', projects);
+
+  // If the user selected "New Project"
+  if (selectedProjectOption === 'New Project') {
+    if (!newProjectName.trim()) {
+      alert('Please enter a new project name.');
+      return;
+    }
+
+    // Create a new project object
+    const newProject = {
+      name: newProjectName,
+      results: [formattedDate],
+      open: true
+    };
+
+    // Add the new project to the projects list
+    setProjects((prevProjects) => [...prevProjects, newProject]);
+
+    // Set the new project as the selected one and open the Sidebar
+    setSelectedResult({
+      projectIndex: projects.length,
+      result: formattedDate,
+    });
+
+    // Expand the sidebar and set overlay so other content is unclickable
+    setExpanded(true);
+    setOverlayActive(true);
+
+    // If the user selected "Existing Project"
+  } else if (selectedProjectOption === 'Existing Project') {
+    // Check if chosen project can be found
+    const existingProjectIndex = projects.findIndex(
+      (project) => project.name === selectedExistingProject
+    );
+
+    if (existingProjectIndex === -1) {
+      console.error('Selected project not found in the list.');
+      alert('The selected project could not be found.');
+      return;
+    }
+
+    // Create a new result and update the project
+    let newResultName = generateUniqueResultName(projects[existingProjectIndex]?.results || [], formattedDate);
+    setProjects((prevProjects) => {
+      const updatedProjects = prevProjects.map((project, index) => {
+        if (index === existingProjectIndex) {
+          return { ...project, results: [...project.results, newResultName], open: true };
+        }
+        return project;
+      });
+      return updatedProjects;
+    });
+
+    // Open the Sidebar and set the created result as selected
+    if (newResultName) {
+      setSelectedResult({
+        projectIndex: existingProjectIndex,
+        result: newResultName,
+      });
+
+      // Expand the sidebar and set overlay so other content is unclickable
+      setExpanded(true); 
+      setOverlayActive(true);
+    }
+      
+  }
+
+    // Reset the form state
+    resetFormState();
+
+    alert("Analysis completed! The result has been added to the selected project.");
+  };
+
+  /**
+   * Generates a unique result name if duplicates exist.
+   * @param {string[]} results - List of existing result names.
+   * @param {string} baseName - The base name for the result.
+   * @returns {string} - A unique result name.
+   */
+  const generateUniqueResultName = (results, baseName) => {
+    let name = baseName;
+    let counter = 1;
+    while (results.includes(name)) {
+      name = `${baseName} (${counter++})`;
+    }
+    console.log('Generated unique result name:', name);
+    return name;
+  };
+
+  const allStepsCompleted = stepCompleted > 4;
+
+  /**
+   * Validates and saves the current step's data.
+   * @param {number} step - The step to validate and save.
+   * @returns {boolean} - True if the step data is valid, false otherwise.
+   */
+  const validateAndSaveStep = (step) => {
+    switch (step) {
+      case 1:
+        if (tempFiles.length === 0 &amp;&amp; tempText.trim() === '') {
+          alert('Please upload one file or enter some text.');
+          return false;
+        }
+        handleFileUpload(tempFiles);
+        handleTextChange(tempText);
+        break;
+
+      case 2:
+        if (!tempClassification) {
+          alert('Please select a classification option.');
+          return false;
+        }
+        if (tempClassification === 'Saved Blueprint' &amp;&amp; !tempBlueprint) {
+          alert('Please select a saved blueprint.');
+          return false;
+        }
+        if (tempClassification === 'Created Blueprint' &amp;&amp; tempCustomText.trim() === '') {
+          alert('Please enter a blueprint for "Created Blueprint".');
+          return false;
+        }
+        handleClassificationSelection(tempClassification);
+        if (tempClassification === 'Saved Blueprint') {
+          handleBlueprintSelection(tempBlueprint);
+        } else if (tempClassification === 'Created Blueprint') {
+          handleCustomTextChange(tempCustomText);
+        } else {
+          setBlueprint(null);
+        }
+        break;
+
+      case 3:
+        if (!tempAI) {
+          alert('Please select an AI option.');
+          return false;
+        }
+        handleAISelection(tempAI);
+        break;
+
+      case 4:
+        if (!tempProjectOption) {
+          alert('Please choose a project option.');
+          return false;
+        }
+        if (tempProjectOption === 'New Project' &amp;&amp; !tempNewProjectName.trim()) {
+          alert('Please enter a new project name.');
+          return false;
+        }
+        if (tempProjectOption === 'Existing Project' &amp;&amp; !tempExistingProject) {
+          alert('Please select an existing project to continue.');
+          return false;
+        }
+        if (tempProjectOption === 'Existing Project' &amp;&amp; tempExistingProject) {
+          handleExistingProjectSelection(tempExistingProject);
+        }
+        handleProjectOptionSelection(tempProjectOption);
+        setNewProjectName(tempNewProjectName);
+        break;
+
+      default:
+        console.error('Invalid step');
+        return false;
+    }
+    return true;
+  };
+
+  /**
+   * Navigates to the next step after validation and saving.
+   */
+  const nextStep = () => {
+    if (!validateAndSaveStep(currentStep)) {
+      return; 
+    }
+    const newStep = currentStep + 1;
+    setCurrentStep(newStep);
+    setStepCompleted(Math.max(stepCompleted, newStep));
+  };
+
+  /**
+   * Updates the selected classification in Step 2.
+   * @param {string} classification - The selected classification option.
+   */
+  const handleClassificationSelection = (classification) => {
+    setSelectedClassification(classification);
+  };
+
+  /**
+   * Updates the selected AI in Step 3.
+   * @param {string} ai - The selected AI option.
+   */
+  const handleAISelection = (ai) => {
+    setSelectedAI(ai);
+  };
+
+  /**
+   * Updates the selected blueprint in Step 2.
+   * @param {string} blueprint - The selected blueprint option.
+   */
+  const handleBlueprintSelection = (blueprint) => {
+    setSelectedBlueprint(blueprint);
+    setBlueprint(blueprint);
+    
+  };
+
+  /**
+   * Updates the custom classification text for the blueprint.
+   * @param {string} text - The custom text input for classification.
+   */
+  const handleCustomTextChange = (text) => {
+    setCustomClassificationText(text);
+    setBlueprint(text)
+  };
+
+  /**
+   * Updates the selected project option (New or Existing).
+   * @param {string} option - The selected project option ('New Project' or 'Existing Project').
+   */
+  const handleProjectOptionSelection = (option) => {
+    setSelectedProjectOption(option);
+    if (option === 'New Project') {
+      setNewProjectName(''); 
+    }
+    if (option !== 'Existing Project') {
+      setSelectedExistingProject(null); 
+    }
+  };
+
+  
+  /**
+   * Updates the selected existing project.
+   * @param {Object} project - The selected existing project.
+   */
+  const handleExistingProjectSelection = (project) => {
+    setSelectedExistingProject(project);
+    setSelectedProjectOption('Existing Project'); 
+  };
+
+  /**
+   * Handles clicking the "Edit" button for a specific step.
+   * @param {number} step - The step number to edit.
+   */
+  const handleEditClick = (step) => {
+    // Prevent editing another step if currently in editing mode
+    if (isEditing) {
+      alert('Please save or cancel the current editing step before editing another step.');
+      return;
+    }
+    setCurrentStep(step);
+    setIsEditing(true);
+  };
+
+  /**
+   * Saves the current step's data and exits editing mode.
+   */
+  const handleSaveClick = () => {
+    if (!validateAndSaveStep(currentStep)) {
+      return; 
+    }
+    setIsEditing(false); 
+    setCurrentStep(5); 
+  };
+
+  return (
+    &lt;div className="multi-step-form">
+      &lt;p className="classification-heading">
+        CED-LLM offers a streamlined process for classifying text data using AI technology. The interface provides four key steps to guide you through the classification process.
+      &lt;/p>
+      {/* Step 1: File upload or copy-paste text */}
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
+            1. File Upload or Copy Paste Text
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 1 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={1} />
+          )}
+        &lt;/div>
+        {currentStep === 1 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;FileDownload 
+              onFileUpload={handleTempFileUpload}
+              onTextChange={handleTempTextChange}
+              isEditing={isEditing} 
+            />
+            {isEditing ? (
+              &lt;SaveButton onSaveClick={handleSaveClick} />
+            ) : (
+              &lt;NextButton onNextClick={nextStep} />
+            )}
+          &lt;/div>
+        )}
+        {stepCompleted >= 1 &amp;&amp; selectedFiles.length > 0 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>Selected Files:&lt;/p>
+            &lt;div className="file-list">
+              {selectedFiles.map((file, index) => (
+                &lt;div key={index} className="file-item">
+                  {file.name}
+                &lt;/div>
+              ))}
+            &lt;/div>
+          &lt;/div>
+        )}
+        {stepCompleted >= 1 &amp;&amp; copiedText.trim() !== '' &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>Text has been copied&lt;/p>
+          &lt;/div>
+        )}
+      &lt;/div>
+
+      {/* Step 2: Blueprint Selection */}
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 2 ? 'active' : ''}`}>
+            2. Blueprint Selection
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 2 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={2} />
+          )}
+        &lt;/div>
+        {currentStep === 2 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;ClassificationSelection
+              selectedClassification={tempClassification}
+              onSelectClassification={setTempClassification} 
+              onSelectBlueprint={setTempBlueprint}
+              isLocked={isEditing} 
+              onCustomTextChange={setTempCustomText}
+            />
+            {isEditing ? (
+              &lt;SaveButton onSaveClick={handleSaveClick} />
+            ) : (
+              &lt;NextButton onNextClick={nextStep} />
+            )}
+          &lt;/div>
+        )}
+        {stepCompleted >= 2 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>{selectedClassification}&lt;/p>
+            {selectedBlueprint &amp;&amp; &lt;p>{selectedBlueprint.name}&lt;/p>}
+            {customClassificationText &amp;&amp; &lt;p>{customClassificationText}&lt;/p>}
+          &lt;/div>
+        )}
+      &lt;/div>
+
+      {/* Step 3: AI selection */}
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 3 ? 'active' : ''}`}>
+            3. AI Selection
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 3 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={3} />
+          )}
+        &lt;/div>
+        {currentStep === 3 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;AISelection selectedAI={tempAI} onSelectAI={setTempAI} isLocked={isEditing} />
+            {isEditing ? (
+              &lt;SaveButton onSaveClick={handleSaveClick} />
+            ) : (
+              &lt;NextButton onNextClick={nextStep} />
+            )}
+          &lt;/div>
+        )}
+        {stepCompleted >= 3 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>{selectedAI}&lt;/p>
+          &lt;/div>
+        )}
+      &lt;/div>
+
+      {/* Step 4: Project Selection */}
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 4 ? 'active' : ''}`}>
+            4. Choose a Project for Displaying Results
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 4 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={4} />
+          )}
+        &lt;/div>
+        {currentStep === 4 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;ProjectSelection
+              existingProjects={projects?.map((project) => project.name) || []}
+              selectedProjectOption={tempProjectOption}
+              onSelectProjectOption={setTempProjectOption}
+              onSelectExistingProject={setTempExistingProject}
+              isLocked={isEditing}
+              uploadedFileName={tempFiles.length > 0 ? tempFiles[0].name : ''}
+              copiedText={tempText}
+              newProjectName={tempNewProjectName}
+              onNewProjectNameChange={setTempNewProjectName}
+            />
+            {isEditing ? (
+              &lt;SaveButton onSaveClick={handleSaveClick} />
+            ) : (
+              &lt;NextButton onNextClick={nextStep} />
+            )}
+          &lt;/div>
+        )}
+        {stepCompleted >= 4 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>{selectedProjectOption}&lt;/p>
+            {selectedProjectOption === 'Existing Project' &amp;&amp; selectedExistingProject &amp;&amp; (
+              &lt;p>{selectedExistingProject}&lt;/p>
+            )}
+            {selectedProjectOption === 'New Project' &amp;&amp; newProjectName &amp;&amp; (
+              &lt;p>The given name: {newProjectName}&lt;/p>
+            )}
+          &lt;/div>
+        )}
+      &lt;/div>
+
+      {/* Show Analyze button disabled until all steps are completed */}
+      &lt;div className="analyze-section">
+        &lt;button 
+          className="analyze-button" 
+          onClick={handleAnalyze} 
+          disabled={!allStepsCompleted}
+        >
+          Analyze
+        &lt;/button>
+      &lt;/div>
+    &lt;/div>
+  );
+};
+
+export default MultiStepForm;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Dec 03 2024 15:21:53 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

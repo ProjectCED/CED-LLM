@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: App.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: App.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';  
+import StartPage from './StartPage';
+import Projects from './Projects';
+import Blueprints from './Blueprints';
+import Header from './Header';
+import Sidebar from './Sidebar'; 
+import MultiStepForm from './MultiStepForm';
+
+/**
+ * The main application component that sets up the router and manages global state.
+ * Includes routing to different views and state management for projects, blueprints,
+ * sidebar expansion, and overlay activation.
+ *
+ * @component
+ */
+function App() {
+
+  /**
+   * State to track whether the overlay is active.
+   * @type {boolean}
+   */
+  const [overlayActive, setOverlayActive] = useState(false);
+
+  /**
+   * State to control the sidebar's expanded state.
+   * @type {boolean}
+   */
+  const [expanded, setExpanded] = useState(false);
+
+  /**
+   * State to track the currently selected result in the sidebar.
+   * @type {string|null}
+   */
+  const [selectedResult, setSelectedResult] = useState(null);
+  
+  /**
+   * State to manage the list of projects.
+   * Each project includes a name, an open state, and a list of results.
+   * @type {Array&lt;{name: string, open: boolean, results: string[]}>}
+   */
+  const [projects, setProjects] = useState([
+    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
+    { name: 'Dog show data', open: false, results: ['28042023'] },
+    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
+  ]);
+
+   /**
+   * State to track the currently selected blueprint.
+   * @type {string}
+   */
+  const [blueprint, setBlueprint] = useState('');
+
+  console.log('Projects in App:', projects);
+  
+  return (
+    &lt;div className={`app-container ${overlayActive ? 'overlay-active' : ''}`}>
+      &lt;Router>
+        &lt;Routes>
+          {/* Starting view */}
+          &lt;Route path="/" element={&lt;StartPage />} />
+
+          {/* Views that have Header */}
+          &lt;Route path="/app/*" element={
+            &lt;MainLayout 
+            setOverlayActive={setOverlayActive} 
+            projects={projects} 
+            setProjects={setProjects} 
+            expanded={expanded}
+            setExpanded={setExpanded}
+            selectedResult={selectedResult}
+            setSelectedResult={setSelectedResult}
+            blueprint={blueprint}
+            setBlueprint={setBlueprint}
+          />
+          } 
+        />
+        &lt;/Routes>
+      &lt;/Router>
+    &lt;/div>
+  );
+}
+
+/**
+ * The layout component for views under `/app/*`.
+ * Includes the header, sidebar, and main content areas.
+ *
+ * @param {Object} props - The props passed to the component.
+ * @param {Function} props.setOverlayActive - Callback to set the overlay active state.
+ * @param {Array&lt;{name: string, open: boolean, results: string[]}>} props.projects - The list of projects.
+ * @param {Function} props.setProjects - Callback to update the list of projects.
+ * @param {boolean} props.expanded - Indicates whether the sidebar is expanded.
+ * @param {Function} props.setExpanded - Callback to set the expanded state of the sidebar.
+ * @param {string|null} props.selectedResult - The currently selected result in the sidebar.
+ * @param {Function} props.setSelectedResult - Callback to update the selected result.
+ * @param {string} props.blueprint - The currently selected blueprint.
+ * @param {Function} props.setBlueprint - Callback to update the selected blueprint.
+ * @returns {JSX.Element} The layout with header, sidebar, and main content.
+ */
+function MainLayout({ 
+  setOverlayActive, 
+  projects, 
+  setProjects, 
+  expanded, 
+  setExpanded, 
+  selectedResult, 
+  setSelectedResult,
+  blueprint,  
+  setBlueprint
+}) {
+  return (
+    &lt;div className="main-layout">
+      &lt;Header />
+      &lt;div className="content-container">
+        &lt;Sidebar
+          setOverlayActive={setOverlayActive} 
+          projects={projects} 
+          setProjects={setProjects} 
+          expanded={expanded} 
+          setExpanded={setExpanded} 
+          selectedResult={selectedResult} 
+          setSelectedResult={setSelectedResult} 
+          blueprint={blueprint}
+         />
+        &lt;div className="main-content">
+          &lt;Routes>
+            &lt;Route path="classification" 
+              element={
+                &lt;MultiStepForm 
+                  projects={projects} 
+                  setProjects={setProjects} 
+                  setExpanded={setExpanded} 
+                  setSelectedResult={setSelectedResult}
+                  setBlueprint={setBlueprint}
+                  setOverlayActive={setOverlayActive} 
+                />
+                } 
+                />
+            &lt;Route path="projects" element={&lt;Projects />} />
+            &lt;Route path="blueprints" element={&lt;Blueprints />} />
+          &lt;/Routes>
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
+  );
+}
+
+export default App;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Dec 03 2024 15:21:53 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
