@@ -59,6 +59,12 @@ class TestAddNode:
         result = db.add_node(NodeLabels.GLOBAL_SETTINGS)
         assert UUID(result,version=4)
 
+    def test_global_settings_2(self,db:Database):
+        """Should only allow one globa settings"""
+        id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        id_2 = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        assert id_2 == None
+
     def test_user_settings(self,db:Database):
         result = db.add_node(NodeLabels.USER_SETTINGS)
         assert UUID(result,version=4)
@@ -174,6 +180,27 @@ class TestSetPropertyLookProperty:
         id_2 = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
         result = db.lookup_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
         assert result == 'foo'
+
+    def test_used_blueprint_2(self,db:Database):
+        """
+        Try to set property on used blueprint
+
+        1. create blueprint
+        2. set property
+        3. create used variant
+        4. set property on used
+        4. lookup used variant property
+        check lookup value
+        """
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        id_2 = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        result_1 = db.set_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL, 'foo2')
+        result_2 = db.lookup_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
+        assert (
+            result_1 == False
+            and result_2 == None
+        )
 
 
 class TestLookupPropertyNotFound:
