@@ -45,7 +45,6 @@ services:
       - VITE_PORT=${VITE_PORT}
     depends_on:
       neo4j:
-        
         condition: service_healthy
     networks:
       - backend
@@ -88,6 +87,7 @@ services:
       - database
   
   ollama:
+    container_name: ollama
     image: ollama/ollama:latest
     runtime: ${GPU_RUNTIME:-nvidia}
     deploy:
@@ -98,11 +98,13 @@ services:
               count: 1
               capabilities: [gpu]
     ports:
-      - "11434:11434" # Default port for Ollama
+      - "11434:11434"
     environment:
       - ${GPU_VISIBLE_DEVICES:-NVIDIA_VISIBLE_DEVICES}=all
       - ${GPU_DRIVER_CAPABILITIES:-NVIDIA_DRIVER_CAPABILITIES}=compute,utility
-
+    networks:
+      - backend
+      
 volumes:
   neo4j_data:
   neo4j_logs:
