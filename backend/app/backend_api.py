@@ -105,14 +105,11 @@ def delete_blueprint():
     return jsonify({"success": success})
 
 @main.route("/mistral", methods=["POST"])
-def query_model():
+def query_mistral():
     data = request.json
-    prompt = data.get("prompt", "Explain the theory of relativity in simple terms.!")
-    response = request.post(
-        "http://ollama:11434/api/v1/query",
-        json={"model": "mistral-7b", "prompt": prompt},
-    )
-    return jsonify(response.json())
+    prompt = data.get("prompt", "Explain the theory of relativity in layman's terms.")
+    response = apiHandler.mistral_analyze(prompt)
+    return jsonify(response)
 
 
 if __name__ == '__main__':

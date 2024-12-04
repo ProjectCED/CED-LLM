@@ -40,3 +40,16 @@ export const deleteBlueprint = async (id) => {
   const data = await response.json();
   return data.success;
 };
+
+export const testMistral = async () => {
+    const response = await fetch("/api/mistral", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "prompt": "Explain the theory of relativity in layman's terms."
+        })
+    });
+    const data = await response.json();
+    console.log(data);
+    return data;
+}
