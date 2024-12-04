@@ -10,7 +10,7 @@ Modules tested:
 
 Usage:
 - "$env:PYTHONPATH = (Get-Location).Path" command in backend-folder (windows11)
-- "pytest -m database -p no:warnings" command in backend-folder
+- "pytest -m database2 -p no:warnings" command in backend-folder
 
 Note: make sure database is up and running either:
 - Through Neo4j Desktop (official app)
