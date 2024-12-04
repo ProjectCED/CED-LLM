@@ -1071,8 +1071,14 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             bool:
                 - True when query succeeded.
-                - False when node doesn't exist.
+                - False when node doesn't exist or cannot be deleted.
         """
+        # Deletion not allowed
+        if node_label in [
+            NodeLabels.USED_BLUEPRINT, # deleted when result is deleted
+        ]:
+            return False
+        
         # Also delete connected nodes connected to it
         if node_label in [
             NodeLabels.USER_SETTINGS, # everything related to this user is deleted and anything beyond
