@@ -189,8 +189,8 @@ class TestSetPropertyLookProperty:
         2. set property
         3. create used variant
         4. set property on used
-        4. lookup used variant property
-        check lookup value
+        5. lookup used variant property
+        check success and lookup value
         """
         id = db.add_node(NodeLabels.BLUEPRINT)
         db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
