@@ -269,7 +269,7 @@ class Database(metaclass=DatabaseMeta):
                 - None if node already exists.
         """
         # check if node already exists
-        if self.__does_node_exist(type, id_type, id_value):
+        if id_value != None and self.__does_node_exist(type, id_type, id_value):
             return None
 
         if id_value == None:
