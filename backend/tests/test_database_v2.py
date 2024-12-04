@@ -19,10 +19,10 @@ Note: make sure database is up and running either:
 """
 
 import pytest
-from app.database import Database, NodeProperties, NodeLabels, NodeRelationships
-from datetime import datetime
+from app.database import Database, NodeProperties, NodeLabels
 from uuid import UUID
 import uuid
+from neo4j.time import DateTime
 
 pytestmark = pytest.mark.database2
 
@@ -116,7 +116,7 @@ class TestSetPropertyLookProperty:
 
     def test_global_settings(self,db:Database):
         id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
-        result = db.set_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
+        result = db.set_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
         result_2 = db.lookup_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS)
         assert (
             result == True
@@ -125,7 +125,7 @@ class TestSetPropertyLookProperty:
 
     def test_user_settings(self,db:Database):
         id = db.add_node(NodeLabels.USER_SETTINGS)
-        result = db.set_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'Alice')
+        result = db.set_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'Alice')
         result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS)
         assert (
             result == True
@@ -135,7 +135,7 @@ class TestSetPropertyLookProperty:
     def test_project(self,db:Database):
         id = db.add_node(NodeLabels.PROJECT)
         result = db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS, 'foo')
-        result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.Project.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS)
         assert (
             result == True
             and result_2 == 'foo'
@@ -144,7 +144,7 @@ class TestSetPropertyLookProperty:
     def test_blueprint(self,db:Database):
         id = db.add_node(NodeLabels.BLUEPRINT)
         result = db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.Blueprint.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
         assert (
             result == True
             and result_2 == 'foo'
@@ -153,7 +153,7 @@ class TestSetPropertyLookProperty:
     def test_result_blueprint(self,db:Database):
         id = db.add_node(NodeLabels.RESULT_BLUEPRINT)
         result = db.set_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.ResultBlueprint.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
         assert (
             result == True
             and result_2 == 'foo'
@@ -174,48 +174,6 @@ class TestSetPropertyLookProperty:
         id_2 = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
         result = db.lookup_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
         assert result == 'foo'
-
-
-# class TestLookupPropertyFound:
-#     """Lookup property that is found
-    
-#     1. create node
-#     2. set property
-#     3. lookup property
-#     check returned property value
-#     """
-
-#     def test_global_settings(self,db:Database):
-#         db.add_global_settings_node()
-#         db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
-#         result = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
-#         assert result == 'Verdana'
-
-#     def test_user_settings(self,db:Database):
-#         db.add_user_settings_node('alice')
-#         db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'Alice')
-#         result = db.lookup_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS)
-#         assert result == 'Alice'
-
-#     def test_project(self,db:Database):
-#         id = db.add_project_node()
-#         db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
-#         result = db.lookup_project_property(id, NodeProperties.Project.TEST_PASS)
-#         assert result == 'foo'
-
-#     def test_blueprint(self,db:Database):
-#         id = db.add_blueprint_node()
-#         db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
-#         result = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
-#         assert result == 'foo'
-
-#     def test_result_blueprint(self,db:Database):
-#         id = db.add_result_blueprint_node()
-#         db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-#         result = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
-#         assert result == 'foo'
-
-
 
 
 class TestLookupPropertyNotFound:
@@ -252,8 +210,8 @@ class TestLookupPropertyNotFound:
         assert result == None
 
     def test_used_blueprint(self,db:Database):
-        id = db.add_node(NodeLabels.USED_BLUEPRINT)
-        id_2 = db.copy_to_used_blueprint_node(id)
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        id_2 = db.copy_node_to_node(id,NodeLabels.BLUEPRINT,NodeLabels.USED_BLUEPRINT)
         result = db.lookup_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
         assert result == None
 
@@ -422,7 +380,7 @@ class TestDeleteNode:
 
     def test_global_settings(self,db:Database):
         id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
-        db.set_global_settings_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS, 'foo')
+        db.set_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS, 'foo')
         result_1 = db.delete_node(id, NodeLabels.GLOBAL_SETTINGS)
         result_2 = db.lookup_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS)
         assert (
@@ -432,7 +390,7 @@ class TestDeleteNode:
 
     def test_user_settings(self,db:Database):
         id = db.add_node(NodeLabels.USER_SETTINGS)
-        db.set_user_settings_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'foo')
+        db.set_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'foo')
         result_1 = db.delete_node(id, NodeLabels.USER_SETTINGS)
         result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS)
         assert (
@@ -442,7 +400,7 @@ class TestDeleteNode:
 
     def test_project(self,db:Database):
         id = db.add_node(NodeLabels.PROJECT)
-        db.set_project_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS, 'foo')
+        db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS, 'foo')
         result_1 = db.delete_node(id, NodeLabels.PROJECT)
         result_2 = db.lookup_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS)
         assert (
@@ -452,7 +410,7 @@ class TestDeleteNode:
 
     def test_blueprint(self,db:Database):
         id = db.add_node(NodeLabels.BLUEPRINT)
-        db.set_blueprint_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
         result_1 = db.delete_node(id, NodeLabels.BLUEPRINT)
         result_2 = db.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
         assert (
@@ -462,7 +420,7 @@ class TestDeleteNode:
 
     def test_result_blueprint(self,db:Database):
         id = db.add_node(NodeLabels.RESULT_BLUEPRINT)
-        db.set_result_blueprint_property(id, NodeLabels.BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        db.set_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
         result_1 = db.delete_node(id, NodeLabels.RESULT_BLUEPRINT)
         result_2 = db.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
         assert (
@@ -577,7 +535,7 @@ class TestDeleteNodeAdvanced:
         id_result = db.add_node(NodeLabels.RESULT_BLUEPRINT)
 
         id_blueprint = db.add_node(NodeLabels.BLUEPRINT)
-        db.set_blueprint_property(id_blueprint, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        db.set_node_property(id_blueprint, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
 
         id_used_blueprint = db.copy_node_to_node(id_blueprint, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
         db.connect_node_to_node(id_used_blueprint, NodeLabels.USED_BLUEPRINT, id_result, NodeLabels.RESULT_BLUEPRINT)
@@ -640,9 +598,9 @@ class TestRelationshipCreationGoodToGood:
         assert result == True
 
     def test_result_blueprint_project(self,db:Database):
-        id_1 = db.add_node(NodeLabels.BLUEPRINT)
+        id_1 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
         id_2 = db.add_node(NodeLabels.PROJECT)
-        result = db.connect_node_to_node(id_1, NodeLabels.BLUEPRINT, id_2, NodeLabels.PROJECT)
+        result = db.connect_node_to_node(id_1, NodeLabels.RESULT_BLUEPRINT, id_2, NodeLabels.PROJECT)
         assert result == True
 
     def test_used_blueprint_result_blueprint(self,db:Database):
@@ -743,13 +701,6 @@ class TestNodeLookups:
     2. add names
     check lookup nodes result (NAME and/or DATETIME)
     """
-    def helper_datetime_checker(self,date_string):
-        try:
-            print(datetime.fromisoformat(date_string))
-            return True
-        except:
-            return False
-
     def test_lookup_project_nodes(self,db:Database):
         id_1 = db.add_node(NodeLabels.PROJECT)
         db.set_node_property(id_1, NodeLabels.PROJECT, NodeProperties.Project.NAME, 'foo_1')
@@ -763,8 +714,10 @@ class TestNodeLookups:
             and UUID(result[1][0],version=4)
             and result[0][1] == 'foo_2' # order matters
             and result[1][1] == 'foo_1'
-            and self.helper_datetime_checker(result[0][2]) == True 
-            and self.helper_datetime_checker(result[1][2]) == True
+            # and self.helper_datetime_checker(result[0][2]) == True 
+            # and self.helper_datetime_checker(result[1][2]) == True
+            and isinstance(result[0][2], DateTime) == True 
+            and isinstance(result[1][2], DateTime) == True
         )
 
     def test_lookup_blueprint_nodes(self,db:Database):
@@ -774,14 +727,13 @@ class TestNodeLookups:
         db.set_node_property(id_2,NodeLabels.BLUEPRINT,NodeProperties.Blueprint.NAME,'foo_2')
 
         result = db.lookup_nodes(NodeLabels.BLUEPRINT)
-
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
             and result[0][1] == 'foo_2' # order matters
             and result[1][1] == 'foo_1'
-            and self.helper_datetime_checker(result[0][2]) == True 
-            and self.helper_datetime_checker(result[1][2]) == True
+            and isinstance(result[0][2], DateTime) == True 
+            and isinstance(result[1][2], DateTime) == True
         )
 
     def test_lookup_result_blueprint_nodes(self,db:Database):
@@ -799,8 +751,8 @@ class TestNodeLookups:
             and UUID(result[1][0],version=4)
             and result[0][0] == id_2 # order matters
             and result[1][0] == id_1
-            and self.helper_datetime_checker(result[0][1]) == True 
-            and self.helper_datetime_checker(result[1][1]) == True
+            and isinstance(result[0][1], DateTime) == True 
+            and isinstance(result[1][1], DateTime) == True
         )
 
 

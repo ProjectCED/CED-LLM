@@ -2,7 +2,8 @@ from neo4j import GraphDatabase
 #from neo4j.exceptions import Neo4jError #using normal Exception
 from dotenv import load_dotenv
 from enum import Enum
-from datetime import datetime
+from datetime import datetime # TODO: remove this when cleaning up
+from neo4j.time import DateTime
 import os
 from uuid import UUID
 from typing import Any
@@ -23,7 +24,7 @@ class NodeLabels(Enum):
         self.id = id
         
 
-class NodeRelationships(Enum):
+class _NodeRelationships(Enum):
     """
     All allowed relationships.
 
@@ -905,8 +906,14 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             properties_enum_class (Enum): The corresponding property enum class for the node_label.
         """
+        # Used variants should have access to normal variant enums
+        alias_mapping = {
+            NodeLabels.USED_BLUEPRINT: NodeLabels.BLUEPRINT
+        }
+        resolved_node_label = alias_mapping.get(node_label, node_label)
+
         # Dynamically get the corresponding property enum class
-        properties_enum_class = getattr(NodeProperties, node_label.label, None)
+        properties_enum_class = getattr(NodeProperties, resolved_node_label.label, None)
 
         if not properties_enum_class:
             raise ValueError(f"No properties defined for node label {node_label.label}")
@@ -952,6 +959,11 @@ class Database(metaclass=DatabaseMeta):
                 - string containing ID value for the created node.
                 - None if node already exists.
         """
+        # this node should only have one instance
+        if node_label == NodeLabels.GLOBAL_SETTINGS:
+            if self.__lookup_nodes(node_label.label, node_label.id, []) != []:
+                return None
+
         id = self.__add_node(node_label.label, node_label.id)
 
         # only add DATETIME on following
@@ -963,12 +975,8 @@ class Database(metaclass=DatabaseMeta):
             # Make sure DATETIME is found for node_label
             datetime_property = self.__helper_get_property_enum_and_validate(node_label, 'DATETIME')
            
-            self.set_node_property(id, node_label, datetime_property, datetime.now().isoformat())
+            self.set_node_property(id, node_label, datetime_property, DateTime.now())
 
-        # this node should only have one instance
-        if node_label == NodeLabels.GLOBAL_SETTINGS:
-            if self.__lookup_nodes(node_label.label, node_label.id, []) != [[]]:
-                return None
 
         return id
 
@@ -1113,6 +1121,7 @@ class Database(metaclass=DatabaseMeta):
                 NodeProperties.Blueprint.NAME.value,
                 NodeProperties.Blueprint.DATETIME.value,
                 ]
+            sort_property = NodeProperties.Blueprint.DATETIME.value
             
         elif node_label == NodeLabels.USER_SETTINGS:
             property_list = [
@@ -1133,7 +1142,6 @@ class Database(metaclass=DatabaseMeta):
         elif node_label == NodeLabels.GLOBAL_SETTINGS:
             # just to get id
             pass
-
         return self.__lookup_nodes(node_label.label, node_label.id, property_list, parent_info, sort_property, sort_direction)
     
 
@@ -1164,8 +1172,8 @@ class Database(metaclass=DatabaseMeta):
         # give "_used" tag and fresh DATETIME when copying back to blueprint
         if from_label == NodeLabels.USED_BLUEPRINT and to_label == NodeLabels.BLUEPRINT:
             name = self.lookup_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME)
-            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, name + "_used")
-            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.DATETIME, datetime.now().isoformat())
+            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, (name or "blueprint") + "_used")
+            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.DATETIME, DateTime.now())
 
         return result
         
@@ -1189,7 +1197,7 @@ class Database(metaclass=DatabaseMeta):
         """
         relationship_string = ''
         try:
-            for relationship in NodeRelationships:
+            for relationship in _NodeRelationships:
                 if relationship.from_node == from_label and relationship.to_node == to_label:
                     relationship_string = relationship.relationship
         except:

@@ -1,4 +1,4 @@
-from app.database import Database, NodeProperties, NodeLabels, NodeRelationships
+from app.database import Database, NodeProperties, NodeLabels
 
 # just for show questions, don't use these
 blueprint_questions = [
