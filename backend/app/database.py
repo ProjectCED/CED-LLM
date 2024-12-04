@@ -997,7 +997,7 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             bool:
                 - True when query succeeded.
-                - False if node was not found.
+                - False if node was not found or cannot be modified.
         """ 
         # not allowed to be modified
         if node_label in [
