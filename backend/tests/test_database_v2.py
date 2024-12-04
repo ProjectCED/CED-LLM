@@ -60,7 +60,7 @@ class TestAddNode:
         assert UUID(result,version=4)
 
     def test_global_settings_2(self,db:Database):
-        """Should only allow one globa settings"""
+        """Should only allow one global settings"""
         id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
         id_2 = db.add_node(NodeLabels.GLOBAL_SETTINGS)
         assert id_2 == None
