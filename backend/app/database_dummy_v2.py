@@ -1,4 +1,4 @@
-from app.database import Database, NodeProperties
+from app.database import Database, NodeProperties, NodeLabels
 
 # just for show questions, don't use these
 blueprint_questions = [
@@ -24,7 +24,7 @@ data_model_node_relationships = [
     'LINKS_THROUGH',
 ]
 
-class DatabaseDummy:
+class DatabaseDummy2:
     '''Creates pre-filled dummy database
     
     Warning. This will first clear the database.
@@ -195,38 +195,38 @@ class DatabaseDummy:
         ]
         self.__result_blueprint(__result_blueprints)
 
-        ### Data models
-        # [(name,
-        #   node_labels,
-        #   node_relationships)]
-        __datamodels = [
-            (
-                'Eduskunta',
-                None,
-                None,
-                ),
-            (
-                'Wayfinder Realm',
-                data_model_node_labels,
-                data_model_node_relationships,
-                ),
-            (
-                'SoftTag Grove',
-                data_model_node_labels,
-                data_model_node_relationships,
-                ),
-            (
-                'Ramble Field',
-                data_model_node_labels,
-                data_model_node_relationships,
-                ),
-            (
-                'Freespace Catalog',
-                data_model_node_labels,
-                data_model_node_relationships,
-                ),
-        ]
-        self.__datamodels(__datamodels)
+        # ### Data models
+        # # [(name,
+        # #   node_labels,
+        # #   node_relationships)]
+        # __datamodels = [
+        #     (
+        #         'Eduskunta',
+        #         None,
+        #         None,
+        #         ),
+        #     (
+        #         'Wayfinder Realm',
+        #         data_model_node_labels,
+        #         data_model_node_relationships,
+        #         ),
+        #     (
+        #         'SoftTag Grove',
+        #         data_model_node_labels,
+        #         data_model_node_relationships,
+        #         ),
+        #     (
+        #         'Ramble Field',
+        #         data_model_node_labels,
+        #         data_model_node_relationships,
+        #         ),
+        #     (
+        #         'Freespace Catalog',
+        #         data_model_node_labels,
+        #         data_model_node_relationships,
+        #         ),
+        # ]
+        # self.__datamodels(__datamodels)
                 
 
 
@@ -236,65 +236,63 @@ class DatabaseDummy:
 
     def __global(self, tuple):
         '''Global settings'''
-        self.db.add_global_settings_node()
+        self.db.add_node(NodeLabels.GLOBAL_SETTINGS)
         # example
         #self.db.set_global_settings_property(NodeProperties.GlobalSettings.FONT, tuple[0])
 
     def __users(self, users):
         '''User Settings'''
         for user in users:
-            # Create nodes with email
-            id = self.db.add_user_settings_node(user[1])
-
-            if not user[0] == None:
-                self.db.set_user_settings_property(id, NodeProperties.UserSettings.NAME, user[0])
+            id = self.db.add_node(NodeLabels.USER_SETTINGS)
+            self.db.set_node_property(id, NodeLabels.USER_SETTINGS,NodeProperties.UserSettings.NAME, user[0])
+            self.db.set_node_property(id, NodeLabels.USER_SETTINGS,NodeProperties.UserSettings.USER_NAME, user[1])
             # add more here
 
     def __blueprints(self, blueprints):
         '''Blueprints'''
         for blueprint in blueprints:
-            id = self.db.add_blueprint_node()
+            id = self.db.add_node(NodeLabels.BLUEPRINT)
 
             if not blueprint[0] == None:
-                self.db.set_blueprint_property(id, NodeProperties.Blueprint.NAME, blueprint[0])
+                self.db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, blueprint[0])
 
             if not blueprint[1] == None:
-                self.db.set_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION, blueprint[1])
+                self.db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.DESCRIPTION, blueprint[1])
 
             if not blueprint[2] == None:
-                self.db.set_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS, blueprint[2])
+                self.db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.QUESTIONS, blueprint[2])
             # add more here
 
-    def __datamodels(self, datamodels):
-        '''Datamodels'''
-        for datamodel in datamodels:
-            id = self.db.add_data_model_node()
-            if not datamodel[0] == None:
-                self.db.set_data_model_property(id, NodeProperties.DataModel.NAME, datamodel[0])
+    # def __datamodels(self, datamodels):
+    #     '''Datamodels'''
+    #     for datamodel in datamodels:
+    #         id = self.db.add_data_model_node()
+    #         if not datamodel[0] == None:
+    #             self.db.set_data_model_property(id, NodeProperties.DataModel.NAME, datamodel[0])
 
-            if not datamodel[1] == None:
-                self.db.set_data_model_property(id, NodeProperties.DataModel.NODE_LABELS, datamodel[1])
+    #         if not datamodel[1] == None:
+    #             self.db.set_data_model_property(id, NodeProperties.DataModel.NODE_LABELS, datamodel[1])
 
-            if not datamodel[2] == None:
-                self.db.set_data_model_property(id, NodeProperties.DataModel.RELATIONSHIP_TYPES, datamodel[2])
-            # add more here
+    #         if not datamodel[2] == None:
+    #             self.db.set_data_model_property(id, NodeProperties.DataModel.RELATIONSHIP_TYPES, datamodel[2])
+    #         # add more here
 
     def __projects(self, projects):
         '''Projects'''
         for project in projects:
-            id = self.db.add_project_node()
+            id = self.db.add_node(NodeLabels.PROJECT)
 
             if not project[0] == None:
-                self.db.set_project_property(id, NodeProperties.Project.NAME, project[0])
+                self.db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.NAME, project[0])
             # add more here
 
 
     def __result_blueprint(self, results):
         '''Result-Blueprint'''
-        projects = self.db.lookup_project_nodes()
-        blueprints = self.db.lookup_blueprint_nodes()
+        projects = self.db.lookup_nodes(NodeLabels.PROJECT)
+        blueprints = self.db.lookup_nodes(NodeLabels.BLUEPRINT)
         for result in results:
-            result_id = self.db.add_result_blueprint_node()
+            result_id = self.db.add_node(NodeLabels.RESULT_BLUEPRINT)
 
             # search blueprint id
             blueprint_id = None
@@ -306,24 +304,18 @@ class DatabaseDummy:
             for project_id, project_name, project_datetime in projects:
                 if project_name == result[0]:
                     # result -> project
-                    self.db.connect_result_blueprint_to_project(result_id, project_id)
+                    self.db.connect_node_to_node(result_id, NodeLabels.RESULT_BLUEPRINT, project_id, NodeLabels.PROJECT)
                     # used blueprint -> result
-                    used_blue_id = self.db.copy_to_used_blueprint_node(blueprint_id)
-                    self.db.connect_used_blueprint_to_result_blueprint(used_blue_id, result_id)
+                    used_blue_id = self.db.copy_node_to_node(blueprint_id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+                    self.db.connect_node_to_node(used_blue_id, NodeLabels.USED_BLUEPRINT, result_id, NodeLabels.RESULT_BLUEPRINT)
 
                     # properties
                     if not result[2] == None:
-                        self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.DATETIME, result[2])
+                        self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.DATETIME, result[2])
 
                     if not result[3] == None:
-                        self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.RESULT, result[3])
+                        self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.RESULT, result[3])
 
                     if not result[4] == None:
-                        self.db.set_result_blueprint_property(result_id, NodeProperties.ResultBlueprint.FILENAME, result[4])
+                        self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.FILENAME, result[4])
                     # add more here
-
-
-                    
-            
-
-

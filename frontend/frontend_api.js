@@ -5,7 +5,7 @@ function App() {
 
   const handleAnalyze = () => {
     // Send POST-request to backend
-    fetch('http://localhost:5000/analyze', {
+    fetch('/api/analyze', {
       method: 'POST',
     })
       .then((response) => response.json())

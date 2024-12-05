@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import './ClassificationSelection.css';
 import BlueprintDropdown from './BlueprintDropdown';
+import { getBlueprints } from './utils';
 
 const ClassificationSelection = ({ selectedClassification, onSelectClassification, onSelectBlueprint, onCustomTextChange }) => {
   // Local state to keep track of the currently selected classification,
   // selected blueprint and custom input text
   const [localSelectedClassification, setLocalSelectedClassification] = useState(selectedClassification || '');
-  const [selectedBlueprint, setSelectedBlueprint] = useState('');
+  const [selectedBlueprint, setSelectedBlueprint] = useState(null);
+  const [blueprints, setBlueprints] = useState([]);
   const [customText, setCustomText] = useState('');
 
   // Update localSelectedClassification if selectedClassification prop changes
   useEffect(() => {
     setLocalSelectedClassification(selectedClassification);
+    getBlueprints().then((bps) => {
+      setBlueprints(bps);
+    });
   }, [selectedClassification]);
-
-  // Array of blueprint options available for selection
-  const blueprints = ['Blueprint 1', 'Blueprint 2', 'Blueprint 3'];
 
   // Handles classification button click
   const handleButtonClick = (classification) => {
@@ -24,8 +26,8 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   
     // If classification is not 'Saved Classification', clears selected blueprint
   if (classification !== 'Saved Blueprint') {
-    setSelectedBlueprint('');
-    onSelectBlueprint(''); 
+    setSelectedBlueprint(null);
+    onSelectBlueprint(null); 
   }
 
   if (classification !== 'Created Blueprint') {
@@ -36,7 +38,8 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   };
 
   // Handles blueprint selection in the BlueprintDropdown component
-  const handleBlueprintSelect = (blueprint) => {
+  const handleBlueprintSelect = (blueprintIndex) => {
+    const blueprint = blueprints[blueprintIndex];
     setSelectedBlueprint(blueprint);
     onSelectBlueprint(blueprint);
   };
@@ -51,8 +54,7 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
     <div className="classification-selection">
       <h2>
         Next, choose how you would like your dataset to be classified. If you're analyzing
-        this type of data for the first time, it's recommended to try the Automatic blueprint. If you're satisfied with the results, you can save the classification as a
-        blueprint and use it next time, for example, on a larger dataset of the same topic.
+        this type of data for the first time, it's recommended to try the Automatic blueprint. 
       </h2>
       <h2>
         Alternatively, you can now use previously saved blueprints or define directly how you want the data to be classified.

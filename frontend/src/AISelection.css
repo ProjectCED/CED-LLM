@@ -9,8 +9,8 @@
 
 /* Header text styling */
 .ai-selection-container h2 {
-  color:#13293D;
-  font-size: 30px;
+  color: #E8F1F2;
+  font-size: 18px;
   margin-bottom: 20px;
 }
 
@@ -27,15 +27,14 @@
 .ai-option {
   background-color: grey;
   color: #e8f1f2;
-  border: none;
-  padding: 20px 70px;
-  font-size: 25px;
+  padding: 15px 70px;
+  font-size: 18px;
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   flex: 1 1 auto; 
   min-width: 250px; 
-  max-width: 100%; 
+  border: none;
 }
 
 /* Styling for AI option button hover state */

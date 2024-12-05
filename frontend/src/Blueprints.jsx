@@ -1,16 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AddBlueprint from './AddBlueprint'; 
 import './Blueprints.css';
+import { getBlueprints, saveBlueprint, deleteBlueprint } from './utils';
 
 const Blueprints = () => {
   // State to hold the array of blueprints. Each blueprint has properties: 
   // id, name, description, question, addedQuestions (array), and editing (boolean)
-  const [blueprints, setBlueprints] = useState([
-    { id: 1, name: 'Customer Feedback Analysis - Positive', description: 'Classify customer feedback based on positive sentiment', question: 'What aspects do customers like the most', addedQuestions: ['Which features received the most praise?', 'What language is used to express satisfaction?'], editing: false },
-    { id: 2, name: 'Customer Feedback Analysis - Negative', description: 'Classify customer feedback based on negative sentiment', question: 'What areas do customers complain about?', addedQuestions: ['Which features receive the most complaints?', 'What common issues are mentioned by dissatisfied customers?'], editing: false },
-    { id: 3, name: 'Blueprint3', description: 'Description of Blueprint 3', question: '', addedQuestions: [], editing: false },
-    { id: 4, name: 'Blueprint4', description: 'Description of Blueprint 4', question: '', addedQuestions: [], editing: false },
-  ]);
+  const [blueprints, setBlueprints] = useState([]);
 
   // State to manage whether the user is adding a new blueprint
   const [isAdding, setIsAdding] = useState(false); 
@@ -18,16 +14,33 @@ const Blueprints = () => {
   // State to display a success message when a new blueprint is saved
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+  // Loading blueprints
+  useEffect(() => {
+    getBlueprints().then((bps) => {
+      const bps2 = bps.map((bp) => ({
+        id: bp.id,
+        name: bp.name,
+        description: bp.description,
+        question: bp.questions[0],
+        addedQuestions: bp.questions.slice(1),
+        editing: false,
+      }));
+      setBlueprints(bps2);
+    });
+  }, []);
+
   // Function to handle the addition of a new blueprint
-  const handleAddNewBlueprint = (blueprint) => {
+  const handleAddNewBlueprint = async (blueprint) => {
     const newBlueprint = {
-      id: blueprints.length + 1, 
+      id: null, // ID should be set on the database side
       name: blueprint.name,
       description: blueprint.description, 
       question: '', 
       addedQuestions: blueprint.questions, 
       editing: false,
     };
+    const id = await saveBlueprint(newBlueprint);
+    newBlueprint.id = id;
     setBlueprints([...blueprints, newBlueprint]);
     setIsAdding(false); 
     setShowSuccessMessage(true); 
@@ -46,7 +59,9 @@ const Blueprints = () => {
   };
 
   // Save changes to the blueprint by turning off edit mode
-  const handleSaveClick = (id) => {
+  const handleSaveClick = async (id) => {
+    const bp = blueprints.find(bp => bp.id === id);
+    await saveBlueprint(bp);
     setBlueprints(blueprints.map(bp => 
       bp.id === id ? { ...bp, editing: false } : bp
     ));
@@ -56,7 +71,10 @@ const Blueprints = () => {
   const handleDeleteClick = (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this blueprint?');
     if (confirmDelete) {
-      setBlueprints(blueprints.filter(bp => bp.id !== id));
+      const success = deleteBlueprint(id);
+      if (success) {
+        setBlueprints(blueprints.filter(bp => bp.id !== id));
+      }
     }
   };
 
@@ -118,7 +136,7 @@ const Blueprints = () => {
               <p>{blueprint.description}</p>
               <p>Type a question for the AI</p>
               
-              <div className="input-container">
+              <div className="blueprint-input-container">
                 <input
                   type="text"
                   placeholder="Enter question for the AI"
@@ -143,7 +161,7 @@ const Blueprints = () => {
                           className="remove-button" 
                           onClick={() => handleRemoveQuestionClick(blueprint.id, index)}
                         >
-                          &#10005; {/* X mark */} 
+                          &#10005;  
                         </span>
                       </li>
                     ))}

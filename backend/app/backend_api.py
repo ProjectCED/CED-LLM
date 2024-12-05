@@ -1,35 +1,35 @@
-from flask import Flask, jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request
 from flask_cors import CORS
 from app.api_handler import ApiHandler
+from app.database import Database, NodeProperties
+from dotenv import load_dotenv
 import os
+from app.models.blueprint import Blueprint as BP
+from app.models.project import Project
+from app.models.result import Result
 
 main = Blueprint('main', __name__)
 apiHandler = ApiHandler()
+database = Database()
 
-CORS(main)  # Allows connections between domains
+frontend_port = os.getenv('VITE_PORT', '5173')
+CORS(main, resources={r"/*": {"origins": "http://localhost:{frontend_port}"}})  # Allows connections between domains
 
-@main.route('/analyze', methods=['POST']) 
-def analyze():
-    file = request.files['file']
-    file.save(file.filename)
-
-    results = apiHandler.test_file_read(file.filename)
-
-    return jsonify(results)
-
+# File management & analysis
 @main.route('/upload_file', methods=['POST'])
 def upload_file():
     file = request.files.get('file')
     filename = file.filename
     file.save(filename)
 
-    return jsonify({'filename': f"{filename}"})
+    return filename
 
-# For ACTUALLY analyzing files using OpenAI
+# For analyzing files using OpenAI
 @main.route('/analyze_file', methods=['POST'])
 def analyze_file():
-    filename = request.data.decode('utf-8')
-    results = apiHandler.analyze_file(filename)
+    filename = request.json['filename']
+    blueprint = request.json['blueprint']
+    results = apiHandler.analyze_file(filename, blueprint)
 
     try:
         os.remove(filename)
@@ -38,8 +38,127 @@ def analyze_file():
     except PermissionError:
         pass
     
+    return jsonify(results)
+
+@main.route('/analyze_text', methods=['POST'])
+def analyze_text():
+    text = request.json['text']
+    blueprint = request.json['blueprint']
+    results = apiHandler.analyze_text(text, blueprint)
 
     return jsonify(results)
+
+# Database handling
+# Blueprints
+
+def __get_whole_blueprint(id):
+    name = database.lookup_blueprint_property(id, NodeProperties.Blueprint.NAME)
+    description = database.lookup_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION)
+    questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
+    return {"id": id, "name": name, "description": description, "questions": questions}
+
+
+@main.route('/get_blueprints', methods=['GET'])
+def get_blueprints():
+    blueprints = database.lookup_blueprint_nodes() # [[ID, NAME]]
+    blueprints_with_all_properties = []
+    for bp in blueprints:
+        id = bp[0]
+        blueprint = __get_whole_blueprint(id)
+        blueprints_with_all_properties.append(blueprint)
+    return jsonify(blueprints_with_all_properties)
+
+
+@main.route('/save_blueprint', methods=['POST'])
+def save_blueprint():
+    data = request.json
+    name = data['name']
+    description = data['description']
+    id = data['id']
+
+    # On the frontend, questions are divided in the "main" question and additional questions
+    question = data['question']
+    addedQuestions = data['addedQuestions']
+
+    # Merge questions to one list
+    questions = [question] + addedQuestions
+
+    bp = BP(name, description, questions, id)
+
+    # Returns the ID
+    return bp.save_blueprint()
+
+@main.route('/delete_blueprint', methods=['POST'])
+def delete_blueprint():
+    id = request.json['id']
+
+    # True/false
+    success = database.delete_blueprint(id)
+    return jsonify({"success": success})
+
+# Projects
+@main.route('/save_project', methods=['POST'])
+def save_project():
+    name = request.json['projectName']
+    project = Project(name)
+    return project.save_project()
+
+@main.route('/get_projects', methods=['GET'])
+def get_projects():
+    projects = database.lookup_project_nodes() # [[ID, NAME, DATETIME]]
+    projects_with_all_properties = []
+    for proj in projects:
+        id = proj[0]
+        name = proj[1]
+        results = __get_results_for_project(id)
+        projects_with_all_properties.append({"id": id, "open": False, "name": name, "results": results})
+    return jsonify(projects_with_all_properties)
+
+@main.route('/delete_project', methods=['POST'])
+def delete_project():
+    id = request.json['id']
+
+    # True/false
+    success = database.delete_project(id)
+    return jsonify({"success": success})
+
+# Results
+
+def __get_results_for_project(project_id):
+    results = database.lookup_result_blueprint_nodes(project_id)
+    results_with_all_properties = []
+    for res in results:
+        id = res[0]
+        name = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.NAME)
+        filename = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.FILENAME)
+        result = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.RESULT)
+        used_blueprint_id = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.USED_BLUEPRINT)
+        blueprint = __get_whole_blueprint(used_blueprint_id)
+        results_with_all_properties.append({"id": id, "name": name, "filename": filename, "result": result, "blueprint": blueprint})
+    return results_with_all_properties
+
+@main.route('/save_result', methods=['POST'])
+def save_result():
+    data = request.json
+    name = data['name']
+    filename = data['filename']
+
+    blueprint = data['blueprint']
+    blueprint_id = blueprint.get('id') if blueprint else None
+    
+    result = data['result']
+    projectId = data['projectId']
+
+    res = Result(name, filename, blueprint_id, result, projectId)
+    return res.save_result()
+
+@main.route('/delete_result', methods=['POST'])
+def delete_result():
+    id = request.json['id']
+
+    # True/false
+    success = database.delete_result_blueprint(id)
+    return jsonify({"success": success})
 
 if __name__ == '__main__':
     main.run(debug=True)
