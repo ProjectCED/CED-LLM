@@ -98,23 +98,63 @@ function Sidebar({
   const downloadPDF = () => {
     if (!selectedResult) return;
 
+    // Text content
     const doc = new jsPDF();
     const projectName = projects[selectedResult?.projectIndex]?.name;
     const resultName = selectedResult?.result?.name;
     const resultText = selectedResult?.result?.result;
+    const filename = selectedResult?.result?.filename;
     const blueprintName = selectedResult?.result?.blueprint?.name;
+
+    // PDF styling (margins, width, height)
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    
+    const maxWidth = pageWidth - 2 * margin;
+    const lineHeight = 10;
+    
+    // Tracks the current line's height, start with a bit of an offset
+    let y = lineHeight * 2;
 
     // Add content to the PDF
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
-    doc.text("Analyze Result", 20, 20);
+    doc.text("Analysis Result", margin, y);
+    y += lineHeight * 2;
+
     doc.setFontSize(12);
+
+    doc.text(`Project: ${projectName}`, margin, y);
+    y += lineHeight;
+
+    doc.text(`Result: ${resultName}`, margin, y);
+    y += lineHeight;
+
+    // Add filename if it exists
+    if (filename) {
+      doc.text(`Filename: ${filename}`, margin, y);
+      y += lineHeight;
+    }
+
+    doc.text(`Blueprint: ${blueprintName || "Automatic Blueprint"}`, margin, y);
+    y += lineHeight * 2;
+
     doc.setFont("helvetica", "normal");
-    doc.text(`Project: ${projectName}`, 20, 40);
-    doc.text(`Result: ${resultName}`, 20, 50);
-    doc.text("Details for the result:", 20, 70);
-    doc.text(`Blueprint: ${blueprintName || "Automatic Blueprint"}`, 20, 60);
-    doc.text(resultText, 20, 90, { maxWidth: 170 });
+
+    // Split the resultText into lines that fit the page
+    const lines = doc.splitTextToSize(resultText, maxWidth);
+
+    // Add lines to the PDF one at a time
+    lines.forEach((line) => {
+      // Signifies going over the page, so add a page and reset y (tracks height on current page)
+      if (y + lineHeight > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y);
+      y += lineHeight;
+    });
 
     // Save the PDF
     doc.save(`${resultName}.pdf`);
