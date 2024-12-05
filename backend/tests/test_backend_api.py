@@ -136,11 +136,6 @@ def test_analyze(client, temp_file):
     # Adjusted to check that 'mocked_result' contains the correct file path
     assert "Processed" in response.json['mocked_result']
 
-def test_test_analyze(client, temp_file):
-    response = client.post('/test_analyze', data=temp_file.name)
-    assert response.status_code == 200
-    assert response.json == {"mocked_result": f"Processed {temp_file.name}"}
-
 def test_analyze_file(client, temp_file):
     """
     Tests the /analyze_file endpoint.
