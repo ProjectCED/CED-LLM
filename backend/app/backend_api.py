@@ -114,6 +114,14 @@ def get_projects():
         projects_with_all_properties.append({"id": id, "open": False, "name": name, "results": results})
     return jsonify(projects_with_all_properties)
 
+@main.route('/delete_project', methods=['POST'])
+def delete_project():
+    id = request.json['id']
+
+    # True/false
+    success = database.delete_project(id)
+    return jsonify({"success": success})
+
 # Results
 
 def __get_results_for_project(project_id):
@@ -128,14 +136,6 @@ def __get_results_for_project(project_id):
         blueprint = __get_whole_blueprint(used_blueprint_id)
         results_with_all_properties.append({"id": id, "name": name, "filename": filename, "result": result, "blueprint": blueprint})
     return results_with_all_properties
-
-'''
-@main.route('/get_results', methods=['POST'])
-def get_results():
-    project_id = request.json['project_id']
-    results = __get_results_for_project(project_id)
-    return jsonify(results)
-'''
 
 @main.route('/save_result', methods=['POST'])
 def save_result():

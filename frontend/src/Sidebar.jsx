@@ -4,7 +4,7 @@ import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import jsPDF from "jspdf"; 
 import './Sidebar.css';
-import { saveProject } from './utils';
+import { saveProject, deleteProject } from './utils';
 
 function Sidebar({ 
   setOverlayActive, 
@@ -63,6 +63,7 @@ function Sidebar({
       "Are you sure you want to delete the project and lose all its results?"
     );
     if (confirmDelete) {
+      deleteProject(projects[index].id);
       setProjects(prevProjects => prevProjects.filter((_, i) => i !== index));
     }
   };

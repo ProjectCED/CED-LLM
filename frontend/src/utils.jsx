@@ -91,6 +91,18 @@ export const getProjects = async () => {
     return projects;
 };
 
+export const deleteProject = async (id) => {
+    const response = await fetch('/api/delete_project', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+    });
+    const data = await response.json();
+    return data.success;
+}
+
 // Results
 export const saveResult = async (result) => {
     const response = await fetch('/api/save_result', {
