@@ -58,12 +58,12 @@ function Sidebar({
   };
 
   // Deletes a project from the list
-  const deleteProject = (index) => {
+  const removeProject = async (index) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete the project and lose all its results?"
     );
     if (confirmDelete) {
-      deleteProject(projects[index].id);
+      await deleteProject(projects[index].id);
       setProjects(prevProjects => prevProjects.filter((_, i) => i !== index));
     }
   };
@@ -187,7 +187,7 @@ function Sidebar({
                       className="delete-icon"
                       onClick={(e) => {
                         e.stopPropagation();
-                        deleteProject(projectIndex);
+                        removeProject(projectIndex);
                       }}
                     />
                   )}
