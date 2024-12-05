@@ -1,8 +1,10 @@
+import json
 import os
 from dotenv import load_dotenv
 import openai
 from openai import OpenAI
 import app.utils as utils
+import requests
 
 PRIMARY_MODEL = "gpt-4o"
 BACKUP_MODEL = "gpt-4o-mini" # This has higher token limit
@@ -54,6 +56,45 @@ class ApiHandler():
         if text is None:
             return None
         return text
+
+    def mistral_analyze(self, prompt) -> str:
+        data = {
+            "model": "mistral",
+            "prompt": prompt,
+            "stream": False,
+        }
+        try:
+            response = requests.post("http://ollama:11434/api/generate", json=data, stream=False)
+            response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx)
+
+            # Read the response in chunks and assemble it into a complete JSON object
+            response_text = ""
+            for chunk in response.iter_content(chunk_size=8192):
+                response_text += chunk.decode('utf-8')
+
+            print("Raw response text:", response_text)  # Print the raw response text for debugging
+
+            # Combine the response text into a single JSON object
+            combined_response = {}
+            json_objects = response_text.split('\n')
+            for obj in json_objects:
+                if obj.strip():  # Skip empty lines
+                    try:
+                        json_obj = json.loads(obj)
+                        combined_response.update(json_obj)
+                    except json.JSONDecodeError as e:
+                        print(f"Failed to decode JSON object: {obj}")
+                        return {"error": "Invalid JSON response"}
+
+            return combined_response
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return {"error": str(e)}
+        except json.JSONDecodeError as e:
+            print(f"Failed to decode JSON response: {response_text}")
+            return {"error": "Invalid JSON response"}
+    
+    
         
 
 def main():

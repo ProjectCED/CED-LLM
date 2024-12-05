@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './AISelection.css';  
+import './AISelection.css'; 
+import { testMistral } from './utils'; 
 
 const AISelection = ({ selectedAI, onSelectAI }) => {
   // Local state to keep track of the currently selected AI model
@@ -15,6 +16,7 @@ const AISelection = ({ selectedAI, onSelectAI }) => {
   const handleAISelection = (ai) => {
     setLocalSelectedAI(ai);
     onSelectAI(ai);
+    testMistral();
   };
 
   return (

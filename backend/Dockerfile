@@ -22,3 +22,4 @@ RUN apt-get update && apt-get install -y netcat-openbsd
 COPY . /app
 
 CMD ["flask", "run", "--host=0.0.0.0"]
+
