@@ -5,7 +5,7 @@ from app.backend_api import main as main_blueprint
 from app.api_handler import ApiHandler
 
 class MockApiHandler:
-     """
+    """
     Mock implementation of the ApiHandler class for testing.
 
     Methods:
