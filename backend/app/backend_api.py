@@ -75,6 +75,7 @@ def save_blueprint():
     data = request.json
     name = data['name']
     description = data['description']
+    id = data['id']
 
     # On the frontend, questions are divided in the "main" question and additional questions
     question = data['question']
@@ -83,7 +84,7 @@ def save_blueprint():
     # Merge questions to one list
     questions = [question] + addedQuestions
 
-    bp = BP(name, description, questions)
+    bp = BP(name, description, questions, id)
 
     # Returns the ID
     return bp.save_blueprint()
