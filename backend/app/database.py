@@ -118,10 +118,12 @@ class NodeProperties:
 
     class ResultBlueprint(Enum):
         # Result
-        # example FOO = "foo"
+        # example <FOO> = "foo"
+        NAME = "name"
         FILENAME = "filename"
         RESULT = "result"
         DATETIME = "datetime"
+        USED_BLUEPRINT = "used_blueprint"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"

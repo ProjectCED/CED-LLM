@@ -4,6 +4,7 @@ import ClassificationSelection from './ClassificationSelection'; // Step 2 compo
 import AISelection from './AISelection'; // Step 3 component
 import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
+import { uploadFile, analyzeUploadedFile, analyzeText, saveProject, saveResult } from './utils';
 
 // EditButton Component
 const EditButton = ({ onEditClick, step }) => {
@@ -32,7 +33,7 @@ const NextButton = ({ onNextClick }) => {
   );
 };
 
-const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint, setOverlayActive}) => {
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setOverlayActive}) => {
   // State variables to track the current step and selections
   const [currentStep, setCurrentStep] = useState(1); 
   const [isEditing, setIsEditing] = useState(false);
@@ -132,26 +133,21 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Handle analyze button click, navigate to the projects page
   const handleAnalyze = async () => {
-  //const formdata = new FormData();
-  //formdata.append('file', selectedFiles[0]);
-  //const response = await fetch('http://127.0.0.1:5000/upload_file', {
-    //method: 'POST',
-    //body: formdata,
-  //});
-  //const data = await response.json();
-  //navigate('/app/projects', { state : data});
+  let analysisResult = null;
+  let filename = null;
+  if (selectedFiles.length > 0) {
+    filename = await uploadFile(selectedFiles[0]);
+    analysisResult = await analyzeUploadedFile(filename, selectedBlueprint);
+  } else {
+    analysisResult = await analyzeText(copiedText, selectedBlueprint);
+  }
+
+  console.log("Analysis result:", analysisResult);
+  console.log("Filename:", filename);
 
   // Create new result 
   const today = new Date();
   const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
-  console.log("Formatted date (DDMMYYYY):", formattedDate);
-  
-  console.log('Selected Classification:', selectedClassification);
-  console.log('Selected Blueprint:', selectedBlueprint);
-  console.log('Custom Classification Text:', customClassificationText);
-  console.log('Selected project:', selectedProjectOption);
-  console.log('Selected Existing Project:', selectedExistingProject);
-  console.log('Projects:', projects);
 
   // If the user selected "New Project"
   if (selectedProjectOption === 'New Project') {
@@ -162,10 +158,26 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
     // Create a new project object
     const newProject = {
+      id: null,
       name: newProjectName,
-      results: [formattedDate],
+      results: [],
       open: true
     };
+    const projectId = await saveProject(newProjectName);
+    newProject.id = projectId;
+
+    // TODO: Avoid duplicate code (result is already present in the other if branch)
+    const newResult = {
+      id: null,
+      name: formattedDate,
+      filename: filename,
+      blueprint: selectedBlueprint,
+      result: analysisResult,
+      projectId: projectId
+    };
+    const resultId = await saveResult(newResult);
+    newResult.id = resultId;
+    newProject.results.push(newResult);
 
     // Add the new project to the projects list
     setProjects((prevProjects) => [...prevProjects, newProject]);
@@ -173,7 +185,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     // Set the new project as the selected one and open the Sidebar
     setSelectedResult({
       projectIndex: projects.length,
-      result: formattedDate,
+      result: newResult
     });
 
     // Expand the sidebar and set overlay so other content is unclickable
@@ -195,10 +207,24 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
     // Create a new result and update the project
     let newResultName = generateUniqueResultName(projects[existingProjectIndex]?.results || [], formattedDate);
+
+    const existingProjectId = projects[existingProjectIndex].id;
+    // TODO: Avoid duplicate code (result is already present in the other if branch)
+    const newResult = {
+      id: null,
+      name: formattedDate,
+      filename: filename,
+      blueprint: selectedBlueprint,
+      result: analysisResult,
+      projectId: existingProjectId
+    };
+    const resultId = await saveResult(newResult);
+    newResult.id = resultId;
+
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {
-          return { ...project, results: [...project.results, newResultName], open: true };
+          return { ...project, results: [...project.results, newResult], open: true };
         }
         return project;
       });
@@ -209,7 +235,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     if (newResultName) {
       setSelectedResult({
         projectIndex: existingProjectIndex,
-        result: newResultName,
+        result: newResult,
       });
 
       // Expand the sidebar and set overlay so other content is unclickable
@@ -269,7 +295,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
         } else if (tempClassification === 'Created Blueprint') {
           handleCustomTextChange(tempCustomText);
         } else {
-          setBlueprint(null);
+          //setBlueprint(null);
         }
         break;
 
@@ -331,14 +357,14 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   // Function to update selected blueprint in step 2
   const handleBlueprintSelection = (blueprint) => {
     setSelectedBlueprint(blueprint);
-    setBlueprint(blueprint);
+    //setBlueprint(blueprint);
     
   };
 
   // Function to custom blueprint text
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
-    setBlueprint(text)
+    //setBlueprint(text)
   };
 
   // Function to update selected project option (New or Existing)
