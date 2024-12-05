@@ -38,7 +38,6 @@ def analyze_file():
     except PermissionError:
         pass
     
-
     return jsonify(results)
 
 @main.route('/analyze_text', methods=['POST'])
