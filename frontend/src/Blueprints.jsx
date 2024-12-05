@@ -30,7 +30,7 @@ const Blueprints = () => {
   }, []);
 
   // Function to handle the addition of a new blueprint
-  const handleAddNewBlueprint = (blueprint) => {
+  const handleAddNewBlueprint = async (blueprint) => {
     const newBlueprint = {
       id: null, // ID should be set on the database side
       name: blueprint.name,
@@ -39,7 +39,7 @@ const Blueprints = () => {
       addedQuestions: blueprint.questions, 
       editing: false,
     };
-    const id = saveBlueprint(newBlueprint);
+    const id = await saveBlueprint(newBlueprint);
     newBlueprint.id = id;
     setBlueprints([...blueprints, newBlueprint]);
     setIsAdding(false); 
@@ -59,7 +59,9 @@ const Blueprints = () => {
   };
 
   // Save changes to the blueprint by turning off edit mode
-  const handleSaveClick = (id) => {
+  const handleSaveClick = async (id) => {
+    const bp = blueprints.find(bp => bp.id === id);
+    await saveBlueprint(bp);
     setBlueprints(blueprints.map(bp => 
       bp.id === id ? { ...bp, editing: false } : bp
     ));
