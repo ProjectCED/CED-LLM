@@ -62,10 +62,15 @@ function Sidebar({
     const confirmDelete = window.confirm(
       "Are you sure you want to delete the project and lose all its results?"
     );
-    if (confirmDelete) {
-      await deleteProject(projects[index].id);
-      setProjects(prevProjects => prevProjects.filter((_, i) => i !== index));
-    }
+
+    if (!confirmDelete) return;
+
+    const projectId = projects[index].id;
+    const success = await deleteProject(projectId)
+
+    if (!success) return;
+
+    setProjects(prevProjects => prevProjects.filter((_, i) => i !== index));
   };
 
   // Deletes a specific result from a project
@@ -73,17 +78,21 @@ function Sidebar({
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this result?"
     );
-    if (confirmDelete) {
-      const resultId = projects[projectIndex].results[resultIndex].id;
-      await deleteResult(resultId);
-      setProjects(prevProjects =>
-        prevProjects.map((project, i) =>
-          i === projectIndex
-            ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
-            : project
-        )
-      );
-    }
+    
+    if (!confirmDelete) return
+
+    const resultId = projects[projectIndex].results[resultIndex].id;
+    const success = await deleteResult(resultId);
+
+    if (!success) return;
+
+    setProjects(prevProjects =>
+      prevProjects.map((project, i) =>
+        i === projectIndex
+          ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
+          : project
+      )
+    );
   };
 
   // Opens detailed view for a specific result
