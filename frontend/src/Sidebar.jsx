@@ -13,8 +13,7 @@ function Sidebar({
   expanded, 
   setExpanded, 
   selectedResult, 
-  setSelectedResult,
-  blueprint  
+  setSelectedResult
   }) {
 
   // State to manage sidebar expansion
@@ -100,8 +99,10 @@ function Sidebar({
     if (!selectedResult) return;
 
     const doc = new jsPDF();
-    const projectName = projects[selectedResult.projectIndex]?.name;
-    const resultName = selectedResult.result.name;
+    const projectName = projects[selectedResult?.projectIndex]?.name;
+    const resultName = selectedResult?.result?.name;
+    const resultText = selectedResult?.result?.result;
+    const blueprintName = selectedResult?.result?.blueprint?.name;
 
     // Add content to the PDF
     doc.setFont("helvetica", "bold");
@@ -112,12 +113,8 @@ function Sidebar({
     doc.text(`Project: ${projectName}`, 20, 40);
     doc.text(`Result: ${resultName}`, 20, 50);
     doc.text("Details for the result:", 20, 70);
-    doc.text(`Blueprint: ${blueprint?.name || "Automatic blueprint"}`, 20, 60);
-
-    // Add example content
-    const exampleText = `
-      Result details here. This could include any relevant data about the result.`;
-    doc.text(exampleText, 20, 90, { maxWidth: 170 });
+    doc.text(`Blueprint: ${blueprintName || "Automatic Blueprint"}`, 20, 60);
+    doc.text(resultText, 20, 90, { maxWidth: 170 });
 
     // Save the PDF
     doc.save(`${resultName}.pdf`);
@@ -205,7 +202,7 @@ function Sidebar({
 
               <div className="result-data">
                 <p>Project: {projects[selectedResult?.projectIndex]?.name}</p>
-                <p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic blueprint'}</p>
+                <p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic Blueprint'}</p>
               </div>
                 
                 <p>

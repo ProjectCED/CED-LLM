@@ -33,7 +33,7 @@ const NextButton = ({ onNextClick }) => {
   );
 };
 
-const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint, setOverlayActive}) => {
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setOverlayActive}) => {
   // State variables to track the current step and selections
   const [currentStep, setCurrentStep] = useState(1); 
   const [isEditing, setIsEditing] = useState(false);
@@ -293,7 +293,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
         } else if (tempClassification === 'Created Blueprint') {
           handleCustomTextChange(tempCustomText);
         } else {
-          setBlueprint(null);
+          //setBlueprint(null);
         }
         break;
 
@@ -355,14 +355,14 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   // Function to update selected blueprint in step 2
   const handleBlueprintSelection = (blueprint) => {
     setSelectedBlueprint(blueprint);
-    setBlueprint(blueprint);
+    //setBlueprint(blueprint);
     
   };
 
   // Function to custom blueprint text
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
-    setBlueprint(text)
+    //setBlueprint(text)
   };
 
   // Function to update selected project option (New or Existing)

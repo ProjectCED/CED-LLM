@@ -14,23 +14,13 @@ function App() {
   // State for Sidebar control and selected result
   const [expanded, setExpanded] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
-  // State for project list, with each project containing results
-  /*const [projects, setProjects] = useState([
-    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
-    { name: 'Dog show data', open: false, results: ['28042023'] },
-    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
-  ]);*/
   const [projects, setProjects] = useState([]);
-  // State for selected blueprint
-  const [blueprint, setBlueprint] = useState(null);
 
   useEffect(() => {
     getProjects().then((projects) => {
       setProjects(projects);
     });
   }, []);
-
-  console.log('Projects in App:', projects);
   
   return (
     <div className={`app-container ${overlayActive ? 'overlay-active' : ''}`}>
@@ -49,8 +39,6 @@ function App() {
             setExpanded={setExpanded}
             selectedResult={selectedResult}
             setSelectedResult={setSelectedResult}
-            blueprint={blueprint ? blueprint.name : "Automatic Blueprint"}
-            setBlueprint={setBlueprint}
           />
           } 
         />
@@ -67,9 +55,7 @@ function MainLayout({
   expanded, 
   setExpanded, 
   selectedResult, 
-  setSelectedResult,
-  blueprint,  
-  setBlueprint
+  setSelectedResult
 }) {
   return (
     <div className="main-layout">
@@ -83,7 +69,6 @@ function MainLayout({
           setExpanded={setExpanded} 
           selectedResult={selectedResult} 
           setSelectedResult={setSelectedResult} 
-          blueprint={blueprint}
          />
         <div className="main-content">
           <Routes>
@@ -94,7 +79,6 @@ function MainLayout({
                   setProjects={setProjects} 
                   setExpanded={setExpanded} 
                   setSelectedResult={setSelectedResult}
-                  setBlueprint={setBlueprint}
                   setOverlayActive={setOverlayActive} 
                 />
                 } 
