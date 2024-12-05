@@ -117,13 +117,14 @@ export const saveResult = async (result) => {
     return id;
 }
 
-/*
-export const getResults = async (project_id) => {
-    const response = await fetch('/api/get_results_under_project', {
+export const deleteResult = async (id) => {
+    const response = await fetch('/api/delete_result', {
         method: 'POST',
-        body: JSON.stringify({ project_id }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
     });
-    const results = await response.json();
-    return results;
-};
-*/
+    const data = await response.json();
+    return data.success;
+}

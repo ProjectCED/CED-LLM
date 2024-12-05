@@ -4,7 +4,7 @@ import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import jsPDF from "jspdf"; 
 import './Sidebar.css';
-import { saveProject, deleteProject } from './utils';
+import { saveProject, deleteProject, deleteResult } from './utils';
 
 function Sidebar({ 
   setOverlayActive, 
@@ -69,11 +69,13 @@ function Sidebar({
   };
 
   // Deletes a specific result from a project
-  const deleteResult = (projectIndex, resultIndex) => {
+  const removeResult = async (projectIndex, resultIndex) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this result?"
     );
     if (confirmDelete) {
+      const resultId = projects[projectIndex].results[resultIndex].id;
+      await deleteResult(resultId);
       setProjects(prevProjects =>
         prevProjects.map((project, i) =>
           i === projectIndex
@@ -210,7 +212,7 @@ function Sidebar({
                             className="delete-icon"
                             onClick={(e) => {
                               e.stopPropagation();
-                              deleteResult(projectIndex, resultIndex);
+                              removeResult(projectIndex, resultIndex);
                             }}
                           />
                         )}

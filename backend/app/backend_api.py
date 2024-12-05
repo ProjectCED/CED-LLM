@@ -152,5 +152,13 @@ def save_result():
     res = Result(name, filename, blueprint_id, result, projectId)
     return res.save_result()
 
+@main.route('/delete_result', methods=['POST'])
+def delete_result():
+    id = request.json['id']
+
+    # True/false
+    success = database.delete_result_blueprint(id)
+    return jsonify({"success": success})
+
 if __name__ == '__main__':
     main.run(debug=True)
