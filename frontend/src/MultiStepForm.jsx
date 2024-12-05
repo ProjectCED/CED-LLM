@@ -208,20 +208,22 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     // Create a new result and update the project
     let newResultName = generateUniqueResultName(projects[existingProjectIndex]?.results || [], formattedDate);
 
+    const existingProjectId = projects[existingProjectIndex].id;
+    // TODO: Avoid duplicate code (result is already present in the other if branch)
+    const newResult = {
+      id: null,
+      name: formattedDate,
+      filename: filename,
+      blueprint: selectedBlueprint,
+      result: analysisResult,
+      projectId: existingProjectId
+    };
+    const resultId = await saveResult(newResult);
+    newResult.id = resultId;
+
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {
-          // TODO: Avoid duplicate code (result is already present in the other if branch)
-          const newResult = {
-            id: null,
-            name: formattedDate,
-            filename: filename,
-            blueprint: selectedBlueprint,
-            result: analysisResult,
-            projectId: project.id
-          };
-          const resultId = saveResult(newResult);
-          newResult.id = resultId;
           return { ...project, results: [...project.results, newResult], open: true };
         }
         return project;
