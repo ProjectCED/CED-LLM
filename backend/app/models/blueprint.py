@@ -1,14 +1,35 @@
 from app.database import Database, NodeProperties
 
 class Blueprint:
-    def __init__(self, name: str, description: str, questions: list, blueprintId: str=None):
+    """
+    Blueprint template class for creating and saving blueprint instances to the database.
+    """
+    def __init__(self, name: str, description: str, questions: list[str], blueprintId: str | None = None):
+        """
+        Constructor for Blueprint instances. Create an instance through this before saving.
+        Also creates a reference to the database singleton.
+
+        Args:
+            name (string): User-given name of the blueprint.
+            description (string): User-given description of the blueprint.
+            questions (list[string]): Questions for the LLM through which to analyze and classify data.
+            blueprintId (string, optional): UUID-type ID of the blueprint node in the database.
+                Defaults to None, and is generated and returned through the database if not provided.
+        """
         self.__blueprintId = blueprintId
         self.__name = name
         self.__description = description
         self.__questions = questions
         self.__database = Database()
 
-    def save_blueprint(self):
+    def save_blueprint(self) -> str:
+        """
+        Saves the blueprint to the database. If the blueprint already exists
+        (ID provided through constructor), it is updated.
+
+        Returns:
+            string: UUID-type ID of the newly created blueprint node in the database.
+        """
         # This check allows editing blueprint, no need to create a new node
         if self.__blueprintId is None:
             self.__blueprintId = self.__database.add_blueprint_node()
