@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: AddBlueprint.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: AddBlueprint.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+import './AddBlueprint.css'; 
+
+/**
+ * The AddBlueprint component provides a user interface for creating a new blueprint.
+ * Users can specify a name, description, and a list of questions for the blueprint.
+ *
+ * @component
+ * @param {Object} props - The props passed to the component.
+ * @param {Function} props.onAdd - Function called when the blueprint is saved.
+ *        It receives an object containing `name`, `description`, and `questions`.
+ * @param {Function} props.onCancel - Function called when the user cancels the action.
+ */
+const AddBlueprint = ({ onAdd, onCancel }) => {
+  const [newBlueprintName, setNewBlueprintName] = useState('');
+  const [newBlueprintDescription, setNewBlueprintDescription] = useState(''); 
+  const [newQuestion, setNewQuestion] = useState('');
+  const [questions, setQuestions] = useState([]);
+
+  /**
+   * Handles adding a new question to the list.
+   * Prevents adding empty questions by trimming whitespace.
+   */
+  const handleAddQuestion = () => {
+    // Only add the question if it's not empty (after trimming white spaces)
+    if (newQuestion.trim()) {
+      setQuestions((prevQuestions) => [...prevQuestions, newQuestion.trim()]);
+      setNewQuestion(''); 
+    }
+  };
+
+  /**
+   * Removes a question from the list by its index.
+   *
+   * @param {number} index - The index of the question to remove.
+   */
+  const handleRemoveQuestion = (index) => {
+    // Filter out the question at the specified index
+    setQuestions((prevQuestions) => 
+      prevQuestions.filter((_, i) => i !== index)
+    );
+  };
+
+  /**
+   * Handles saving the blueprint.
+   * Ensures that the name field is filled before proceeding.
+   * Calls the `onAdd` prop with the blueprint data and resets the form fields.
+   */
+  const handleSave = () => {
+    // If the blueprint name is empty, show an alert
+    if (!newBlueprintName.trim()) {
+      alert('Name is required!'); 
+      return;
+    }
+    // Call the onAdd function passed via props to save the blueprint data
+    onAdd({
+      name: newBlueprintName,
+      description: newBlueprintDescription, 
+      questions,
+    });
+    // Reset the form fields after saving
+    setNewBlueprintName('');
+    setNewBlueprintDescription(''); 
+    setQuestions([]);
+  };
+
+  return (
+    &lt;div className="new-blueprint-form">
+      &lt;h2>Add new blueprint&lt;/h2>
+      &lt;div className="input-group">
+        &lt;span>Name *&lt;/span>
+        &lt;input
+          type="text"
+          placeholder="Enter name for the blueprint"
+          value={newBlueprintName}
+          onChange={(e) => setNewBlueprintName(e.target.value)}
+        />
+      &lt;/div>
+      &lt;div className="input-group">
+        &lt;span>Description&lt;/span>
+        &lt;input
+          type="text"
+          placeholder="Enter description for the blueprint"
+          value={newBlueprintDescription}
+          onChange={(e) => setNewBlueprintDescription(e.target.value)}
+        />
+      &lt;/div>
+      &lt;div className="input-group">
+        &lt;span>Type a question for the AI&lt;/span>
+        &lt;div className="input-with-button">
+          &lt;input
+            type="text"
+            placeholder="Enter question for the AI"
+            value={newQuestion}
+            onChange={(e) => setNewQuestion(e.target.value)}
+          />
+          &lt;button 
+            onClick={handleAddQuestion} 
+            aria-label="Add question"
+          >
+            +
+          &lt;/button>
+        &lt;/div>
+      &lt;/div>
+      &lt;div className="questions-list">
+        {questions.map((question, index) => (
+          &lt;div key={index} className="question-item">
+            {question}
+            &lt;button 
+              onClick={() => handleRemoveQuestion(index)} 
+              aria-label={`Remove question ${question}`}
+            >
+              &amp;#10005;
+            &lt;/button>
+          &lt;/div>
+        ))}
+      &lt;/div>
+       {/* Button group for saving or cancelling the form */}
+      &lt;div className="button-group">
+        &lt;button className="save-button-add" onClick={handleSave}>
+          SAVE
+        &lt;/button>
+        &lt;button className="cancel-button" onClick={onCancel}>
+          CANCEL
+        &lt;/button>
+      &lt;/div>
+      &lt;p className="required-note">Fields marked with * are required&lt;/p>
+    &lt;/div>
+  );
+};
+
+export default AddBlueprint;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

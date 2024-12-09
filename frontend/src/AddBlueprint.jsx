@@ -1,13 +1,26 @@
 import React, { useState } from 'react';
 import './AddBlueprint.css'; 
 
+/**
+ * The AddBlueprint component provides a user interface for creating a new blueprint.
+ * Users can specify a name, description, and a list of questions for the blueprint.
+ *
+ * @component
+ * @param {Object} props - The props passed to the component.
+ * @param {Function} props.onAdd - Function called when the blueprint is saved.
+ *        It receives an object containing `name`, `description`, and `questions`.
+ * @param {Function} props.onCancel - Function called when the user cancels the action.
+ */
 const AddBlueprint = ({ onAdd, onCancel }) => {
   const [newBlueprintName, setNewBlueprintName] = useState('');
   const [newBlueprintDescription, setNewBlueprintDescription] = useState(''); 
   const [newQuestion, setNewQuestion] = useState('');
   const [questions, setQuestions] = useState([]);
 
-  // Function to handle adding a new question
+  /**
+   * Handles adding a new question to the list.
+   * Prevents adding empty questions by trimming whitespace.
+   */
   const handleAddQuestion = () => {
     // Only add the question if it's not empty (after trimming white spaces)
     if (newQuestion.trim()) {
@@ -16,7 +29,11 @@ const AddBlueprint = ({ onAdd, onCancel }) => {
     }
   };
 
-  // Function to remove a specific question by index
+  /**
+   * Removes a question from the list by its index.
+   *
+   * @param {number} index - The index of the question to remove.
+   */
   const handleRemoveQuestion = (index) => {
     // Filter out the question at the specified index
     setQuestions((prevQuestions) => 
@@ -24,7 +41,11 @@ const AddBlueprint = ({ onAdd, onCancel }) => {
     );
   };
 
-  // Function to handle saving the blueprint
+  /**
+   * Handles saving the blueprint.
+   * Ensures that the name field is filled before proceeding.
+   * Calls the `onAdd` prop with the blueprint data and resets the form fields.
+   */
   const handleSave = () => {
     // If the blueprint name is empty, show an alert
     if (!newBlueprintName.trim()) {

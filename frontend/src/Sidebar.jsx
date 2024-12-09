@@ -6,6 +6,23 @@ import jsPDF from "jspdf";
 import './Sidebar.css';
 import { saveProject, deleteProject, deleteResult } from './utils';
 
+/**
+ * Sidebar component provides a collapsible interface for managing projects and their associated results.
+ * It supports deleting and selecting projects or results, creating new projects and downloading result details as a PDF.
+ *
+ * @component
+ * @param {Object} props - The props passed to the component.
+ * @param {Function} props.setOverlayActive - Function to set the state of the overlay (true/false).
+ * @param {Array<Object>} props.projects - List of projects, where each project contains a name, open state, and results array.
+ * @param {Function} props.setProjects - Function to update the list of projects.
+ * @param {boolean} props.expanded - Boolean indicating whether the sidebar is expanded or collapsed.
+ * @param {Function} props.setExpanded - Function to toggle the expanded state of the sidebar.
+ * @param {Object|null} props.selectedResult - Currently selected result object, or null if none is selected.
+ * @param {Function} props.setSelectedResult - Function to set the currently selected result.
+ * @param {string|null} props.blueprint - Blueprint name or description associated with the current result.
+ * @returns {JSX.Element} A collapsible sidebar interface for managing projects and results.
+ */
+
 function Sidebar({ 
   setOverlayActive, 
   projects, 
@@ -16,12 +33,29 @@ function Sidebar({
   setSelectedResult
   }) {
 
-  // State to manage sidebar expansion
+  /**
+   * @type {string}
+   * @description Stores the name of the new project being created.
+   */
   const [newProjectName, setNewProjectName] = useState('');
+
+   /**
+   * @type {number|null}
+   * @description Tracks the index of the project currently being hovered over. Null if no project is hovered.
+   */
   const [hoveredProject, setHoveredProject] = useState(null);
+
+  /**
+   * @type {Object}
+   * @property {number|null} projectIndex - Index of the hovered project, or null if no project is hovered.
+   * @property {number|null} resultIndex - Index of the hovered result, or null if no result is hovered.
+   * @description Tracks the project and result currently being hovered over.
+   */
   const [hoveredResult, setHoveredResult] = useState({ projectIndex: null, resultIndex: null });
 
-  // Toggle sidebar between expanded and collapsed states
+  /**
+   * Toggles the sidebar between expanded and collapsed states.
+   */
   const toggleSidebar = () => {
     setExpanded(!expanded);
     if (!expanded) {
@@ -29,7 +63,11 @@ function Sidebar({
     }
   };
 
-  // Toggles a project's open/closed state
+  /**
+   * Toggles a project's open/closed state in the project list.
+   *
+   * @param {number} index - Index of the project to toggle.
+   */
   const toggleProject = (index) => {
     setProjects(prevProjects =>
       prevProjects.map((project, i) =>
@@ -38,7 +76,10 @@ function Sidebar({
     );
   };
 
-  // Adds a new project to the project list
+  /**
+   * Adds a new project to the project list with the specified name.
+   * Alerts the user if the project name is empty.
+   */
   const addProject = () => {
     if (newProjectName.trim()) {
       const newProject = {
@@ -57,8 +98,12 @@ function Sidebar({
     }
   };
 
-  // Deletes a project from the list
-  const removeProject = async (index) => {
+   /**
+   * Deletes a project from the project list after user confirmation.
+   *
+   * @param {number} index - Index of the project to delete.
+   */
+  const deleteProject = async (index) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete the project and lose all its results?"
     );
@@ -73,8 +118,13 @@ function Sidebar({
     setProjects(prevProjects => prevProjects.filter((_, i) => i !== index));
   };
 
-  // Deletes a specific result from a project
-  const removeResult = async (projectIndex, resultIndex) => {
+  /**
+   * Deletes a specific result from a project after user confirmation.
+   *
+   * @param {number} projectIndex - Index of the project containing the result.
+   * @param {number} resultIndex - Index of the result to delete.
+   */
+  const deleteResult = async (projectIndex, resultIndex) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this result?"
     );
@@ -95,18 +145,29 @@ function Sidebar({
     );
   };
 
-  // Opens detailed view for a specific result
+  /**
+   * Opens detailed view for a specific result and activates the overlay.
+   *
+   * @param {number} projectIndex - Index of the project containing the result.
+   * @param {string} result - The result to display details for.
+   */
   const openResultDetails = (projectIndex, result) => {
     setSelectedResult({ projectIndex, result });
     setOverlayActive(true);
   };
 
-  // Closes the detailed view
+  /**
+   * Closes the result details view and deactivates the overlay.
+   */
   const closeResultDetails = () => {
     setSelectedResult(null);
     setOverlayActive(false);
   };
 
+  /**
+   * Downloads the currently selected result details as a PDF.
+   * Uses jsPDF library to generate the PDF document.
+   */
   const downloadPDF = () => {
     if (!selectedResult) return;
 
