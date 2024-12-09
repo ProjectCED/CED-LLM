@@ -58,6 +58,20 @@ class ApiHandler():
         return text
 
     def mistral_analyze(self, prompt) -> str:
+        """
+        Analyzes the given prompt using the Mistral model via an API call.
+
+        Args:
+            prompt (str): The input prompt to be analyzed by the Mistral model.
+
+        Returns:
+            str: The combined JSON response from the API call as a string. If an error occurs, 
+                a dictionary with an "error" key and the error message is returned.
+
+        Raises:
+            requests.exceptions.RequestException: If the API request fails.
+            json.JSONDecodeError: If the response contains invalid JSON.
+        """
         data = {
             "model": "mistral",
             "prompt": prompt,
