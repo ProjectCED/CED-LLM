@@ -111,10 +111,10 @@ const Blueprints = () => {
    * 
    * @param {number} id - The ID of the blueprint to delete.
    */
-  const handleDeleteClick = (id) => {
+  const handleDeleteClick = async (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this blueprint?');
     if (confirmDelete) {
-      const success = deleteBlueprint(id);
+      const success = await deleteBlueprint(id);
       if (success) {
         setBlueprints(blueprints.filter(bp => bp.id !== id));
       }
