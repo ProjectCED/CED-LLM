@@ -84,4 +84,15 @@ class ApiHandler():
         text = utils.extract_text_from_file(filepath)
         if text is None:
             return None
+          
         return self.analyze_text(text, blueprint, model)
+            
+
+def main():
+    #apiHandler = ApiHandler()
+    #result = apiHandler.analyze_file("PTK_102+2024.pdf", PRIMARY_MODEL)
+    #print(result)
+    pass
+
+if __name__ == "__main__":
+    main()
