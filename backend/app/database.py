@@ -2,13 +2,52 @@ from neo4j import GraphDatabase
 #from neo4j.exceptions import Neo4jError #using normal Exception
 from dotenv import load_dotenv
 from enum import Enum
-from datetime import datetime
+from datetime import datetime # TODO: remove this when cleaning up
+from neo4j.time import DateTime
 import os
+from uuid import UUID
+from typing import Any
+
+class NodeLabels(Enum):
+    """
+    All allowed node labels and their id variable name.
+    """
+    GLOBAL_SETTINGS = ("GlobalSettings", 'id')
+    USER_SETTINGS = ("UserSettings", 'id')
+    BLUEPRINT = ("Blueprint", 'id')
+    PROJECT = ("Project", 'id')
+    RESULT_BLUEPRINT = ("ResultBlueprint", 'id')
+    USED_BLUEPRINT = ("UsedBlueprint", 'id')
+
+    def __init__(self, label, id):
+        self.label = label
+        self.id = id
+        
+
+class _NodeRelationships(Enum):
+    """
+    All allowed relationships.
+
+    Enum variables are not used. Just NodeLabels compared.
+    """
+    RESULT_BLUEPRINT_TO_PROJECT = (NodeLabels.RESULT_BLUEPRINT, NodeLabels.PROJECT, "BELONGS_TO")
+    USED_BLUEPRINT_TO_RESULT_BLUEPRINT = (NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, "USED_IN_ANALYSIS")
+    PROJECT_TO_USER_SETTINGS = (NodeLabels.PROJECT, NodeLabels.USER_SETTINGS, "OWNED_BY")
+    BLUEPRINT_TO_USER_SETTINGS = (NodeLabels.BLUEPRINT, NodeLabels.USER_SETTINGS, "OWNED_BY")
+
+    def __init__(self, from_node, to_node, relationship):
+        self.from_node = from_node
+        self.to_node = to_node
+        self.relationship = relationship
+
 
 class NodeProperties:
-    """All allowed property names for each node label.
+    """
+    All allowed property names for each node label.
 
     Add more properties here when needed, but check Database class init for reserved names for identifier usage before adding new property names.
+
+    When adding properties that should be used with sorting the lists. They also need to be added to 'sorting_properties'-variable in __lookup_nodes().
     """
     class GlobalSettings(Enum):
         # Settings
@@ -21,6 +60,7 @@ class NodeProperties:
         # User settings
         # example FOO = "foo"
         NAME = "name"
+        USER_NAME = "user_name"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -79,9 +119,11 @@ class NodeProperties:
     class ResultBlueprint(Enum):
         # Result
         # example <FOO> = "foo"
+        NAME = "name"
         FILENAME = "filename"
         RESULT = "result"
         DATETIME = "datetime"
+        USED_BLUEPRINT = "used_blueprint"
 
         TEST_PASS = "test_pass"
         TEST_FAIL = "test_fail"
@@ -229,7 +271,7 @@ class Database(metaclass=DatabaseMeta):
                 - None if node already exists.
         """
         # check if node already exists
-        if self.__does_node_exist(type, id_type, id_value):
+        if id_value != None and self.__does_node_exist(type, id_type, id_value):
             return None
 
         if id_value == None:
@@ -371,9 +413,10 @@ class Database(metaclass=DatabaseMeta):
             raise RuntimeError( "Neo4j lookup_node_property query failed: " + error_string )
 
 
-    def __lookup_nodes(self, type, id_type, property_list, parent_info = None):
+    def __lookup_nodes(self, type, id_type, property_list, parent_info = None, sort_property = None, sort_direction = 'DESC'):
         """
         Lookup nodes and return list of them in a [[ID, property_list]] combo.
+        Sorting the result by first found sorting property DESC (compared with sorting_properties). If no sorting property found, defaults to 'id' ASC.
 
         Args:
             type (string): Node label
@@ -385,31 +428,40 @@ class Database(metaclass=DatabaseMeta):
                 - 'node_type' (string): Node label
                 - 'id_type' (string): Node id(property)
                 - 'id_value' (string): Value for the id
+            sort_property (string, optional): sorting property
+            sort_direction (string, optional): sorting direction ('DESC' or 'ASC')
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If invalid sort_direction value.
+            RuntimeError: If database query error.
 
         Returns:
             list[string, Any] or None:
                 - [ID, property_name value] A list of found nodes with ID and wanted property combination.
                 - None if nothing was found.
         """
+        # sorting string
+        sorting_string = '' # this will be used if no sorting property detected
+        if (sort_direction != 'DESC' and sort_direction != 'ASC'):
+            raise RuntimeError( "__lookup_nodes() sort_direction invalid value: " + sort_direction )
+        if sort_property:
+            sorting_string = f"WITH n ORDER BY n.{sort_property} {sort_direction} "
 
+        # make string from property list
         property_list_string = ''
         for item in property_list:
             property_list_string = property_list_string + ", n." + item
 
-
+        query_string =''
         if parent_info == None:
-            query_string = (
-                "MATCH (n:" + type + " ) "
-                "RETURN COLLECT ([n." + id_type + property_list_string + "]) AS list"
-            )
+            query_string += f"MATCH (n:{type}) "
+            query_string += sorting_string
+            query_string += f"RETURN COLLECT ([n.{id_type}{property_list_string}]) AS list "
+
         else:
-            query_string = (
-                "MATCH (n:" + type + " ) - [] -> (:" + parent_info["node_type"] + " {" + parent_info["id_type"] + ": '" + parent_info["id_value"] + "'}) "
-                "RETURN COLLECT ([n." + id_type + property_list_string + "]) AS list"
-            )
+            query_string += f"MATCH (n:{type}) - [] -> (:{parent_info['node_type']} {{{parent_info['id_type']}: '{parent_info['id_value']}'}}) "
+            query_string += sorting_string
+            query_string += f"RETURN COLLECT ([n.{id_type}{property_list_string}]) AS list "
 
         try:
             records, summary, keys = self.__driver.execute_query(
@@ -842,7 +894,333 @@ class Database(metaclass=DatabaseMeta):
             raise RuntimeError( "Neo4j does_node_exist() query failed: " + error_string )
 
 
+    def __helper_get_property_enum_and_validate(self, node_label:NodeLabels, property_name:Enum):
+        """
+        Helper function to dynamically get the property enum class for a node_label and validate the property_name.
+
+        Parameters:
+            node_label (NodeLabels): The node label to get the corresponding property enum class for.
+            property_name (Enum): The property name to validate.
+
+        Raises:
+            ValueError: If the property enum class doesn't exist or the property_name is invalid.
+
+        Returns:
+            properties_enum_class (Enum): The corresponding property enum class for the node_label.
+        """
+        # Used variants should have access to normal variant enums
+        alias_mapping = {
+            NodeLabels.USED_BLUEPRINT: NodeLabels.BLUEPRINT
+        }
+        resolved_node_label = alias_mapping.get(node_label, node_label)
+
+        # Dynamically get the corresponding property enum class
+        properties_enum_class = getattr(NodeProperties, resolved_node_label.label, None)
+
+        if not properties_enum_class:
+            raise ValueError(f"No properties defined for node label {node_label.label}")
+        
+        # If property_name is passed as a string, we will dynamically retrieve the property
+        if isinstance(property_name, str):
+            # Check if the property exists in the enum class
+            property_enum = getattr(properties_enum_class, property_name, None)
+
+            if not property_enum:
+                raise ValueError(
+                    f"Invalid property '{property_name}' for node label '{node_label.label}'. "
+                    f"Expected one of: {[e.name for e in properties_enum_class]}"
+                )
+        
+            return property_enum
+        
+        # Check if the property_name is valid for the given node_label
+        if not isinstance(property_name, properties_enum_class):
+            raise ValueError(
+                f"Invalid property '{property_name}' for node label '{node_label.label}'. "
+                f"Expected one of: {[e.name for e in properties_enum_class]}"
+            )
+
+        return properties_enum_class
+
+    ### Add node
+    def add_node(self, node_label:NodeLabels):
+        
+        """
+        Create a node. Also DATETIME is set as creation time for Blueprints, Projects and results.
+
+        Args:
+            node_label (NodeLabels): Node label
+            user_name (string, optional): Used with creating UserSettings node
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label (from DATETIME set)
+
+        Returns:
+            string or None:
+                - string containing ID value for the created node.
+                - None if node already exists.
+        """
+        # this node should only have one instance
+        if node_label == NodeLabels.GLOBAL_SETTINGS:
+            if self.__lookup_nodes(node_label.label, node_label.id, []) != []:
+                return None
+
+        id = self.__add_node(node_label.label, node_label.id)
+
+        # only add DATETIME on following
+        if node_label in [
+            NodeLabels.BLUEPRINT,
+            NodeLabels.PROJECT,
+            NodeLabels.RESULT_BLUEPRINT,
+        ]:
+            # Make sure DATETIME is found for node_label
+            datetime_property = self.__helper_get_property_enum_and_validate(node_label, 'DATETIME')
+           
+            self.set_node_property(id, node_label, datetime_property, DateTime.now())
+
+
+        return id
+
+    def set_node_property(self, id:UUID, node_label:NodeLabels, property_name: Enum, new_data: Any):
+        """
+        Create/modify node property data with new data.
+
+        Args:
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+            property_name (Enum): property name to create/modify
+            new_data (Any): value for the property
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False if node was not found or cannot be modified.
+        """ 
+        # not allowed to be modified
+        if node_label in [
+            NodeLabels.USED_BLUEPRINT,
+        ]:
+            return False
+
+        # Check that node_label has property_name
+        self.__helper_get_property_enum_and_validate(node_label, property_name)
+
+        return self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
+
+    def remove_node_property(self, id:UUID, node_label:NodeLabels, property_name:Enum):
+        """
+        Removes specific node property data (and property)
+
+        Args:
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+            property_name (Enum): property name for removing
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label.
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when property doesn't exist.
+        """
+        # Check that node_label has property_name
+        self.__helper_get_property_enum_and_validate(node_label, property_name)
+
+        return self.__remove_property(node_label.label, node_label.id, id, property_name.value)
+
+
+    def lookup_node_property(self, id:UUID, node_label:NodeLabels, property_name:Enum):
+        """
+        Return data of specific property from settings
+        
+        Args:
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+            property_name (Enum): property name for removing
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If the property_name is invalid for the given node_label.
+
+        Returns:
+            Any or None:
+                - Any if found, single node property data.
+                - None if nothing was found.
+        """ 
+        # Check that node_label has property_name
+        self.__helper_get_property_enum_and_validate(node_label, property_name)
+
+        return self.__lookup_node_property(node_label.label, node_label.id, id, property_name.value)
+
+    def delete_node(self, id:UUID, node_label:NodeLabels):
+        """
+        Delete node. For Project, ResultBlueprint and UserSettings, also all the connected nodes are deleted.
+
+        Args:
+            id (UUID): Node identifier
+            node_label (NodeLabels): Node label
+        
+        Raises:
+            RuntimeError: If database query error.
+            
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when node doesn't exist or cannot be deleted.
+        """
+        # Deletion not allowed
+        if node_label in [
+            NodeLabels.USED_BLUEPRINT, # deleted when result is deleted
+        ]:
+            return False
+        
+        # Also delete connected nodes connected to it
+        if node_label in [
+            NodeLabels.USER_SETTINGS, # everything related to this user is deleted and anything beyond
+            NodeLabels.PROJECT, # results also deleted and anything beyond
+            NodeLabels.RESULT_BLUEPRINT, # used_blueprints also deleted
+        ]:
+            return self.__delete_node_with_connections(node_label.label, node_label.id, id)
+        else:
+            return self.__delete_node(node_label.label, node_label.id, id)
+
+
+    def lookup_nodes(self, node_label:NodeLabels, parent_label:NodeLabels = None, parent_id:UUID = None):
+        """
+        Lookup nodes and return list of them in a [[ID, NAME, DATETIME,...]] combo. Sorting the result by DATETIME DESC when present.
+
+        Args:
+            node_label (NodeLabels): Node label
+            parent_label (NodeLabels, optional): Parent label for searching under specific node
+            parent_id (UUID, optional): Id value of parent node
+
+        Raises:
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
+
+        Returns:
+            list[list[string]] or None:
+                - list[list[string]] A list of found nodes with ID, NAME, DATETIME.iso()... etc combination.
+                - None if nothing was found.
+        """
+        property_list = []
+        parent_info = None
+        sort_property = None
+        sort_direction = 'DESC'
+
+        if node_label == NodeLabels.PROJECT:
+            property_list = [
+                NodeProperties.Project.NAME.value,
+                NodeProperties.Project.DATETIME.value,
+                ]
+            sort_property = NodeProperties.Project.DATETIME.value
+
+        elif node_label == NodeLabels.RESULT_BLUEPRINT:
+            parent_info = { "node_type" : parent_label.label, "id_type" : parent_label.id, "id_value" : parent_id }
+            property_list = [
+                NodeProperties.ResultBlueprint.DATETIME.value,
+                ]
+            sort_property = NodeProperties.ResultBlueprint.DATETIME.value
+
+        elif node_label == NodeLabels.BLUEPRINT:
+            property_list = [
+                NodeProperties.Blueprint.NAME.value,
+                NodeProperties.Blueprint.DATETIME.value,
+                ]
+            sort_property = NodeProperties.Blueprint.DATETIME.value
+            
+        elif node_label == NodeLabels.USER_SETTINGS:
+            property_list = [
+                NodeProperties.UserSettings.NAME.value,
+                NodeProperties.UserSettings.USER_NAME.value,
+                ]
+            sort_property = NodeProperties.UserSettings.USER_NAME.value
+            sort_direction = 'ASC'
+        
+        elif node_label == NodeLabels.USED_BLUEPRINT:
+            parent_info = { "node_type" : parent_label.label, "id_type" : parent_label.id, "id_value" : parent_id }
+            property_list = [
+                NodeProperties.Blueprint.NAME.value,
+                NodeProperties.Blueprint.DATETIME.value,
+                ]
+            sort_property = NodeProperties.Blueprint.DATETIME.value
+        
+        elif node_label == NodeLabels.GLOBAL_SETTINGS:
+            # just to get id
+            pass
+        return self.__lookup_nodes(node_label.label, node_label.id, property_list, parent_info, sort_property, sort_direction)
     
+
+    def copy_node_to_node(self, from_id:UUID, from_label:NodeLabels, to_label:NodeLabels):
+        """
+        Copies node into another node. Only supports copies between Blueprint <-> Used_Blueprint.
+
+        Args:
+            id_value (string): Value for the "active" blueprint id
+
+        Raises:
+            RuntimeError: If database query error.
+            RuntimeError: If copy not supported by design.
+
+        Returns:
+            string(UUID): string containing ID value for the created node. 
+        """
+        # allowed cases
+        if from_label == NodeLabels.BLUEPRINT and to_label == NodeLabels.USED_BLUEPRINT:
+            pass
+        elif from_label == NodeLabels.USED_BLUEPRINT and to_label == NodeLabels.BLUEPRINT:
+            pass
+        else:
+            raise RuntimeError( "Unsupported copy attempt: " + from_label.label + " to " + to_label.label)
+        
+        result = self.__copy_node(from_label.label, from_label.id, from_id, to_label.label, to_label.id)
+
+        # give "_used" tag and fresh DATETIME when copying back to blueprint
+        if from_label == NodeLabels.USED_BLUEPRINT and to_label == NodeLabels.BLUEPRINT:
+            name = self.lookup_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME)
+            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, (name or "blueprint") + "_used")
+            self.set_node_property(result, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.DATETIME, DateTime.now())
+
+        return result
+        
+
+    def connect_node_to_node(self, from_id:UUID, from_label:NodeLabels, to_id:UUID, to_label:NodeLabels):
+        """
+        Connect node to node with pre-defined relationship.
+
+        Args:
+            dataset_id_value (string): Value for the Dataset id
+            data_model_id_value (string): Value for the DataModel id
+
+        Raises:
+            RuntimeError: If database query error.
+            ValueError: If relationship was not found between nodes.
+
+        Returns:
+            bool:
+                - True when query succeeded.
+                - False when either of the nodes doesn't exist.
+        """
+        relationship_string = ''
+        try:
+            for relationship in _NodeRelationships:
+                if relationship.from_node == from_label and relationship.to_node == to_label:
+                    relationship_string = relationship.relationship
+        except:
+            raise ValueError(f"No relationship found between {from_label.label} and {to_label.label}")
+        
+        return self.__connect_with_relationship(from_label.label, from_label.id, from_id, to_label.label, to_label.id, to_id, relationship_string)
+
+
+### TODO: all codelines below are older version, everything should be set to use above code instead and then delete below
+
     ### Connections
     def connect_dataset_to_data_model(self, dataset_id_value, data_model_id_value):
         """
@@ -1362,10 +1740,11 @@ class Database(metaclass=DatabaseMeta):
 
     def lookup_project_nodes(self):
         """
-        Lookup Projects and return list of them in a [[ID, NAME, DATETIME]] combo.
+        Lookup Projects and return list of them in a [[ID, NAME, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
 
         Returns:
             list[string, string, string] or None:
@@ -1376,8 +1755,9 @@ class Database(metaclass=DatabaseMeta):
             NodeProperties.Project.NAME.value,
             NodeProperties.Project.DATETIME.value,
             ]
+        sort_property = NodeProperties.Project.DATETIME.value
         
-        return self.__lookup_nodes(self.__project_type, self.__project_id, property_list)
+        return self.__lookup_nodes(self.__project_type, self.__project_id, property_list, None, sort_property)
     
 
     def delete_project(self, id_value):
@@ -1738,10 +2118,11 @@ class Database(metaclass=DatabaseMeta):
 
     def lookup_blueprint_nodes(self):
         """
-        Lookup Blueprints and return list of them in a [[ID, NAME]] combo.
+        Lookup Blueprints and return list of them in a [[ID, NAME, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
 
         Returns:
             list[string, string] or None:
@@ -1752,7 +2133,10 @@ class Database(metaclass=DatabaseMeta):
             NodeProperties.Blueprint.NAME.value,
             NodeProperties.Blueprint.DATETIME.value,
             ]
-        return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, property_list)
+        
+        sort_property = NodeProperties.Blueprint.DATETIME.value
+
+        return self.__lookup_nodes(self.__blueprint_type, self.__blueprint_id, property_list, None, sort_property)
     
 
     def delete_blueprint(self, id_value):
@@ -1996,6 +2380,26 @@ class Database(metaclass=DatabaseMeta):
                 - None if nothing was found.
         """ 
         return self.__lookup_node_property(self.__used_blueprint_type, self.__used_blueprint_id, id_value, property_name.value)
+    
+    def lookup_used_blueprint_node(self, result_id_value):
+        """
+        Lookup used_blueprint from specific result and return ID of it.
+
+        Args:
+             result_id_value(string): Value for the id
+
+        Raises:
+            RuntimeError: If database query error.   
+
+        Returns:
+            string or None:
+                - string A id of used_blueprint
+                - None if nothing was found.
+        """ 
+        result_info = { "node_type" : self.__result_blueprint_type, "id_type" : self.__result_blueprint_id, "id_value" : result_id_value }
+
+        return self.__lookup_nodes(self.__used_blueprint_type, self.__used_blueprint_id, [], result_info)[0][0]
+
 
     
     ### Used datamodel
@@ -2199,13 +2603,14 @@ class Database(metaclass=DatabaseMeta):
     
     def lookup_result_blueprint_nodes(self, project_id):
         """
-        Lookup ResultBlueprints from specific project and return list of them in a [[ID, DATETIME]] combo.
+        Lookup ResultBlueprints from specific project and return list of them in a [[ID, DATETIME]] combo. Sorting the result by DATETIME DESC.
 
         Args:
             project_id (string): Value for the id
 
         Raises:
-            RuntimeError: If database query error.   
+            RuntimeError: If database query error.
+            RuntimeError: If an invalid sort_direction value is provided (should not occur).
 
         Returns:
             list[string, DATETIME.ISO] or None:
@@ -2216,7 +2621,9 @@ class Database(metaclass=DatabaseMeta):
         property_list = [
             NodeProperties.ResultBlueprint.DATETIME.value,
             ]
-        return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, property_list, project_info)
+        sort_property = NodeProperties.ResultBlueprint.DATETIME.value
+
+        return self.__lookup_nodes(self.__result_blueprint_type, self.__result_blueprint_id, property_list, project_info, sort_property)
 
     def delete_result_blueprint(self, id_value):
         """

@@ -1,3 +1,23 @@
+"""
+Database testing. Combined unit- and integration-testing. 
+
+Tests is done by using database() public functions and it's queries instead of creating new connection in this module.
+
+Modules tested:
+- Database public functions
+- Partially Database private functions (that used by public functions)
+- Communication with real database.
+
+Usage:
+- "$env:PYTHONPATH = (Get-Location).Path" command in backend-folder (windows11)
+- "pytest -m database -p no:warnings" command in backend-folder
+
+Note: make sure database is up and running either:
+- Through Neo4j Desktop (official app)
+- Editing neo4j ports back in in docker-compose.yml and launching with "docker-compose up neo4j --build"
+
+"""
+
 import pytest
 from app.database import Database, NodeProperties
 from datetime import datetime
@@ -10,9 +30,6 @@ def db():
     """
     Fixture that sets up a real database connection for the entire module.
     This connection will be shared across all tests in this module.
-
-    Tests is done by using database() public functions and it's queries,
-    instead of making separate queries from here.
 
     Returns:
         database object
@@ -684,8 +701,8 @@ class TestNodeLookups:
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
-            and result[0][1] == 'foo_1' 
-            and result[1][1] == 'foo_2'
+            and result[0][1] == 'foo_2' # order matters
+            and result[1][1] == 'foo_1'
             and self.helper_datetime_checker(result[0][2]) == True 
             and self.helper_datetime_checker(result[1][2]) == True
         )
@@ -701,8 +718,8 @@ class TestNodeLookups:
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
-            and result[0][1] == 'foo_1' 
-            and result[1][1] == 'foo_2'
+            and result[0][1] == 'foo_2' # order matters
+            and result[1][1] == 'foo_1'
             and self.helper_datetime_checker(result[0][2]) == True 
             and self.helper_datetime_checker(result[1][2]) == True
         )
@@ -720,6 +737,8 @@ class TestNodeLookups:
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
+            and result[0][0] == id_2 # order matters
+            and result[1][0] == id_1
             and self.helper_datetime_checker(result[0][1]) == True 
             and self.helper_datetime_checker(result[1][1]) == True
         )

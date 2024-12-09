@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './ProjectSelection.css';
 
+/**
+ * ProjectSelection allows users to select an existing project or create a new one. 
+ * It provides a UI for choosing between existing projects from a list or entering a new project name.
+ *
+ * @component
+ * @param {Object} props - The props passed to the component.
+ * @param {string[]} props.existingProjects - Array of existing project names available for selection.
+ * @param {string} [props.selectedProjectOption] - The currently selected option, either 'Existing Project' or 'New Project'.
+ * @param {Function} props.onSelectProjectOption - Callback function triggered when the project option changes.
+ *        Receives the selected option as an argument.
+ * @param {Function} props.onSelectExistingProject - Callback function triggered when an existing project is selected.
+ *        Receives the name of the selected existing project as an argument.
+ * @param {string} [props.uploadedFileName] - Name of an uploaded file, used to suggest a default name for a new project.
+ * @param {string} [props.copiedText] - Text copied by the user, used to generate a suggested name for a new project.
+ * @param {string} [props.newProjectName] - The name of the new project currently entered by the user.
+ * @param {Function} props.onNewProjectNameChange - Callback function triggered when the new project name changes.
+ *        Receives the updated project name as an argument.
+ * @returns {JSX.Element} A UI for project selection, including buttons, dropdowns, and input fields.
+ */
+
 const ProjectSelection = ({
   existingProjects = [],
   selectedProjectOption,
@@ -11,18 +31,37 @@ const ProjectSelection = ({
   newProjectName,
   onNewProjectNameChange,
 }) => {
+
+  /**
+   * @type {string}
+   * @description Tracks the locally selected project option ('Existing Project' or 'New Project').
+   */
   const [localSelectedOption, setLocalSelectedOption] = useState(selectedProjectOption || '');
+
+  /**
+   * @type {string}
+   * @description Tracks the name of the selected existing project from the dropdown.
+   */
   const [selectedExistingProject, setSelectedExistingProject] = useState('');
+
+  /**
+   * @type {string}
+   * @description Tracks the name of the new project entered by the user.
+   */
   const [localNewProjectName, setLocalNewProjectName] = useState(newProjectName || '');
 
-  // Sync the local selected option with the selectedProjectOption prop whenever it changes
+  /**
+   * Synchronize the local selected option with the `selectedProjectOption` prop whenever it changes.
+   */
   useEffect(() => {
     if (selectedProjectOption !== localSelectedOption) {
       setLocalSelectedOption(selectedProjectOption);
     }
   }, [selectedProjectOption]);
 
-  // Effect hook to handle project name change when selecting a new project
+  /**
+   * Automatically set a suggested name for a new project based on the uploaded file name or copied text.
+   */
   useEffect(() => {
     if (localSelectedOption === 'New Project') {
       if (uploadedFileName) {
@@ -33,14 +72,20 @@ const ProjectSelection = ({
     }
   }, [localSelectedOption, uploadedFileName, copiedText]);
 
-  // Effect hook to update the project name in parent when it changes
+  /**
+   * Update the parent component whenever the new project name changes.
+   */
   useEffect(() => {
     if (localNewProjectName !== newProjectName) {
       onNewProjectNameChange(localNewProjectName);
     }
   }, [localNewProjectName, newProjectName, onNewProjectNameChange]);
 
-  // Handler for when an option (existing, new, or none) is selected
+  /**
+   * Handle selection of a project option ('Existing Project' or 'New Project').
+   *
+   * @param {string} option - The selected option.
+   */
   const handleOptionSelect = (option) => {
     setLocalSelectedOption(option);
     onSelectProjectOption(option);
@@ -51,14 +96,22 @@ const ProjectSelection = ({
     }
   };
 
-  // Handler for when a specific existing project is selected from the dropdown
+  /**
+   * Handle selection of an existing project from the dropdown.
+   *
+   * @param {string} project - The name of the selected existing project.
+   */
   const handleExistingProjectSelect = (project) => {
     setSelectedExistingProject(project);
     onSelectExistingProject(project);
     onSelectProjectOption('Existing Project');
   };
 
-  // Handler for the new project name change
+  /**
+   * Handle changes to the new project name input field.
+   *
+   * @param {Object} event - The input change event.
+   */
   const handleNewProjectNameChange = (event) => {
     const value = event.target.value;
     setLocalNewProjectName(value); 

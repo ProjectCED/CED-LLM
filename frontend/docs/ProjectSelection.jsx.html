@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ProjectSelection.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ProjectSelection.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import './ProjectSelection.css';
+
+/**
+ * ProjectSelection allows users to select an existing project or create a new one. 
+ * It provides a UI for choosing between existing projects from a list or entering a new project name.
+ *
+ * @component
+ * @param {Object} props - The props passed to the component.
+ * @param {string[]} props.existingProjects - Array of existing project names available for selection.
+ * @param {string} [props.selectedProjectOption] - The currently selected option, either 'Existing Project' or 'New Project'.
+ * @param {Function} props.onSelectProjectOption - Callback function triggered when the project option changes.
+ *        Receives the selected option as an argument.
+ * @param {Function} props.onSelectExistingProject - Callback function triggered when an existing project is selected.
+ *        Receives the name of the selected existing project as an argument.
+ * @param {string} [props.uploadedFileName] - Name of an uploaded file, used to suggest a default name for a new project.
+ * @param {string} [props.copiedText] - Text copied by the user, used to generate a suggested name for a new project.
+ * @param {string} [props.newProjectName] - The name of the new project currently entered by the user.
+ * @param {Function} props.onNewProjectNameChange - Callback function triggered when the new project name changes.
+ *        Receives the updated project name as an argument.
+ * @returns {JSX.Element} A UI for project selection, including buttons, dropdowns, and input fields.
+ */
+
+const ProjectSelection = ({
+  existingProjects = [],
+  selectedProjectOption,
+  onSelectProjectOption,
+  onSelectExistingProject,
+  uploadedFileName,
+  copiedText,
+  newProjectName,
+  onNewProjectNameChange,
+}) => {
+
+  /**
+   * @type {string}
+   * @description Tracks the locally selected project option ('Existing Project' or 'New Project').
+   */
+  const [localSelectedOption, setLocalSelectedOption] = useState(selectedProjectOption || '');
+
+  /**
+   * @type {string}
+   * @description Tracks the name of the selected existing project from the dropdown.
+   */
+  const [selectedExistingProject, setSelectedExistingProject] = useState('');
+
+  /**
+   * @type {string}
+   * @description Tracks the name of the new project entered by the user.
+   */
+  const [localNewProjectName, setLocalNewProjectName] = useState(newProjectName || '');
+
+  /**
+   * Synchronize the local selected option with the `selectedProjectOption` prop whenever it changes.
+   */
+  useEffect(() => {
+    if (selectedProjectOption !== localSelectedOption) {
+      setLocalSelectedOption(selectedProjectOption);
+    }
+  }, [selectedProjectOption]);
+
+  /**
+   * Automatically set a suggested name for a new project based on the uploaded file name or copied text.
+   */
+  useEffect(() => {
+    if (localSelectedOption === 'New Project') {
+      if (uploadedFileName) {
+        setLocalNewProjectName(uploadedFileName);
+      } else if (copiedText) {
+        setLocalNewProjectName(copiedText.split(' ').slice(0, 3).join(' '));
+      }
+    }
+  }, [localSelectedOption, uploadedFileName, copiedText]);
+
+  /**
+   * Update the parent component whenever the new project name changes.
+   */
+  useEffect(() => {
+    if (localNewProjectName !== newProjectName) {
+      onNewProjectNameChange(localNewProjectName);
+    }
+  }, [localNewProjectName, newProjectName, onNewProjectNameChange]);
+
+  /**
+   * Handle selection of a project option ('Existing Project' or 'New Project').
+   *
+   * @param {string} option - The selected option.
+   */
+  const handleOptionSelect = (option) => {
+    setLocalSelectedOption(option);
+    onSelectProjectOption(option);
+
+    if (option === 'Existing Project') {
+      setSelectedExistingProject('');
+      onSelectExistingProject('');
+    }
+  };
+
+  /**
+   * Handle selection of an existing project from the dropdown.
+   *
+   * @param {string} project - The name of the selected existing project.
+   */
+  const handleExistingProjectSelect = (project) => {
+    setSelectedExistingProject(project);
+    onSelectExistingProject(project);
+    onSelectProjectOption('Existing Project');
+  };
+
+  /**
+   * Handle changes to the new project name input field.
+   *
+   * @param {Object} event - The input change event.
+   */
+  const handleNewProjectNameChange = (event) => {
+    const value = event.target.value;
+    setLocalNewProjectName(value); 
+  };
+
+  return (
+    &lt;div className="project-selection">
+      &lt;p>Select an existing project or create a new one:&lt;/p>
+
+      &lt;div className="project-button-container">
+        &lt;button
+          className={`selection-button ${localSelectedOption === 'Existing Project' ? 'selected' : ''}`}
+          onClick={() => handleOptionSelect('Existing Project')}
+        >
+          Existing Project
+        &lt;/button>
+        &lt;button
+          className={`selection-button ${localSelectedOption === 'New Project' ? 'selected' : ''}`}
+          onClick={() => handleOptionSelect('New Project')}
+        >
+          Create a New Project
+        &lt;/button>
+      &lt;/div>
+
+      {localSelectedOption === 'Existing Project' &amp;&amp; (
+        &lt;div className="dropdown-container">
+          &lt;select
+            value={selectedExistingProject}
+            onChange={(e) => handleExistingProjectSelect(e.target.value)}
+          >
+            &lt;option value="">-- Choose a Project --&lt;/option>
+            {existingProjects.map((project, index) => (
+              &lt;option key={index} value={project}>
+                {project}
+              &lt;/option>
+            ))}
+          &lt;/select>
+        &lt;/div>
+      )}
+
+      {localSelectedOption === 'New Project' &amp;&amp; (
+        &lt;div className="new-project-container">
+          &lt;p>Enter a new project name or use the default name:&lt;/p>
+          &lt;input
+            type="text"
+            placeholder="Enter a New Project Name"
+            value={localNewProjectName}
+            onChange={handleNewProjectNameChange}
+          />
+        &lt;/div>
+      )}
+    &lt;/div>
+  );
+};
+
+export default ProjectSelection;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
