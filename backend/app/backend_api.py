@@ -183,6 +183,14 @@ def delete_blueprint():
     success = database.delete_blueprint(id)
     return jsonify({"success": success})
 
+
+@main.route("/mistral", methods=["POST"])
+def query_mistral():
+    data = request.json
+    prompt = data.get("prompt", "Explain the theory of relativity in layman's terms.")
+    response = apiHandler.mistral_analyze(prompt)
+    return jsonify(response)
+
 # Projects
 @main.route('/save_project', methods=['POST'])
 def save_project():
