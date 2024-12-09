@@ -94,6 +94,696 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="analyzeText"><span class="type-signature">(constant) </span>analyzeText<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Analyzes raw text using the provided blueprint.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line44">line 44</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="analyzeUploadedFile"><span class="type-signature">(constant) </span>analyzeUploadedFile<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Analyzes an already uploaded file using the provided blueprint.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line24">line 24</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="deleteBlueprint"><span class="type-signature">(constant) </span>deleteBlueprint<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Deletes the blueprint with given ID from the backend database.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line93">line 93</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="deleteProject"><span class="type-signature">(constant) </span>deleteProject<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Deletes a project from the backend database. Also deletes all results
+ under the project (but not their blueprints).
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line144">line 144</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="deleteResult"><span class="type-signature">(constant) </span>deleteResult<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Deletes an analysis result from the backend database. Will NOT delete attached blueprint.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line180">line 180</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="getBlueprints"><span class="type-signature">(constant) </span>getBlueprints<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Fetches all user-saved blueprints from the backend server.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line62">line 62</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="getProjects"><span class="type-signature">(constant) </span>getProjects<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Fetches all projects from the backend server. Projects contain
+ their ID, name, and results list. Results contain all relevant data,
+ including the blueprint used for analysis.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line130">line 130</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="saveBlueprint"><span class="type-signature">(constant) </span>saveBlueprint<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Saves a given blueprint to backend database.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line76">line 76</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="saveProject"><span class="type-signature">(constant) </span>saveProject<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Creates a new project with the given name, saving it to the backend database.
+ The project will be have an empty results list initially.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line112">line 112</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="saveResult"><span class="type-signature">(constant) </span>saveResult<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Saves an analysis result to the backend database.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line162">line 162</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="uploadFile"><span class="type-signature">(constant) </span>uploadFile<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Uploads a file to the backend server for later analysis.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.jsx.html">utils.jsx</a>, <a href="utils.jsx.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -580,7 +1270,7 @@ sidebar expansion, and overlay activation.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="App.jsx.html">App.jsx</a>, <a href="App.jsx.html#line18">line 18</a>
+        <a href="App.jsx.html">App.jsx</a>, <a href="App.jsx.html#line19">line 19</a>
     </li></ul></dd>
     
 
@@ -1438,7 +2128,7 @@ blueprint dropdown, and custom text input fields.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MultiStepForm.jsx.html">MultiStepForm.jsx</a>, <a href="MultiStepForm.jsx.html#line16">line 16</a>
+        <a href="MultiStepForm.jsx.html">MultiStepForm.jsx</a>, <a href="MultiStepForm.jsx.html#line17">line 17</a>
     </li></ul></dd>
     
 
@@ -2182,7 +2872,7 @@ Includes the header, sidebar, and main content areas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="App.jsx.html">App.jsx</a>, <a href="App.jsx.html#line101">line 101</a>
+        <a href="App.jsx.html">App.jsx</a>, <a href="App.jsx.html#line96">line 96</a>
     </li></ul></dd>
     
 
@@ -2414,29 +3104,6 @@ and associating results with a project.
             
 
             <td class="description last">Callback to set the selected result.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>setBlueprint</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Callback to set the selected blueprint.</td>
         </tr>
 
     
@@ -2715,7 +3382,7 @@ and associating results with a project.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MultiStepForm.jsx.html">MultiStepForm.jsx</a>, <a href="MultiStepForm.jsx.html#line46">line 46</a>
+        <a href="MultiStepForm.jsx.html">MultiStepForm.jsx</a>, <a href="MultiStepForm.jsx.html#line47">line 47</a>
     </li></ul></dd>
     
 
@@ -3370,7 +4037,7 @@ It provides a UI for choosing between existing projects from a list or entering 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MultiStepForm.jsx.html">MultiStepForm.jsx</a>, <a href="MultiStepForm.jsx.html#line31">line 31</a>
+        <a href="MultiStepForm.jsx.html">MultiStepForm.jsx</a>, <a href="MultiStepForm.jsx.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -3746,7 +4413,7 @@ It supports deleting and selecting projects or results, creating new projects an
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Sidebar.jsx.html">Sidebar.jsx</a>, <a href="Sidebar.jsx.html#line25">line 25</a>
+        <a href="Sidebar.jsx.html">Sidebar.jsx</a>, <a href="Sidebar.jsx.html#line26">line 26</a>
     </li></ul></dd>
     
 
@@ -3925,13 +4592,13 @@ and provides a "Get Started" button for navigation to the main functionality.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Dec 03 2024 15:21:53 GMT+0200 (Itä-Euroopan normaaliaika)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -26,7 +26,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';  
 import StartPage from './StartPage';
@@ -35,6 +35,7 @@ import Blueprints from './Blueprints';
 import Header from './Header';
 import Sidebar from './Sidebar'; 
 import MultiStepForm from './MultiStepForm';
+import { getProjects } from './utils';
 
 /**
  * The main application component that sets up the router and manages global state.
@@ -68,19 +69,15 @@ function App() {
    * Each project includes a name, an open state, and a list of results.
    * @type {Array&lt;{name: string, open: boolean, results: string[]}>}
    */
-  const [projects, setProjects] = useState([
-    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
-    { name: 'Dog show data', open: false, results: ['28042023'] },
-    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
-  ]);
+  const [projects, setProjects] = useState([]);
 
-   /**
-   * State to track the currently selected blueprint.
-   * @type {string}
-   */
-  const [blueprint, setBlueprint] = useState('');
 
-  console.log('Projects in App:', projects);
+
+  useEffect(() => {
+    getProjects().then((projects) => {
+      setProjects(projects);
+    });
+  }, []);
   
   return (
     &lt;div className={`app-container ${overlayActive ? 'overlay-active' : ''}`}>
@@ -99,8 +96,6 @@ function App() {
             setExpanded={setExpanded}
             selectedResult={selectedResult}
             setSelectedResult={setSelectedResult}
-            blueprint={blueprint}
-            setBlueprint={setBlueprint}
           />
           } 
         />
@@ -133,9 +128,7 @@ function MainLayout({
   expanded, 
   setExpanded, 
   selectedResult, 
-  setSelectedResult,
-  blueprint,  
-  setBlueprint
+  setSelectedResult
 }) {
   return (
     &lt;div className="main-layout">
@@ -149,7 +142,6 @@ function MainLayout({
           setExpanded={setExpanded} 
           selectedResult={selectedResult} 
           setSelectedResult={setSelectedResult} 
-          blueprint={blueprint}
          />
         &lt;div className="main-content">
           &lt;Routes>
@@ -160,7 +152,6 @@ function MainLayout({
                   setProjects={setProjects} 
                   setExpanded={setExpanded} 
                   setSelectedResult={setSelectedResult}
-                  setBlueprint={setBlueprint}
                   setOverlayActive={setOverlayActive} 
                 />
                 } 
@@ -184,13 +175,13 @@ export default App;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Dec 03 2024 15:21:53 GMT+0200 (Itä-Euroopan normaaliaika)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
 </footer>
 
 <script> prettyPrint(); </script>

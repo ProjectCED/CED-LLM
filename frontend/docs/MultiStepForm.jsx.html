@@ -32,6 +32,7 @@ import ClassificationSelection from './ClassificationSelection'; // Step 2 compo
 import AISelection from './AISelection'; // Step 3 component
 import ProjectSelection from './ProjectSelection'; // Step 4 component
 import './MultiStepForm.css';
+import { uploadFile, analyzeUploadedFile, analyzeText, saveProject, saveResult } from './utils';
 
 /**
  * EditButton component renders a button to enable editing a specific step.
@@ -90,11 +91,10 @@ const NextButton = ({ onNextClick }) => {
  * @param {function} props.setProjects - Callback to update projects.
  * @param {function} props.setExpanded - Callback to expand the project sidebar.
  * @param {function} props.setSelectedResult - Callback to set the selected result.
- * @param {function} props.setBlueprint - Callback to set the selected blueprint.
  * @param {function} props.setOverlayActive - Callback to toggle the overlay state.
  * @returns {JSX.Element} The MultiStepForm component.
  */
-const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setBlueprint, setOverlayActive}) => {
+const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, setOverlayActive}) => {
   // State variables to track the current step and selections
   
   /**
@@ -316,26 +316,21 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
    * and associating results with a project.
    */
   const handleAnalyze = async () => {
-  //const formdata = new FormData();
-  //formdata.append('file', selectedFiles[0]);
-  //const response = await fetch('http://127.0.0.1:5000/upload_file', {
-    //method: 'POST',
-    //body: formdata,
-  //});
-  //const data = await response.json();
-  //navigate('/app/projects', { state : data});
+  let analysisResult = null;
+  let filename = null;
+  if (selectedFiles.length > 0) {
+    filename = await uploadFile(selectedFiles[0]);
+    analysisResult = await analyzeUploadedFile(filename, selectedBlueprint);
+  } else {
+    analysisResult = await analyzeText(copiedText, selectedBlueprint);
+  }
+
+  console.log("Analysis result:", analysisResult);
+  console.log("Filename:", filename);
 
   // Create new result 
   const today = new Date();
   const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
-  console.log("Formatted date (DDMMYYYY):", formattedDate);
-  
-  console.log('Selected Classification:', selectedClassification);
-  console.log('Selected Blueprint:', selectedBlueprint);
-  console.log('Custom Classification Text:', customClassificationText);
-  console.log('Selected project:', selectedProjectOption);
-  console.log('Selected Existing Project:', selectedExistingProject);
-  console.log('Projects:', projects);
 
   // If the user selected "New Project"
   if (selectedProjectOption === 'New Project') {
@@ -346,10 +341,26 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
     // Create a new project object
     const newProject = {
+      id: null,
       name: newProjectName,
-      results: [formattedDate],
+      results: [],
       open: true
     };
+    const projectId = await saveProject(newProjectName);
+    newProject.id = projectId;
+
+    // TODO: Avoid duplicate code (result is already present in the other if branch)
+    const newResult = {
+      id: null,
+      name: formattedDate,
+      filename: filename,
+      blueprint: selectedBlueprint,
+      result: analysisResult,
+      projectId: projectId
+    };
+    const resultId = await saveResult(newResult);
+    newResult.id = resultId;
+    newProject.results.push(newResult);
 
     // Add the new project to the projects list
     setProjects((prevProjects) => [...prevProjects, newProject]);
@@ -357,7 +368,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     // Set the new project as the selected one and open the Sidebar
     setSelectedResult({
       projectIndex: projects.length,
-      result: formattedDate,
+      result: newResult
     });
 
     // Expand the sidebar and set overlay so other content is unclickable
@@ -379,10 +390,24 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
     // Create a new result and update the project
     let newResultName = generateUniqueResultName(projects[existingProjectIndex]?.results || [], formattedDate);
+
+    const existingProjectId = projects[existingProjectIndex].id;
+    // TODO: Avoid duplicate code (result is already present in the other if branch)
+    const newResult = {
+      id: null,
+      name: formattedDate,
+      filename: filename,
+      blueprint: selectedBlueprint,
+      result: analysisResult,
+      projectId: existingProjectId
+    };
+    const resultId = await saveResult(newResult);
+    newResult.id = resultId;
+
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {
-          return { ...project, results: [...project.results, newResultName], open: true };
+          return { ...project, results: [...project.results, newResult], open: true };
         }
         return project;
       });
@@ -393,7 +418,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     if (newResultName) {
       setSelectedResult({
         projectIndex: existingProjectIndex,
-        result: newResultName,
+        result: newResult,
       });
 
       // Expand the sidebar and set overlay so other content is unclickable
@@ -462,7 +487,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
         } else if (tempClassification === 'Created Blueprint') {
           handleCustomTextChange(tempCustomText);
         } else {
-          setBlueprint(null);
+          //setBlueprint(null);
         }
         break;
 
@@ -535,7 +560,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
    */
   const handleBlueprintSelection = (blueprint) => {
     setSelectedBlueprint(blueprint);
-    setBlueprint(blueprint);
+    //setBlueprint(blueprint);
     
   };
 
@@ -545,7 +570,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
    */
   const handleCustomTextChange = (text) => {
     setCustomClassificationText(text);
-    setBlueprint(text)
+    //setBlueprint(text)
   };
 
   /**
@@ -774,13 +799,13 @@ export default MultiStepForm;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Dec 03 2024 15:21:53 GMT+0200 (Itä-Euroopan normaaliaika)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
 </footer>
 
 <script> prettyPrint(); </script>
