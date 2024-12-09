@@ -1,4 +1,32 @@
-import React, { useState, useEffect } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ProjectSelection.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ProjectSelection.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
 import './ProjectSelection.css';
 
 /**
@@ -118,53 +146,76 @@ const ProjectSelection = ({
   };
 
   return (
-    <div className="project-selection">
-      <p>Select an existing project or create a new one:</p>
+    &lt;div className="project-selection">
+      &lt;p>Select an existing project or create a new one:&lt;/p>
 
-      <div className="project-button-container">
-        <button
+      &lt;div className="project-button-container">
+        &lt;button
           className={`selection-button ${localSelectedOption === 'Existing Project' ? 'selected' : ''}`}
           onClick={() => handleOptionSelect('Existing Project')}
         >
           Existing Project
-        </button>
-        <button
+        &lt;/button>
+        &lt;button
           className={`selection-button ${localSelectedOption === 'New Project' ? 'selected' : ''}`}
           onClick={() => handleOptionSelect('New Project')}
         >
           Create a New Project
-        </button>
-      </div>
+        &lt;/button>
+      &lt;/div>
 
-      {localSelectedOption === 'Existing Project' && (
-        <div className="dropdown-container">
-          <select
+      {localSelectedOption === 'Existing Project' &amp;&amp; (
+        &lt;div className="dropdown-container">
+          &lt;select
             value={selectedExistingProject}
             onChange={(e) => handleExistingProjectSelect(e.target.value)}
           >
-            <option value="">-- Choose a Project --</option>
+            &lt;option value="">-- Choose a Project --&lt;/option>
             {existingProjects.map((project, index) => (
-              <option key={index} value={project}>
+              &lt;option key={index} value={project}>
                 {project}
-              </option>
+              &lt;/option>
             ))}
-          </select>
-        </div>
+          &lt;/select>
+        &lt;/div>
       )}
 
-      {localSelectedOption === 'New Project' && (
-        <div className="new-project-container">
-          <p>Enter a new project name or use the default name:</p>
-          <input
+      {localSelectedOption === 'New Project' &amp;&amp; (
+        &lt;div className="new-project-container">
+          &lt;p>Enter a new project name or use the default name:&lt;/p>
+          &lt;input
             type="text"
             placeholder="Enter a New Project Name"
             value={localNewProjectName}
             onChange={handleNewProjectNameChange}
           />
-        </div>
+        &lt;/div>
       )}
-    </div>
+    &lt;/div>
   );
 };
 
 export default ProjectSelection;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

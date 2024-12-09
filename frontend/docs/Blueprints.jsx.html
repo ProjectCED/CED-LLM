@@ -1,4 +1,32 @@
-import React, { useState, useEffect } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Blueprints.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Blueprints.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
 import AddBlueprint from './AddBlueprint'; 
 import './Blueprints.css';
 import { getBlueprints, saveBlueprint, deleteBlueprint } from './utils';
@@ -18,9 +46,9 @@ const Blueprints = () => {
   * - `name` {string}: Name of the blueprint.
   * - `description` {string}: Description of the blueprint.
   * - `question` {string}: Current question being added to the blueprint.
-  * - `addedQuestions` {Array<string>}: List of questions already added to the blueprint.
+  * - `addedQuestions` {Array&lt;string>}: List of questions already added to the blueprint.
   * - `editing` {boolean}: Indicates whether the blueprint is in edit mode.
-  * @type {Array<{id: number | null, name: string, description: string, question: string, addedQuestions: Array<string>, editing: boolean}>}
+  * @type {Array&lt;{id: number | null, name: string, description: string, question: string, addedQuestions: Array&lt;string>, editing: boolean}>}
   */
   const [blueprints, setBlueprints] = useState([]);
 
@@ -59,7 +87,7 @@ const Blueprints = () => {
    * @param {Object} blueprint - The blueprint object containing name, description, and questions.
    * @param {string} blueprint.name - The name of the blueprint.
    * @param {string} blueprint.description - The description of the blueprint.
-   * @param {Array<string>} blueprint.questions - The questions associated with the blueprint.
+   * @param {Array&lt;string>} blueprint.questions - The questions associated with the blueprint.
    */
   const handleAddNewBlueprint = async (blueprint) => {
     const newBlueprint = {
@@ -140,7 +168,7 @@ const Blueprints = () => {
    */
   const handleAddQuestionClick = (id) => {
     setBlueprints(blueprints.map(bp =>
-      bp.id === id && bp.question ? { ...bp, addedQuestions: [...bp.addedQuestions, bp.question], question: '' } : bp
+      bp.id === id &amp;&amp; bp.question ? { ...bp, addedQuestions: [...bp.addedQuestions, bp.question], question: '' } : bp
     ));
   };
 
@@ -159,87 +187,109 @@ const Blueprints = () => {
   };
 
   return (
-    <div className="blueprints-container">
-      {showSuccessMessage && (
-        <div className="success-message">
+    &lt;div className="blueprints-container">
+      {showSuccessMessage &amp;&amp; (
+        &lt;div className="success-message">
           Blueprint saved successfully!
-        </div>
+        &lt;/div>
       )}
       
-      <button className="add-button" onClick={() => setIsAdding(true)}>Add new blueprint</button>
+      &lt;button className="add-button" onClick={() => setIsAdding(true)}>Add new blueprint&lt;/button>
       
-      {isAdding && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <AddBlueprint 
+      {isAdding &amp;&amp; (
+        &lt;div className="modal-overlay">
+          &lt;div className="modal-content">
+            &lt;AddBlueprint 
               onAdd={handleAddNewBlueprint}
               onCancel={() => setIsAdding(false)}
             />
-          </div>
-        </div>
+          &lt;/div>
+        &lt;/div>
       )}
       
       {blueprints.map(blueprint => (
-        <div key={blueprint.id} className="blueprint-card">
-          <div className="blueprint-header">
-            <span>{blueprint.name}</span>
-            <button className="edit-button" onClick={() => handleEditClick(blueprint.id)}>
+        &lt;div key={blueprint.id} className="blueprint-card">
+          &lt;div className="blueprint-header">
+            &lt;span>{blueprint.name}&lt;/span>
+            &lt;button className="edit-button" onClick={() => handleEditClick(blueprint.id)}>
               {blueprint.editing ? 'Close' : 'Edit'}
-            </button>
-          </div>
-          {blueprint.editing && (
-            <div className="blueprint-body">
+            &lt;/button>
+          &lt;/div>
+          {blueprint.editing &amp;&amp; (
+            &lt;div className="blueprint-body">
               {/* Display blueprint description */}
-              <p>{blueprint.description}</p>
-              <p>Type a question for the AI</p>
+              &lt;p>{blueprint.description}&lt;/p>
+              &lt;p>Type a question for the AI&lt;/p>
               
-              <div className="blueprint-input-container">
-                <input
+              &lt;div className="blueprint-input-container">
+                &lt;input
                   type="text"
                   placeholder="Enter question for the AI"
                   value={blueprint.question}
                   onChange={(e) => handleInputChange(blueprint.id, e.target.value)}
                 />
-                <button 
+                &lt;button 
                   className="add-question-button" 
                   onClick={() => handleAddQuestionClick(blueprint.id)}
                 >
                   +
-                </button>
-              </div>
+                &lt;/button>
+              &lt;/div>
 
-              <div className="question-container">
+              &lt;div className="question-container">
                 {blueprint.addedQuestions.length > 0 ? (
-                  <ul>
+                  &lt;ul>
                     {blueprint.addedQuestions.map((q, index) => (
-                      <li key={index} className="question-item">
-                        <span>{q}</span>
-                        <span 
+                      &lt;li key={index} className="question-item">
+                        &lt;span>{q}&lt;/span>
+                        &lt;span 
                           className="remove-button" 
                           onClick={() => handleRemoveQuestionClick(blueprint.id, index)}
                         >
-                          &#10005;  
-                        </span>
-                      </li>
+                          &amp;#10005;  
+                        &lt;/span>
+                      &lt;/li>
                     ))}
-                  </ul>
+                  &lt;/ul>
                 ) : null}
-              </div>
+              &lt;/div>
 
-              <div className="blueprint-actions">
-                <button className="delete-button" onClick={() => handleDeleteClick(blueprint.id)}>
+              &lt;div className="blueprint-actions">
+                &lt;button className="delete-button" onClick={() => handleDeleteClick(blueprint.id)}>
                   Delete
-                </button>
-                <button className="save-button" onClick={() => handleSaveClick(blueprint.id)}>
+                &lt;/button>
+                &lt;button className="save-button" onClick={() => handleSaveClick(blueprint.id)}>
                   Save
-                </button>
-              </div>
-            </div>
+                &lt;/button>
+              &lt;/div>
+            &lt;/div>
           )}
-        </div>
+        &lt;/div>
       ))}
-    </div>
+    &lt;/div>
   );
 };
 
-export default Blueprints;
+export default Blueprints;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

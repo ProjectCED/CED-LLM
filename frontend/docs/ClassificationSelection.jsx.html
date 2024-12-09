@@ -1,4 +1,32 @@
-import React, { useState, useEffect } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ClassificationSelection.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ClassificationSelection.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
 import './ClassificationSelection.css';
 import BlueprintDropdown from './BlueprintDropdown';
 import { getBlueprints } from './utils';
@@ -32,7 +60,7 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
 
   /**
    * Local state to keep track of the available blueprints.
-   * @type {Array<Object>}
+   * @type {Array&lt;Object>}
    */
   const [blueprints, setBlueprints] = useState([]);
 
@@ -89,7 +117,7 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   /**
    * Handles changes in the custom text input field for creating a new blueprint.
    * 
-   * @param {React.ChangeEvent<HTMLInputElement>} event - The change event triggered by the input field.
+   * @param {React.ChangeEvent&lt;HTMLInputElement>} event - The change event triggered by the input field.
    */
   const handleCustomTextChange = (event) => {
     const text = event.target.value;
@@ -98,37 +126,37 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
   };
 
   return (
-    <div className="classification-selection">
-      <h2>
+    &lt;div className="classification-selection">
+      &lt;h2>
         Next, choose how you would like your dataset to be classified. If you're analyzing
         this type of data for the first time, it's recommended to try the Automatic blueprint. 
-      </h2>
-      <h2>
+      &lt;/h2>
+      &lt;h2>
         Alternatively, you can now use previously saved blueprints or define directly how you want the data to be classified.
-      </h2>
-      <div className="button-container">
-        <button
+      &lt;/h2>
+      &lt;div className="button-container">
+        &lt;button
           className={`selection-button ${localSelectedClassification === 'Automatic Blueprint' ? 'selected' : ''}`}
           onClick={() => handleButtonClick('Automatic Blueprint')}
         >
           Automatic Blueprint
-        </button>
-        <button
+        &lt;/button>
+        &lt;button
           className={`selection-button ${localSelectedClassification === 'Saved Blueprint' ? 'selected' : ''}`}
           onClick={() => handleButtonClick('Saved Blueprint')}
         >
           Saved Blueprint
-        </button>
-        <button
+        &lt;/button>
+        &lt;button
           className={`selection-button ${localSelectedClassification === 'Created Blueprint' ? 'selected' : ''}`}
           onClick={() => handleButtonClick('Created Blueprint')}
         >
           Create Blueprint
-        </button>
-      </div>
+        &lt;/button>
+      &lt;/div>
 
-      {localSelectedClassification === 'Saved Blueprint' && (
-        <BlueprintDropdown
+      {localSelectedClassification === 'Saved Blueprint' &amp;&amp; (
+        &lt;BlueprintDropdown
           key={localSelectedClassification} 
           blueprints={blueprints}
           selectedBlueprint={selectedBlueprint}
@@ -136,18 +164,41 @@ const ClassificationSelection = ({ selectedClassification, onSelectClassificatio
         />
       )}
 
-      {localSelectedClassification === 'Created Blueprint' && (
-        <div className="custom-text-input">
-          <input
+      {localSelectedClassification === 'Created Blueprint' &amp;&amp; (
+        &lt;div className="custom-text-input">
+          &lt;input
             type="text"
             placeholder="Enter custom blueprint"
             value={customText}
             onChange={handleCustomTextChange}
           />
-        </div>
+        &lt;/div>
       )}
-    </div>
+    &lt;/div>
   );
 };
 
 export default ClassificationSelection;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

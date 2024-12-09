@@ -1,4 +1,32 @@
-import React, { useState } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: MultiStepForm.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: MultiStepForm.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
 import FileDownload from './FileDownload'; // Step 1 component
 import ClassificationSelection from './ClassificationSelection'; // Step 2 component
 import AISelection from './AISelection'; // Step 3 component
@@ -16,9 +44,9 @@ import { uploadFile, analyzeUploadedFile, analyzeText, saveProject, saveResult }
  */
 const EditButton = ({ onEditClick, step }) => {
   return (
-    <button className="edit-button" onClick={() => onEditClick(step)}>
+    &lt;button className="edit-button" onClick={() => onEditClick(step)}>
       Edit
-    </button>
+    &lt;/button>
   );
 };
 
@@ -31,9 +59,9 @@ const EditButton = ({ onEditClick, step }) => {
  */
 const SaveButton = ({ onSaveClick }) => {
   return (
-    <button className="multiform-save-button" onClick={onSaveClick}>
+    &lt;button className="multiform-save-button" onClick={onSaveClick}>
       Save
-    </button>
+    &lt;/button>
   );
 };
 
@@ -46,9 +74,9 @@ const SaveButton = ({ onSaveClick }) => {
  */
 const NextButton = ({ onNextClick }) => {
   return (
-    <button className="next-button" onClick={onNextClick}>
+    &lt;button className="next-button" onClick={onNextClick}>
       Next
-    </button>
+    &lt;/button>
   );
 };
 
@@ -89,7 +117,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Persistent states for current step changes
    /**
-   * @type {Array<File>}
+   * @type {Array&lt;File>}
    * @description List of selected files for upload.
    */
    const [selectedFiles, setSelectedFiles] = useState([]);
@@ -145,7 +173,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Temporary states for current step changes
   /**
-   * @type {Array<File>}
+   * @type {Array&lt;File>}
    * @description Temporarily stores files during the current step.
    */
   const [tempFiles, setTempFiles] = useState([]);
@@ -432,7 +460,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   const validateAndSaveStep = (step) => {
     switch (step) {
       case 1:
-        if (tempFiles.length === 0 && tempText.trim() === '') {
+        if (tempFiles.length === 0 &amp;&amp; tempText.trim() === '') {
           alert('Please upload one file or enter some text.');
           return false;
         }
@@ -445,11 +473,11 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
           alert('Please select a classification option.');
           return false;
         }
-        if (tempClassification === 'Saved Blueprint' && !tempBlueprint) {
+        if (tempClassification === 'Saved Blueprint' &amp;&amp; !tempBlueprint) {
           alert('Please select a saved blueprint.');
           return false;
         }
-        if (tempClassification === 'Created Blueprint' && tempCustomText.trim() === '') {
+        if (tempClassification === 'Created Blueprint' &amp;&amp; tempCustomText.trim() === '') {
           alert('Please enter a blueprint for "Created Blueprint".');
           return false;
         }
@@ -476,15 +504,15 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
           alert('Please choose a project option.');
           return false;
         }
-        if (tempProjectOption === 'New Project' && !tempNewProjectName.trim()) {
+        if (tempProjectOption === 'New Project' &amp;&amp; !tempNewProjectName.trim()) {
           alert('Please enter a new project name.');
           return false;
         }
-        if (tempProjectOption === 'Existing Project' && !tempExistingProject) {
+        if (tempProjectOption === 'Existing Project' &amp;&amp; !tempExistingProject) {
           alert('Please select an existing project to continue.');
           return false;
         }
-        if (tempProjectOption === 'Existing Project' && tempExistingProject) {
+        if (tempProjectOption === 'Existing Project' &amp;&amp; tempExistingProject) {
           handleExistingProjectSelection(tempExistingProject);
         }
         handleProjectOptionSelection(tempProjectOption);
@@ -595,66 +623,66 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   };
 
   return (
-    <div className="multi-step-form">
-      <p className="classification-heading">
+    &lt;div className="multi-step-form">
+      &lt;p className="classification-heading">
         CED-LLM offers a streamlined process for classifying text data using AI technology. The interface provides four key steps to guide you through the classification process.
-      </p>
+      &lt;/p>
       {/* Step 1: File upload or copy-paste text */}
-      <div className="step">
-        <div className="step-header">
-          <h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 1 ? 'active' : ''}`}>
             1. File Upload or Copy Paste Text
-          </h2>
-          {allStepsCompleted && currentStep !== 1 && (
-            <EditButton onEditClick={handleEditClick} step={1} />
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 1 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={1} />
           )}
-        </div>
-        {currentStep === 1 && (
-          <div className="step-content">
-            <FileDownload 
+        &lt;/div>
+        {currentStep === 1 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;FileDownload 
               onFileUpload={handleTempFileUpload}
               onTextChange={handleTempTextChange}
               isEditing={isEditing} 
             />
             {isEditing ? (
-              <SaveButton onSaveClick={handleSaveClick} />
+              &lt;SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <NextButton onNextClick={nextStep} />
+              &lt;NextButton onNextClick={nextStep} />
             )}
-          </div>
+          &lt;/div>
         )}
-        {stepCompleted >= 1 && selectedFiles.length > 0 && (
-          <div className="step-summary">
-            <p>Selected Files:</p>
-            <div className="file-list">
+        {stepCompleted >= 1 &amp;&amp; selectedFiles.length > 0 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>Selected Files:&lt;/p>
+            &lt;div className="file-list">
               {selectedFiles.map((file, index) => (
-                <div key={index} className="file-item">
+                &lt;div key={index} className="file-item">
                   {file.name}
-                </div>
+                &lt;/div>
               ))}
-            </div>
-          </div>
+            &lt;/div>
+          &lt;/div>
         )}
-        {stepCompleted >= 1 && copiedText.trim() !== '' && (
-          <div className="step-summary">
-            <p>Text has been copied</p>
-          </div>
+        {stepCompleted >= 1 &amp;&amp; copiedText.trim() !== '' &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>Text has been copied&lt;/p>
+          &lt;/div>
         )}
-      </div>
+      &lt;/div>
 
       {/* Step 2: Blueprint Selection */}
-      <div className="step">
-        <div className="step-header">
-          <h2 className={`step-title ${currentStep === 2 ? 'active' : ''}`}>
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 2 ? 'active' : ''}`}>
             2. Blueprint Selection
-          </h2>
-          {allStepsCompleted && currentStep !== 2 && (
-            <EditButton onEditClick={handleEditClick} step={2} />
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 2 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={2} />
           )}
-        </div>
-        {currentStep === 2 && (
-          <div className="step-content">
-            <ClassificationSelection
+        &lt;/div>
+        {currentStep === 2 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;ClassificationSelection
               selectedClassification={tempClassification}
               onSelectClassification={setTempClassification} 
               onSelectBlueprint={setTempBlueprint}
@@ -662,61 +690,61 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
               onCustomTextChange={setTempCustomText}
             />
             {isEditing ? (
-              <SaveButton onSaveClick={handleSaveClick} />
+              &lt;SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <NextButton onNextClick={nextStep} />
+              &lt;NextButton onNextClick={nextStep} />
             )}
-          </div>
+          &lt;/div>
         )}
-        {stepCompleted >= 2 && (
-          <div className="step-summary">
-            <p>{selectedClassification}</p>
-            {selectedBlueprint && <p>{selectedBlueprint.name}</p>}
-            {customClassificationText && <p>{customClassificationText}</p>}
-          </div>
+        {stepCompleted >= 2 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>{selectedClassification}&lt;/p>
+            {selectedBlueprint &amp;&amp; &lt;p>{selectedBlueprint.name}&lt;/p>}
+            {customClassificationText &amp;&amp; &lt;p>{customClassificationText}&lt;/p>}
+          &lt;/div>
         )}
-      </div>
+      &lt;/div>
 
       {/* Step 3: AI selection */}
-      <div className="step">
-        <div className="step-header">
-          <h2 className={`step-title ${currentStep === 3 ? 'active' : ''}`}>
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 3 ? 'active' : ''}`}>
             3. AI Selection
-          </h2>
-          {allStepsCompleted && currentStep !== 3 && (
-            <EditButton onEditClick={handleEditClick} step={3} />
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 3 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={3} />
           )}
-        </div>
-        {currentStep === 3 && (
-          <div className="step-content">
-            <AISelection selectedAI={tempAI} onSelectAI={setTempAI} isLocked={isEditing} />
+        &lt;/div>
+        {currentStep === 3 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;AISelection selectedAI={tempAI} onSelectAI={setTempAI} isLocked={isEditing} />
             {isEditing ? (
-              <SaveButton onSaveClick={handleSaveClick} />
+              &lt;SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <NextButton onNextClick={nextStep} />
+              &lt;NextButton onNextClick={nextStep} />
             )}
-          </div>
+          &lt;/div>
         )}
-        {stepCompleted >= 3 && (
-          <div className="step-summary">
-            <p>{selectedAI}</p>
-          </div>
+        {stepCompleted >= 3 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>{selectedAI}&lt;/p>
+          &lt;/div>
         )}
-      </div>
+      &lt;/div>
 
       {/* Step 4: Project Selection */}
-      <div className="step">
-        <div className="step-header">
-          <h2 className={`step-title ${currentStep === 4 ? 'active' : ''}`}>
+      &lt;div className="step">
+        &lt;div className="step-header">
+          &lt;h2 className={`step-title ${currentStep === 4 ? 'active' : ''}`}>
             4. Choose a Project for Displaying Results
-          </h2>
-          {allStepsCompleted && currentStep !== 4 && (
-            <EditButton onEditClick={handleEditClick} step={4} />
+          &lt;/h2>
+          {allStepsCompleted &amp;&amp; currentStep !== 4 &amp;&amp; (
+            &lt;EditButton onEditClick={handleEditClick} step={4} />
           )}
-        </div>
-        {currentStep === 4 && (
-          <div className="step-content">
-            <ProjectSelection
+        &lt;/div>
+        {currentStep === 4 &amp;&amp; (
+          &lt;div className="step-content">
+            &lt;ProjectSelection
               existingProjects={projects?.map((project) => project.name) || []}
               selectedProjectOption={tempProjectOption}
               onSelectProjectOption={setTempProjectOption}
@@ -728,37 +756,59 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
               onNewProjectNameChange={setTempNewProjectName}
             />
             {isEditing ? (
-              <SaveButton onSaveClick={handleSaveClick} />
+              &lt;SaveButton onSaveClick={handleSaveClick} />
             ) : (
-              <NextButton onNextClick={nextStep} />
+              &lt;NextButton onNextClick={nextStep} />
             )}
-          </div>
+          &lt;/div>
         )}
-        {stepCompleted >= 4 && (
-          <div className="step-summary">
-            <p>{selectedProjectOption}</p>
-            {selectedProjectOption === 'Existing Project' && selectedExistingProject && (
-              <p>{selectedExistingProject}</p>
+        {stepCompleted >= 4 &amp;&amp; (
+          &lt;div className="step-summary">
+            &lt;p>{selectedProjectOption}&lt;/p>
+            {selectedProjectOption === 'Existing Project' &amp;&amp; selectedExistingProject &amp;&amp; (
+              &lt;p>{selectedExistingProject}&lt;/p>
             )}
-            {selectedProjectOption === 'New Project' && newProjectName && (
-              <p>The given name: {newProjectName}</p>
+            {selectedProjectOption === 'New Project' &amp;&amp; newProjectName &amp;&amp; (
+              &lt;p>The given name: {newProjectName}&lt;/p>
             )}
-          </div>
+          &lt;/div>
         )}
-      </div>
+      &lt;/div>
 
       {/* Show Analyze button disabled until all steps are completed */}
-      <div className="analyze-section">
-        <button 
+      &lt;div className="analyze-section">
+        &lt;button 
           className="analyze-button" 
           onClick={handleAnalyze} 
           disabled={!allStepsCompleted}
         >
           Analyze
-        </button>
-      </div>
-    </div>
+        &lt;/button>
+      &lt;/div>
+    &lt;/div>
   );
 };
 
-export default MultiStepForm;
+export default MultiStepForm;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

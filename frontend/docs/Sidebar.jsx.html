@@ -1,4 +1,32 @@
-import React, { useState } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Sidebar.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Sidebar.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
@@ -13,7 +41,7 @@ import { saveProject, deleteProject, deleteResult } from './utils';
  * @component
  * @param {Object} props - The props passed to the component.
  * @param {Function} props.setOverlayActive - Function to set the state of the overlay (true/false).
- * @param {Array<Object>} props.projects - List of projects, where each project contains a name, open state, and results array.
+ * @param {Array&lt;Object>} props.projects - List of projects, where each project contains a name, open state, and results array.
  * @param {Function} props.setProjects - Function to update the list of projects.
  * @param {boolean} props.expanded - Boolean indicating whether the sidebar is expanded or collapsed.
  * @param {Function} props.setExpanded - Function to toggle the expanded state of the sidebar.
@@ -234,28 +262,28 @@ function Sidebar({
   };
 
   return (
-    <div className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}>
-      <button className="sidebar-toggle" onClick={toggleSidebar}>
-        {expanded ? <TbLayoutSidebarLeftCollapse size={24} /> : <TbLayoutSidebarLeftExpand size={24} />}
-      </button>
+    &lt;div className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}>
+      &lt;button className="sidebar-toggle" onClick={toggleSidebar}>
+        {expanded ? &lt;TbLayoutSidebarLeftCollapse size={24} /> : &lt;TbLayoutSidebarLeftExpand size={24} />}
+      &lt;/button>
 
-      {expanded && (
-        <>
-          <h2 className="projects-title">Projects</h2>
-          <div className="project-list">
+      {expanded &amp;&amp; (
+        &lt;>
+          &lt;h2 className="projects-title">Projects&lt;/h2>
+          &lt;div className="project-list">
             {projects.map((project, projectIndex) => (
-              <div
+              &lt;div
                 key={projectIndex}
                 className="project-item"
                 onMouseEnter={() => setHoveredProject(projectIndex)}
                 onMouseLeave={() => setHoveredProject(null)}
               >
-                <div className="project-header" onClick={() => toggleProject(projectIndex)}>
-                  <span className="project-name">
+                &lt;div className="project-header" onClick={() => toggleProject(projectIndex)}>
+                  &lt;span className="project-name">
                     {project.open ? '▴' : '▾'} {project.name}
-                  </span>
-                  {hoveredProject === projectIndex && (
-                    <FaTrash
+                  &lt;/span>
+                  {hoveredProject === projectIndex &amp;&amp; (
+                    &lt;FaTrash
                       className="delete-icon"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -263,22 +291,22 @@ function Sidebar({
                       }}
                     />
                   )}
-                </div>
-                {project.open && (
-                  <div className="project-results">
+                &lt;/div>
+                {project.open &amp;&amp; (
+                  &lt;div className="project-results">
                     {project.results.map((result, resultIndex) => (
-                      <div
+                      &lt;div
                         key={resultIndex}
                         className={`project-result ${
-                          selectedResult?.projectIndex === projectIndex && selectedResult?.result?.id === result?.id ? 'selected' : ''
+                          selectedResult?.projectIndex === projectIndex &amp;&amp; selectedResult?.result?.id === result?.id ? 'selected' : ''
                         }`}
                         onMouseEnter={() => setHoveredResult({ projectIndex, resultIndex })}
                         onMouseLeave={() => setHoveredResult({ projectIndex: null, resultIndex: null })}
                         onClick={() => openResultDetails(projectIndex, result)}
                       >
                         {result?.name}
-                        {hoveredResult.projectIndex === projectIndex && hoveredResult.resultIndex === resultIndex && (
-                          <FaTrash
+                        {hoveredResult.projectIndex === projectIndex &amp;&amp; hoveredResult.resultIndex === resultIndex &amp;&amp; (
+                          &lt;FaTrash
                             className="delete-icon"
                             onClick={(e) => {
                               e.stopPropagation();
@@ -286,55 +314,77 @@ function Sidebar({
                             }}
                           />
                         )}
-                      </div>
+                      &lt;/div>
                     ))}
-                  </div>
+                  &lt;/div>
                 )}
-              </div>
+              &lt;/div>
             ))}
-          </div>
-          <div className="input-container">
-            <p className="add-project-title">Add new project</p>
-            <input
+          &lt;/div>
+          &lt;div className="input-container">
+            &lt;p className="add-project-title">Add new project&lt;/p>
+            &lt;input
               type="text"
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
               placeholder="Enter project name"
               className="project-name-input"
             />
-            <button onClick={addProject} className="create-project-button">Save</button>
-          </div>
+            &lt;button onClick={addProject} className="create-project-button">Save&lt;/button>
+          &lt;/div>
 
-          {selectedResult && <div className="overlay" onClick={closeResultDetails}></div>}
-          {selectedResult && (
-            <div className={`result-details ${selectedResult ? 'show' : ''}`}>
-              <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
-              <h2>Details for result: {selectedResult.result.name}</h2>
+          {selectedResult &amp;&amp; &lt;div className="overlay" onClick={closeResultDetails}>&lt;/div>}
+          {selectedResult &amp;&amp; (
+            &lt;div className={`result-details ${selectedResult ? 'show' : ''}`}>
+              &lt;AiOutlineClose className="close-icon" onClick={closeResultDetails} />
+              &lt;h2>Details for result: {selectedResult.result.name}&lt;/h2>
 
-              <div className="result-details-content">
+              &lt;div className="result-details-content">
 
-              <div className="result-data">
-                <p>Project: {projects[selectedResult?.projectIndex]?.name}</p>
-                <p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic Blueprint'}</p>
-              </div>
+              &lt;div className="result-data">
+                &lt;p>Project: {projects[selectedResult?.projectIndex]?.name}&lt;/p>
+                &lt;p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic Blueprint'}&lt;/p>
+              &lt;/div>
                 
-                <p>
+                &lt;p>
                 {selectedResult.result.result}
-                </p>
+                &lt;/p>
 
-              </div>
+              &lt;/div>
 
               {/* Download button */}
-              <button className="download-pdf-button" onClick={downloadPDF}>
+              &lt;button className="download-pdf-button" onClick={downloadPDF}>
                 Download to PDF
-              </button>
+              &lt;/button>
 
-            </div>
+            &lt;/div>
           )}
-        </>
+        &lt;/>
       )}
-    </div>
+    &lt;/div>
   );
 }
 
-export default Sidebar;
+export default Sidebar;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AISelection">AISelection</a></li><li><a href="global.html#AddBlueprint">AddBlueprint</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#BlueprintDropdown">BlueprintDropdown</a></li><li><a href="global.html#Blueprints">Blueprints</a></li><li><a href="global.html#ClassificationSelection">ClassificationSelection</a></li><li><a href="global.html#EditButton">EditButton</a></li><li><a href="global.html#FileDownload">FileDownload</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#MultiStepForm">MultiStepForm</a></li><li><a href="global.html#NextButton">NextButton</a></li><li><a href="global.html#ProjectSelection">ProjectSelection</a></li><li><a href="global.html#SaveButton">SaveButton</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#StartPage">StartPage</a></li><li><a href="global.html#analyzeText">analyzeText</a></li><li><a href="global.html#analyzeUploadedFile">analyzeUploadedFile</a></li><li><a href="global.html#deleteBlueprint">deleteBlueprint</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteResult">deleteResult</a></li><li><a href="global.html#getBlueprints">getBlueprints</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#saveBlueprint">saveBlueprint</a></li><li><a href="global.html#saveProject">saveProject</a></li><li><a href="global.html#saveResult">saveResult</a></li><li><a href="global.html#uploadFile">uploadFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Dec 09 2024 13:00:17 GMT+0200 (Itä-Euroopan normaaliaika)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

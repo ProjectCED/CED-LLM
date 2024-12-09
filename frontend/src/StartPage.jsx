@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
 import './StartPage.css';
 
-// Define a functional component named StartPage
+/**
+ * StartPage is a landing page component that introduces the application 
+ * and provides a "Get Started" button for navigation to the main functionality.
+ *
+ * @component
+ * @returns {JSX.Element} The StartPage component displaying a welcome message and navigation button.
+ */
 const StartPage = () => {
   return (
     <>
