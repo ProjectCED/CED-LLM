@@ -4,6 +4,7 @@ import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import jsPDF from "jspdf"; 
 import './Sidebar.css';
+import { saveProject, deleteProject, deleteResult } from './utils';
 
 /**
  * Sidebar component provides a collapsible interface for managing projects and their associated results.
@@ -29,8 +30,7 @@ function Sidebar({
   expanded, 
   setExpanded, 
   selectedResult, 
-  setSelectedResult,
-  blueprint  
+  setSelectedResult
   }) {
 
   /**
@@ -83,10 +83,14 @@ function Sidebar({
   const addProject = () => {
     if (newProjectName.trim()) {
       const newProject = {
+        id: null,
         name: newProjectName,
         open: false,
         results: []
       };
+      const id = saveProject(newProjectName);
+      newProject.id = id;
+      
       setProjects([...projects, newProject]);
       setNewProjectName('');
     } else {
@@ -99,13 +103,19 @@ function Sidebar({
    *
    * @param {number} index - Index of the project to delete.
    */
-  const deleteProject = (index) => {
+  const deleteProject = async (index) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete the project and lose all its results?"
     );
-    if (confirmDelete) {
-      setProjects(prevProjects => prevProjects.filter((_, i) => i !== index));
-    }
+
+    if (!confirmDelete) return;
+
+    const projectId = projects[index].id;
+    const success = await deleteProject(projectId)
+
+    if (!success) return;
+
+    setProjects(prevProjects => prevProjects.filter((_, i) => i !== index));
   };
 
   /**
@@ -114,19 +124,25 @@ function Sidebar({
    * @param {number} projectIndex - Index of the project containing the result.
    * @param {number} resultIndex - Index of the result to delete.
    */
-  const deleteResult = (projectIndex, resultIndex) => {
+  const deleteResult = async (projectIndex, resultIndex) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this result?"
     );
-    if (confirmDelete) {
-      setProjects(prevProjects =>
-        prevProjects.map((project, i) =>
-          i === projectIndex
-            ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
-            : project
-        )
-      );
-    }
+    
+    if (!confirmDelete) return
+
+    const resultId = projects[projectIndex].results[resultIndex].id;
+    const success = await deleteResult(resultId);
+
+    if (!success) return;
+
+    setProjects(prevProjects =>
+      prevProjects.map((project, i) =>
+        i === projectIndex
+          ? { ...project, results: project.results.filter((_, j) => j !== resultIndex) }
+          : project
+      )
+    );
   };
 
   /**
@@ -155,25 +171,63 @@ function Sidebar({
   const downloadPDF = () => {
     if (!selectedResult) return;
 
+    // Text content
     const doc = new jsPDF();
-    const projectName = projects[selectedResult.projectIndex]?.name;
-    const resultName = selectedResult.result;
+    const projectName = projects[selectedResult?.projectIndex]?.name;
+    const resultName = selectedResult?.result?.name;
+    const resultText = selectedResult?.result?.result;
+    const filename = selectedResult?.result?.filename;
+    const blueprintName = selectedResult?.result?.blueprint?.name;
+
+    // PDF styling (margins, width, height)
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    
+    const maxWidth = pageWidth - 2 * margin;
+    const lineHeight = 10;
+    
+    // Tracks the current line's height, start with a bit of an offset
+    let y = lineHeight * 2;
 
     // Add content to the PDF
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
-    doc.text("Analyze Result", 20, 20);
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Project: ${projectName}`, 20, 40);
-    doc.text(`Result: ${resultName}`, 20, 50);
-    doc.text("Details for the result:", 20, 70);
-    doc.text(`Blueprint: ${blueprint || "Automatic blueprint"}`, 20, 60);
+    doc.text("Analysis Result", margin, y);
+    y += lineHeight * 2;
 
-    // Add example content
-    const exampleText = `
-      Result details here. This could include any relevant data about the result.`;
-    doc.text(exampleText, 20, 90, { maxWidth: 170 });
+    doc.setFontSize(12);
+
+    doc.text(`Project: ${projectName}`, margin, y);
+    y += lineHeight;
+
+    doc.text(`Result: ${resultName}`, margin, y);
+    y += lineHeight;
+
+    // Add filename if it exists
+    if (filename) {
+      doc.text(`Filename: ${filename}`, margin, y);
+      y += lineHeight;
+    }
+
+    doc.text(`Blueprint: ${blueprintName || "Automatic Blueprint"}`, margin, y);
+    y += lineHeight * 2;
+
+    doc.setFont("helvetica", "normal");
+
+    // Split the resultText into lines that fit the page
+    const lines = doc.splitTextToSize(resultText, maxWidth);
+
+    // Add lines to the PDF one at a time
+    lines.forEach((line) => {
+      // Signifies going over the page, so add a page and reset y (tracks height on current page)
+      if (y + lineHeight > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y);
+      y += lineHeight;
+    });
 
     // Save the PDF
     doc.save(`${resultName}.pdf`);
@@ -205,7 +259,7 @@ function Sidebar({
                       className="delete-icon"
                       onClick={(e) => {
                         e.stopPropagation();
-                        deleteProject(projectIndex);
+                        removeProject(projectIndex);
                       }}
                     />
                   )}
@@ -216,19 +270,19 @@ function Sidebar({
                       <div
                         key={resultIndex}
                         className={`project-result ${
-                          selectedResult?.projectIndex === projectIndex && selectedResult?.result === result ? 'selected' : ''
+                          selectedResult?.projectIndex === projectIndex && selectedResult?.result?.id === result?.id ? 'selected' : ''
                         }`}
                         onMouseEnter={() => setHoveredResult({ projectIndex, resultIndex })}
                         onMouseLeave={() => setHoveredResult({ projectIndex: null, resultIndex: null })}
                         onClick={() => openResultDetails(projectIndex, result)}
                       >
-                        {result}
+                        {result?.name}
                         {hoveredResult.projectIndex === projectIndex && hoveredResult.resultIndex === resultIndex && (
                           <FaTrash
                             className="delete-icon"
                             onClick={(e) => {
                               e.stopPropagation();
-                              deleteResult(projectIndex, resultIndex);
+                              removeResult(projectIndex, resultIndex);
                             }}
                           />
                         )}
@@ -255,33 +309,17 @@ function Sidebar({
           {selectedResult && (
             <div className={`result-details ${selectedResult ? 'show' : ''}`}>
               <AiOutlineClose className="close-icon" onClick={closeResultDetails} />
-              <h2>Details for result: {selectedResult.result}</h2>
+              <h2>Details for result: {selectedResult.result.name}</h2>
 
               <div className="result-details-content">
 
               <div className="result-data">
-                <p>Project: {projects[selectedResult.projectIndex]?.name}</p>
-                <p>Blueprint: {blueprint || 'Automatic blueprint'}</p>
+                <p>Project: {projects[selectedResult?.projectIndex]?.name}</p>
+                <p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic Blueprint'}</p>
               </div>
                 
                 <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
-                </p>
-
-                <p>
-                Text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text.
+                {selectedResult.result.result}
                 </p>
 
               </div>

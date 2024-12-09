@@ -61,7 +61,7 @@ const Blueprints = () => {
    * @param {string} blueprint.description - The description of the blueprint.
    * @param {Array<string>} blueprint.questions - The questions associated with the blueprint.
    */
-  const handleAddNewBlueprint = (blueprint) => {
+  const handleAddNewBlueprint = async (blueprint) => {
     const newBlueprint = {
       id: null, // ID should be set on the database side
       name: blueprint.name,
@@ -70,7 +70,7 @@ const Blueprints = () => {
       addedQuestions: blueprint.questions, 
       editing: false,
     };
-    const id = saveBlueprint(newBlueprint);
+    const id = await saveBlueprint(newBlueprint);
     newBlueprint.id = id;
     setBlueprints([...blueprints, newBlueprint]);
     setIsAdding(false); 
@@ -93,12 +93,14 @@ const Blueprints = () => {
     ));
   };
 
-  /**
+    /**
    * Saves the changes to the blueprint by turning off the edit mode.
    * 
-   * @param {number} id - The ID of the blueprint to save.
+   * @param {string} id - The ID of the blueprint to save.
    */
-  const handleSaveClick = (id) => {
+  const handleSaveClick = async (id) => {
+    const bp = blueprints.find(bp => bp.id === id);
+    await saveBlueprint(bp);
     setBlueprints(blueprints.map(bp => 
       bp.id === id ? { ...bp, editing: false } : bp
     ));

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';  
 import StartPage from './StartPage';
@@ -7,6 +7,7 @@ import Blueprints from './Blueprints';
 import Header from './Header';
 import Sidebar from './Sidebar'; 
 import MultiStepForm from './MultiStepForm';
+import { getProjects } from './utils';
 
 /**
  * The main application component that sets up the router and manages global state.
@@ -40,19 +41,15 @@ function App() {
    * Each project includes a name, an open state, and a list of results.
    * @type {Array<{name: string, open: boolean, results: string[]}>}
    */
-  const [projects, setProjects] = useState([
-    { name: 'Customer Feedback', open: false, results: ['12062024', '27092024'] },
-    { name: 'Dog show data', open: false, results: ['28042023'] },
-    { name: 'Market Research', open: false, results: ['17052024', '18052024', '22052024'] }
-  ]);
+  const [projects, setProjects] = useState([]);
 
-   /**
-   * State to track the currently selected blueprint.
-   * @type {string}
-   */
-  const [blueprint, setBlueprint] = useState('');
 
-  console.log('Projects in App:', projects);
+
+  useEffect(() => {
+    getProjects().then((projects) => {
+      setProjects(projects);
+    });
+  }, []);
   
   return (
     <div className={`app-container ${overlayActive ? 'overlay-active' : ''}`}>
@@ -71,8 +68,6 @@ function App() {
             setExpanded={setExpanded}
             selectedResult={selectedResult}
             setSelectedResult={setSelectedResult}
-            blueprint={blueprint}
-            setBlueprint={setBlueprint}
           />
           } 
         />
@@ -105,9 +100,7 @@ function MainLayout({
   expanded, 
   setExpanded, 
   selectedResult, 
-  setSelectedResult,
-  blueprint,  
-  setBlueprint
+  setSelectedResult
 }) {
   return (
     <div className="main-layout">
@@ -121,7 +114,6 @@ function MainLayout({
           setExpanded={setExpanded} 
           selectedResult={selectedResult} 
           setSelectedResult={setSelectedResult} 
-          blueprint={blueprint}
          />
         <div className="main-content">
           <Routes>
@@ -132,7 +124,6 @@ function MainLayout({
                   setProjects={setProjects} 
                   setExpanded={setExpanded} 
                   setSelectedResult={setSelectedResult}
-                  setBlueprint={setBlueprint}
                   setOverlayActive={setOverlayActive} 
                 />
                 } 

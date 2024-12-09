@@ -68,7 +68,6 @@ const FileDownload = ({ onFileUpload, onTextChange }) => {
     if (text.trim() !== '') {
       setIsLocked(true);
     }
-    console.log("Text entered:", text);
     onTextChange(text);
   };
 
