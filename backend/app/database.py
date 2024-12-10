@@ -149,15 +149,19 @@ class Database(metaclass=DatabaseMeta):
     Enforced to be Singleton class.
     """
     def __init__(self) -> None:
-        """Start up database driver.
-        Setup (according to database design v4):
-          - labels
-          - identifier names
-          - relationship types
+        """
+        Start up database driver and setup constraints.
         """
 
         self.__driver = GraphDatabase.driver(os.getenv('DB_URL'), auth=(os.getenv('DB_USERNAME'), os.getenv('DB_PASSWORD')))
         self.__name = os.getenv('DB_NAME')
+
+        ### setup constraints
+        # special, user_name must be unique
+        self.__create_unique_constraints(NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.USER_NAME.value)
+        # node identifier should always be unique (adds index by default)
+        for node_label in NodeLabels:
+            self.__create_unique_constraints(node_label, node_label.id)
 
         self.__global_settings_type = 'Settings'
         self.__global_settings_id = 'name'
@@ -251,6 +255,36 @@ class Database(metaclass=DatabaseMeta):
             print(record)
 
         return "Whole database printed out in console"
+    
+    def __create_unique_constraints(self, node_label:NodeLabels, property_name:str):
+        """
+        Create unique constraint for specific node property.
+
+        Warning: Will not check property_name validity.
+
+        Args:
+            label (NodeLabels): Node label
+            property_name (string): Node property
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            None: This function does not return any value.
+        """
+
+        query_string = f"""
+        CREATE CONSTRAINT {node_label.label}_{property_name}_unique IF NOT EXISTS
+        FOR (n:{node_label.label})
+        REQUIRE n.{property_name} IS UNIQUE
+        """
+
+        try:
+            with self.__driver.session() as session:
+                session.run(query_string)
+        except Exception as e:
+            error_string = str(e)
+            raise RuntimeError( "Neo4j create_unique_constraints() error: " + error_string )
     
 
     def __add_node(self, type, id_type, id_value = None):
