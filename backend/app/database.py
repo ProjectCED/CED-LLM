@@ -281,7 +281,11 @@ class Database(metaclass=DatabaseMeta):
 
         try:
             with self.__driver.session() as session:
-                session.run(query_string)
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
+
         except Exception as e:
             error_string = str(e)
             raise RuntimeError( "Neo4j create_unique_constraints() error: " + error_string )
@@ -321,10 +325,16 @@ class Database(metaclass=DatabaseMeta):
             )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+
             return next(iter(records)).data()[id_type]
         
         except Exception as e:
@@ -360,13 +370,13 @@ class Database(metaclass=DatabaseMeta):
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
             "SET n." + property_name + " = $old_data" 
         )
-
         try:
-            self.__driver.execute_query(
-                query_string,
-                old_data = new_data,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    old_data=new_data,
+                    database=self.__name,
+                )
             return True
         
         except Exception as e:
@@ -432,11 +442,16 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
-            
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+
             try:
                 return next(iter(records)).data()[property_name]
             except:
@@ -498,11 +513,16 @@ class Database(metaclass=DatabaseMeta):
             query_string += f"RETURN COLLECT ([n.{id_type}{property_list_string}]) AS list "
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
-        
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+      
             try:
                 # gives out [[ ]]
                 double_list = next(iter(records)).data()['list']
@@ -570,10 +590,11 @@ class Database(metaclass=DatabaseMeta):
             return TypeError( "Invalid exclude_relationships type: " + type(exclude_relationships) )
         
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -610,10 +631,11 @@ class Database(metaclass=DatabaseMeta):
         )
         
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -651,10 +673,11 @@ class Database(metaclass=DatabaseMeta):
         )
         
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -703,10 +726,11 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -755,10 +779,16 @@ class Database(metaclass=DatabaseMeta):
             )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+
             return next(iter(records)).data()[id_type]
         
         except Exception as e:
@@ -876,10 +906,15 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
 
             if not records:
                 return False
@@ -914,10 +949,16 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+                    
             if not records:
                 return False
             else:
