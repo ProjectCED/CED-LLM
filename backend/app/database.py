@@ -958,7 +958,7 @@ class Database(metaclass=DatabaseMeta):
                 )
                 for record in result:
                     records.append(record)
-                    
+
             if not records:
                 return False
             else:
@@ -1085,7 +1085,18 @@ class Database(metaclass=DatabaseMeta):
         # Check that node_label has property_name
         self.__helper_get_property_enum_and_validate(node_label, property_name)
 
-        return self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
+        result = self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
+
+        # Update datetime (modified), similar to add_node()
+        if node_label in [
+            NodeLabels.BLUEPRINT,
+            NodeLabels.PROJECT,
+            NodeLabels.RESULT_BLUEPRINT,
+        ]:
+            datetime_property = self.__helper_get_property_enum_and_validate(node_label, 'DATETIME')
+            self.__set_node_property(node_label.label, node_label.id, id, datetime_property.value, DateTime.now())
+
+        return result
 
     def remove_node_property(self, id:UUID, node_label:NodeLabels, property_name:Enum):
         """
