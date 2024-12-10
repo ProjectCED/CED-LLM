@@ -41,7 +41,9 @@ class Result:
         self.__database.connect_result_blueprint_to_project(resultId, self.__projectId)
 
         # Temp
-        self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.USED_BLUEPRINT, self.__blueprintId)
+        #self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.USED_BLUEPRINT, self.__blueprintId)
+        usedBlueprintId = self.__database.copy_to_used_blueprint_node(self.__blueprintId)
+        self.__database.connect_used_blueprint_to_result_blueprint(usedBlueprintId, resultId)
         return resultId
 
         '''

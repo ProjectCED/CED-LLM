@@ -110,6 +110,21 @@ def __get_whole_blueprint(id: str) -> dict:
     questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
     return {"id": id, "name": name, "description": description, "questions": questions}
 
+def __get_whole_used_blueprint(id: str) -> dict:
+    """
+    Gets the whole used blueprint with all properties for given ID.
+
+    Args:
+        id (string): UUID-type ID of the used blueprint node in the database.
+
+    Returns:
+        dict: used Blueprint with all properties.
+    """
+    name = database.lookup_used_blueprint_property(id, NodeProperties.Blueprint.NAME)
+    description = database.lookup_used_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION)
+    questions = database.lookup_used_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
+    return {"id": id, "name": name, "description": description, "questions": questions}
+
 
 @main.route('/get_blueprints', methods=['GET'])
 def get_blueprints():
@@ -267,8 +282,10 @@ def __get_results_for_project(projectId):
         name = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.NAME)
         filename = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.FILENAME)
         result = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.RESULT)
-        used_blueprint_id = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.USED_BLUEPRINT)
-        blueprint = __get_whole_blueprint(used_blueprint_id)
+        #used_blueprint_id = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.USED_BLUEPRINT)
+        used_blueprint_id = database.lookup_used_blueprint_node(id)
+        #blueprint = __get_whole_blueprint(used_blueprint_id)
+        blueprint = __get_whole_used_blueprint(used_blueprint_id)
         results_with_all_properties.append({"id": id, "name": name, "filename": filename, "result": result, "blueprint": blueprint})
     return results_with_all_properties
 
