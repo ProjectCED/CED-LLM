@@ -24,7 +24,7 @@ from uuid import UUID
 import uuid
 from neo4j.time import DateTime
 
-pytestmark = pytest.mark.database2
+pytestmark = pytest.mark.database
 
 random_UUID = uuid.uuid4()
 

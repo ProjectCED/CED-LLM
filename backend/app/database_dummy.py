@@ -2,7 +2,7 @@ from app.database import Database, NodeProperties, NodeLabels
 
 # just for show questions, don't use these
 blueprint_questions = [
-    'Lorem Ipsum dolor sit amet, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat?',
+    '',
     'Lorem Ipsum sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, vel iusto odio dignissim qui blandit praesent luptatum zzril?',
     'Lorem Ipsum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, enim ad minim veniam?',
     'Lorem Ipsum ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat?',
@@ -24,7 +24,7 @@ data_model_node_relationships = [
     'LINKS_THROUGH',
 ]
 
-class DatabaseDummy2:
+class DatabaseDummy:
     '''Creates pre-filled dummy database
     
     Warning. This will first clear the database.
@@ -78,7 +78,7 @@ class DatabaseDummy2:
             (
                 'Eduskunta ',
                 'A collaborative framework designed to enhance educational dialogue and decision-making through structured discussions and feedback.',
-                None,
+                [],
                 ),
             (
                 'Brainstorm Blueprint',
@@ -195,40 +195,6 @@ class DatabaseDummy2:
         ]
         self.__result_blueprint(__result_blueprints)
 
-        # ### Data models
-        # # [(name,
-        # #   node_labels,
-        # #   node_relationships)]
-        # __datamodels = [
-        #     (
-        #         'Eduskunta',
-        #         None,
-        #         None,
-        #         ),
-        #     (
-        #         'Wayfinder Realm',
-        #         data_model_node_labels,
-        #         data_model_node_relationships,
-        #         ),
-        #     (
-        #         'SoftTag Grove',
-        #         data_model_node_labels,
-        #         data_model_node_relationships,
-        #         ),
-        #     (
-        #         'Ramble Field',
-        #         data_model_node_labels,
-        #         data_model_node_relationships,
-        #         ),
-        #     (
-        #         'Freespace Catalog',
-        #         data_model_node_labels,
-        #         data_model_node_relationships,
-        #         ),
-        # ]
-        # self.__datamodels(__datamodels)
-                
-
 
     def __clear(self):
         '''Clear database'''
@@ -262,20 +228,6 @@ class DatabaseDummy2:
             if not blueprint[2] == None:
                 self.db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.QUESTIONS, blueprint[2])
             # add more here
-
-    # def __datamodels(self, datamodels):
-    #     '''Datamodels'''
-    #     for datamodel in datamodels:
-    #         id = self.db.add_data_model_node()
-    #         if not datamodel[0] == None:
-    #             self.db.set_data_model_property(id, NodeProperties.DataModel.NAME, datamodel[0])
-
-    #         if not datamodel[1] == None:
-    #             self.db.set_data_model_property(id, NodeProperties.DataModel.NODE_LABELS, datamodel[1])
-
-    #         if not datamodel[2] == None:
-    #             self.db.set_data_model_property(id, NodeProperties.DataModel.RELATIONSHIP_TYPES, datamodel[2])
-    #         # add more here
 
     def __projects(self, projects):
         '''Projects'''
