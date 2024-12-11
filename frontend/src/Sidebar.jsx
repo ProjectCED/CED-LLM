@@ -80,7 +80,7 @@ function Sidebar({
    * Adds a new project to the project list with the specified name.
    * Alerts the user if the project name is empty.
    */
-  const addProject = () => {
+  const addProject = async () => {
     if (newProjectName.trim()) {
       const newProject = {
         id: null,
@@ -88,7 +88,7 @@ function Sidebar({
         open: false,
         results: []
       };
-      const id = saveProject(newProjectName);
+      const id = await saveProject(newProjectName);
       newProject.id = id;
       
       setProjects([...projects, newProject]);
@@ -103,7 +103,7 @@ function Sidebar({
    *
    * @param {number} index - Index of the project to delete.
    */
-  const deleteProject = async (index) => {
+  const removeProject = async (index) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete the project and lose all its results?"
     );
@@ -124,7 +124,7 @@ function Sidebar({
    * @param {number} projectIndex - Index of the project containing the result.
    * @param {number} resultIndex - Index of the result to delete.
    */
-  const deleteResult = async (projectIndex, resultIndex) => {
+  const removeResult = async (projectIndex, resultIndex) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this result?"
     );
