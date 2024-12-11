@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint, request
 from flask_cors import CORS
 from app.api_handler import ApiHandler
-from app.database import Database, NodeProperties
+from app.database import Database, NodeProperties, NodeLabels
 from dotenv import load_dotenv
 import os
 from app.models.blueprint import Blueprint as BP
@@ -105,9 +105,24 @@ def __get_whole_blueprint(id: str) -> dict:
     Returns:
         dict: Blueprint with all properties.
     """
-    name = database.lookup_blueprint_property(id, NodeProperties.Blueprint.NAME)
-    description = database.lookup_blueprint_property(id, NodeProperties.Blueprint.DESCRIPTION)
-    questions = database.lookup_blueprint_property(id, NodeProperties.Blueprint.QUESTIONS)
+    name = database.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME)
+    description = database.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.DESCRIPTION)
+    questions = database.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.QUESTIONS)
+    return {"id": id, "name": name, "description": description, "questions": questions}
+
+def __get_whole_used_blueprint(id: str) -> dict:
+    """
+    Gets the whole used blueprint with all properties for given ID.
+
+    Args:
+        id (string): UUID-type ID of the used blueprint node in the database.
+
+    Returns:
+        dict: used Blueprint with all properties.
+    """
+    name = database.lookup_node_property(id, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.NAME)
+    description = database.lookup_node_property(id, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.DESCRIPTION)
+    questions = database.lookup_node_property(id, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.QUESTIONS)
     return {"id": id, "name": name, "description": description, "questions": questions}
 
 
@@ -122,7 +137,7 @@ def get_blueprints():
     Returns:
         list[dict]: List of blueprints with all properties.
     """
-    blueprints = database.lookup_blueprint_nodes() # [[ID, NAME]]
+    blueprints = database.lookup_nodes(NodeLabels.BLUEPRINT) # [[ID, NAME]]
     blueprints_with_all_properties = []
     for bp in blueprints:
         id = bp[0]
@@ -180,7 +195,7 @@ def delete_blueprint():
     id = request.json['id']
 
     # True/false
-    success = database.delete_blueprint(id)
+    success = database.delete_node(id, NodeLabels.BLUEPRINT)
     return jsonify({"success": success})
 
 
@@ -221,7 +236,7 @@ def get_projects():
     Returns:
         list[dict]: List of projects with all properties, results and their blueprints.
     """
-    projects = database.lookup_project_nodes() # [[ID, NAME, DATETIME]]
+    projects = database.lookup_nodes(NodeLabels.PROJECT) # [[ID, NAME, DATETIME]]
     projects_with_all_properties = []
     for proj in projects:
         id = proj[0]
@@ -245,7 +260,7 @@ def delete_project():
     id = request.json['id']
 
     # True/false
-    success = database.delete_project(id)
+    success = database.delete_node(id, NodeLabels.PROJECT)
     return jsonify({"success": success})
 
 # Results
@@ -260,16 +275,16 @@ def __get_results_for_project(projectId):
     Returns:
         list[dict]: List of results with all properties (and blueprints).
     """
-    results = database.lookup_result_blueprint_nodes(projectId)
+    results = database.lookup_nodes(NodeLabels.RESULT_BLUEPRINT, NodeLabels.PROJECT, projectId)
     results_with_all_properties = []
     for res in results:
         id = res[0]
-        name = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.NAME)
-        filename = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.FILENAME)
-        result = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.RESULT)
-        used_blueprint_id = database.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.USED_BLUEPRINT)
-        blueprint = __get_whole_blueprint(used_blueprint_id)
-        results_with_all_properties.append({"id": id, "name": name, "filename": filename, "result": result, "blueprint": blueprint})
+        name = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.NAME)
+        filename = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.FILENAME)
+        result = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.RESULT)
+        used_blueprint_id = database.lookup_nodes(NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, id)[0][0]
+        used_blueprint_info = __get_whole_used_blueprint(used_blueprint_id)
+        results_with_all_properties.append({"id": id, "name": name, "filename": filename, "result": result, "blueprint": used_blueprint_info})
     return results_with_all_properties
 
 @main.route('/save_result', methods=['POST'])
@@ -316,7 +331,7 @@ def delete_result():
     id = request.json['id']
 
     # True/false
-    success = database.delete_result_blueprint(id)
+    success = database.delete_node(id, NodeLabels.RESULT_BLUEPRINT)
     return jsonify({"success": success})
 
 if __name__ == '__main__':

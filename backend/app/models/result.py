@@ -1,5 +1,5 @@
 from app.database import Database
-from app.database import NodeProperties
+from app.database import NodeProperties, NodeLabels
 
 class Result:
     """
@@ -32,16 +32,17 @@ class Result:
         Returns:
             string: UUID-type ID of the newly created result node in the database.
         """
-        resultId = self.__database.add_result_blueprint_node()
-        self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.NAME, self.__name)
-        self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.FILENAME, self.__filename)
-        self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.RESULT, self.__result)
+        resultId = self.__database.add_node(NodeLabels.RESULT_BLUEPRINT)
+        self.__database.set_node_property(resultId, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.NAME, self.__name)
+        self.__database.set_node_property(resultId, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.FILENAME, self.__filename)
+        self.__database.set_node_property(resultId, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.RESULT, self.__result)
 
         # Set result under a project
-        self.__database.connect_result_blueprint_to_project(resultId, self.__projectId)
+        self.__database.connect_node_to_node(resultId, NodeLabels.RESULT_BLUEPRINT, self.__projectId, NodeLabels.PROJECT)
 
-        # Temp
-        self.__database.set_result_blueprint_property(resultId, NodeProperties.ResultBlueprint.USED_BLUEPRINT, self.__blueprintId)
+        # Make used blueprint and connect it to result
+        usedBlueprintId = self.__database.copy_node_to_node(self.__blueprintId, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        self.__database.connect_node_to_node(usedBlueprintId, NodeLabels.USED_BLUEPRINT, resultId, NodeLabels.RESULT_BLUEPRINT)
         return resultId
 
         '''
