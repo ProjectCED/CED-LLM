@@ -282,7 +282,15 @@ def __get_results_for_project(projectId):
         name = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.NAME)
         filename = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.FILENAME)
         result = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.RESULT)
-        used_blueprint_id = database.lookup_nodes(NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, id)[0][0]
+
+        # TODO: For some reason there are indexing errors, but nothing breaks if those cases are filtered out?
+        # Perhaps the problem is Automatic-blueprint
+        used_blueprint_id = None
+        try:
+            used_blueprint_id = database.lookup_nodes(NodeLabels.USED_BLUEPRINT, NodeLabels.RESULT_BLUEPRINT, id)[0][0]
+        except:
+            used_blueprint_id = None
+
         used_blueprint_info = __get_whole_used_blueprint(used_blueprint_id)
         results_with_all_properties.append({"id": id, "name": name, "filename": filename, "result": result, "blueprint": used_blueprint_info})
     return results_with_all_properties
