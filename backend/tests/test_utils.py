@@ -4,6 +4,7 @@ from app.utils import extract_text_from_file
 from unittest.mock import patch, MagicMock
 from pypdf import PdfReader
 
+pytestmark = pytest.mark.utils
 
 @pytest.fixture
 def create_text_file(tmp_path):

@@ -2,7 +2,8 @@ import pytest
 import os
 from flask import Flask
 from app.backend_api import main as main_blueprint
-from app.api_handler import ApiHandler
+
+pytestmark = pytest.mark.api_backend
 
 class MockApiHandler:
     """

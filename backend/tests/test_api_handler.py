@@ -4,7 +4,9 @@ import openai
 from unittest.mock import patch, MagicMock
 from app.api_handler import ApiHandler, PRIMARY_MODEL, BACKUP_MODEL
 
-@pytest.fixture
+pytestmark = pytest.mark.api_llm
+
+@pytest.fixture(scope="module")
 def api_handler():
      """
      Fixture to create an instance of the ApiHandler class.
