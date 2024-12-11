@@ -798,7 +798,7 @@ class TestNodeLookups:
         assert (
             UUID(result[0][0],version=4)
             and result[0][0] == id_3 # order matters
-            and isinstance(result[0][1], DateTime) == True 
+            and isinstance(result[0][2], DateTime) == True 
         )
 
 
