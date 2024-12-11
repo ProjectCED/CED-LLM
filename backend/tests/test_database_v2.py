@@ -781,6 +781,25 @@ class TestNodeLookups:
             and isinstance(result[0][1], DateTime) == True 
             and isinstance(result[1][1], DateTime) == True
         )
+    
+    def test_lookup_used_blueprint_node(self,db:Database):
+        id = db.add_node(NodeLabels.PROJECT)
+
+        id_1 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.connect_node_to_node(id_1,NodeLabels.RESULT_BLUEPRINT,id,NodeLabels.PROJECT)
+
+        id_2 = db.add_node(NodeLabels.BLUEPRINT)
+        id_3 = db.copy_node_to_node(id_2, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+
+        db.connect_node_to_node(id_3, NodeLabels.USED_BLUEPRINT, id_1, NodeLabels.RESULT_BLUEPRINT)
+
+        result = db.lookup_nodes(NodeLabels.USED_BLUEPRINT,NodeLabels.RESULT_BLUEPRINT,id_1)
+
+        assert (
+            UUID(result[0][0],version=4)
+            and result[0][0] == id_3 # order matters
+            and isinstance(result[0][1], DateTime) == True 
+        )
 
 
 
