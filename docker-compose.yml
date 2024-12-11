@@ -2,10 +2,13 @@
 
 # Networks for backend and database are separated
 networks:
- backend: 
-   external: false
- database: 
-   external: false
+  backend: 
+    external: false
+  database: 
+    external: false
+  llm:
+    external: false
+  
 
 services:
   frontend:
@@ -45,9 +48,12 @@ services:
     depends_on:
       neo4j:
         condition: service_healthy
+      ollama:
+        condition: service_healthy
     networks:
       - backend
       - database
+      - llm
     healthcheck:
       #test: ["CMD", "nc", "-z", "localhost", "5000"] # check if port is open
       test: ["CMD", "nc", "-z", "backend", "5000"] # check if port is open
@@ -97,13 +103,25 @@ services:
             - driver: ${GPU_DRIVER:-nvidia}
               count: 1
               capabilities: [gpu]
-    ports:
-      - "11434:11434"
+    expose:
+      - "11434"
     environment:
       - ${GPU_VISIBLE_DEVICES:-NVIDIA_VISIBLE_DEVICES}=all
       - ${GPU_DRIVER_CAPABILITIES:-NVIDIA_DRIVER_CAPABILITIES}=compute,utility
+    healthcheck:
+      test: ollama list || exit 1
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+    # workaround on healthcheck spam not making log too large
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
-      - backend
+      - llm
       
 volumes:
   neo4j_data:
