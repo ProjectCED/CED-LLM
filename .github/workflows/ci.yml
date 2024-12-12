@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - master
+      - backend-documentation
     #
     # Trigger when either files in the docs folder,
     # the requirements.txt file or the mkdocs.yml file
@@ -21,7 +22,7 @@ on:
 permissions:
   contents: read
   pages: write
-  id-token: wite
+  id-token: write
 
 # Makes sure only one workflow runs at a time.
 concurrency:
