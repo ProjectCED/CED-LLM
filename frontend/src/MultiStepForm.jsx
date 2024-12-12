@@ -762,5 +762,5 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     </div>
   );
 };
-
+}
 export default MultiStepForm;
