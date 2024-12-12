@@ -91,7 +91,7 @@ function Sidebar({
       const id = await saveProject(newProjectName);
       newProject.id = id;
       
-      setProjects([...projects, newProject]);
+      setProjects([newProject, ...projects]);
       setNewProjectName('');
     } else {
       alert("Project name cannot be empty");
