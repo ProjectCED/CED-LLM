@@ -335,7 +335,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     newProject.results.push(newResult);
 
     // Add the new project to the projects list
-    setProjects((prevProjects) => [...prevProjects, newProject]);
+    setProjects((prevProjects) => [newProject, ...prevProjects]);
 
     // Set the new project as the selected one and open the Sidebar
     setSelectedResult({
@@ -379,7 +379,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {
-          return { ...project, results: [...project.results, newResult], open: true };
+          return { ...project, results: [newResult, ...project.results], open: true };
         }
         return project;
       });
