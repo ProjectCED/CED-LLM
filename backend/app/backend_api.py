@@ -7,6 +7,7 @@ import os
 from app.models.blueprint import Blueprint as BP
 from app.models.project import Project
 from app.models.result import Result
+from neo4j.time import DateTime
 
 """
 This file contains the backend API for the application. It handles the file management, analysis, and database handling.
@@ -322,6 +323,9 @@ def save_result():
     
     result = data['result']
     projectId = data['projectId']
+
+    #refresh datetime
+    database.set_node_property(projectId, NodeLabels.PROJECT, NodeProperties.Project.DATETIME, DateTime.now())
 
     res = Result(name, filename, blueprint_id, result, projectId)
     return res.save_result()
