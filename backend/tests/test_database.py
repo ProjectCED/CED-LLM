@@ -10,7 +10,7 @@ Modules tested:
 
 Usage:
 - "$env:PYTHONPATH = (Get-Location).Path" command in backend-folder (windows11)
-- "pytest -m database -p no:warnings" command in backend-folder
+- "pytest -m database2 -p no:warnings" command in backend-folder
 
 Note: make sure database is up and running either:
 - Through Neo4j Desktop (official app)
@@ -19,11 +19,14 @@ Note: make sure database is up and running either:
 """
 
 import pytest
-from app.database import Database, NodeProperties
-from datetime import datetime
+from app.database import Database, NodeProperties, NodeLabels
 from uuid import UUID
+import uuid
+from neo4j.time import DateTime
 
 pytestmark = pytest.mark.database
+
+random_UUID = uuid.uuid4()
 
 @pytest.fixture(scope="module")
 def db():
@@ -50,121 +53,154 @@ class TestAddNode:
     """Create node
     
     1. create node
-    check returned id-string
+    check returned id
     """
     def test_global_settings(self,db:Database):
-        result = db.add_global_settings_node()
-        assert result == 'Global'
+        result = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        assert UUID(result,version=4)
+
+    def test_global_settings_2(self,db:Database):
+        """Should only allow one global settings"""
+        id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        id_2 = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        assert id_2 == None
 
     def test_user_settings(self,db:Database):
-        result = db.add_user_settings_node('alice')
-        assert result == 'alice'
+        result = db.add_node(NodeLabels.USER_SETTINGS)
+        assert UUID(result,version=4)
 
     def test_project(self,db:Database):
-        result = db.add_project_node()
+        result = db.add_node(NodeLabels.PROJECT)
         assert UUID(result,version=4)
 
     def test_blueprint(self,db:Database):
-        result = db.add_blueprint_node()
+        result = db.add_node(NodeLabels.BLUEPRINT)
         assert UUID(result,version=4)
 
     def test_blueprint_2(self,db:Database):
-        id = db.add_blueprint_node()
-        used_id = db.copy_to_used_blueprint_node(id)
-        result = db.copy_to_blueprint_node(used_id)
+        """
+        Test blueprint created by copying used blueprint
+
+        1. create blueprint
+        2. create used variant by copying blueprint
+        3. create blueprint by copying used variant back
+        check returned id
+        """
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        used_id = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        result = db.copy_node_to_node(used_id, NodeLabels.USED_BLUEPRINT, NodeLabels.BLUEPRINT)
         assert UUID(result,version=4)
         
     def test_result_blueprint(self,db:Database):
-        result = db.add_result_blueprint_node()
+        result = db.add_node(NodeLabels.RESULT_BLUEPRINT)
         assert UUID(result,version=4)
 
     def test_used_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        result = db.copy_to_used_blueprint_node(id)
+        """
+        Test used blueprint creation
+
+        1. create blueprint
+        2. create used one by copying from blueprint
+        3. check returned id
+        """
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        result = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
         assert UUID(result,version=4)
 
        
 
 
-class TestSetProperty:
-    """Creating property
+class TestSetPropertyLookProperty:
+    """
+    Creating property and lookup property
     
     1. create node
     2. set property
-    check returned bool
+    3. lookup said property
+    check returned bool and lookup value
     """
 
     def test_global_settings(self,db:Database):
-        db.add_global_settings_node()
-        result = db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
-        assert result == True
+        id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        result = db.set_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
+        result_2 = db.lookup_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS)
+        assert (
+            result == True
+            and result_2 == 'Verdana'
+        )
 
     def test_user_settings(self,db:Database):
-        db.add_user_settings_node('alice')
-        result = db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'Alice')
-        assert result == True
+        id = db.add_node(NodeLabels.USER_SETTINGS)
+        result = db.set_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'Alice')
+        result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS)
+        assert (
+            result == True
+            and result_2 == 'Alice'
+        )
 
     def test_project(self,db:Database):
-        id = db.add_project_node()
-        result = db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
-        assert result == True
+        id = db.add_node(NodeLabels.PROJECT)
+        result = db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS, 'foo')
+        result_2 = db.lookup_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS)
+        assert (
+            result == True
+            and result_2 == 'foo'
+        )
 
     def test_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        result = db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        assert result == True
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        result = db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        result_2 = db.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
+        assert (
+            result == True
+            and result_2 == 'foo'
+        )
 
     def test_result_blueprint(self,db:Database):
-        id = db.add_result_blueprint_node()
-        result = db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        assert result == True
-
-
-class TestLookupPropertyFound:
-    """Lookup property that is found
-    
-    1. create node
-    2. set property
-    3. lookup property
-    check returned property value
-    """
-
-    def test_global_settings(self,db:Database):
-        db.add_global_settings_node()
-        db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
-        result = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
-        assert result == 'Verdana'
-
-    def test_user_settings(self,db:Database):
-        db.add_user_settings_node('alice')
-        db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'Alice')
-        result = db.lookup_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS)
-        assert result == 'Alice'
-
-    def test_project(self,db:Database):
-        id = db.add_project_node()
-        db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
-        result = db.lookup_project_property(id, NodeProperties.Project.TEST_PASS)
-        assert result == 'foo'
-
-    def test_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        result = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
-        assert result == 'foo'
-
-    def test_result_blueprint(self,db:Database):
-        id = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        result = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
-        assert result == 'foo'
+        id = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        result = db.set_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        result_2 = db.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
+        assert (
+            result == True
+            and result_2 == 'foo'
+        )
 
     def test_used_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        id_2 = db.copy_to_used_blueprint_node(id)
-        result = db.lookup_used_blueprint_property(id_2, NodeProperties.Blueprint.TEST_PASS)
+        """
+        Just look up property from used_blueprint
+
+        1. create blueprint
+        2. set property
+        3. create used variant
+        4. lookup used variant property
+        check lookup value
+        """
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        id_2 = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        result = db.lookup_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
         assert result == 'foo'
+
+    def test_used_blueprint_2(self,db:Database):
+        """
+        Try to set property on used blueprint
+
+        1. create blueprint
+        2. set property
+        3. create used variant
+        4. set property on used
+        5. lookup used variant property
+        check success and lookup value
+        """
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        id_2 = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        result_1 = db.set_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL, 'foo2')
+        result_2 = db.lookup_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
+        assert (
+            result_1 == False
+            and result_2 == None
+        )
 
 
 class TestLookupPropertyNotFound:
@@ -176,34 +212,34 @@ class TestLookupPropertyNotFound:
     """
 
     def test_global_settings(self,db:Database):
-        db.add_global_settings_node()
-        result = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_FAIL)
+        id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        result = db.lookup_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_FAIL)
         assert result == None
 
     def test_user_settings(self,db:Database):
-        db.add_user_settings_node('alice')
-        result = db.lookup_user_settings_property('alice', NodeProperties.UserSettings.TEST_FAIL)
+        id = db.add_node(NodeLabels.USER_SETTINGS)
+        result = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_FAIL)
         assert result == None
 
     def test_project(self,db:Database):
-        id = db.add_project_node()
-        result = db.lookup_project_property(id, NodeProperties.Project.TEST_FAIL)
+        id = db.add_node(NodeLabels.PROJECT)
+        result = db.lookup_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_FAIL)
         assert result == None
 
     def test_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        result = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_FAIL)
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        result = db.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
         assert result == None
 
     def test_result_blueprint(self,db:Database):
-        id = db.add_result_blueprint_node()
-        result = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_FAIL)
+        id = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        result = db.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_FAIL)
         assert result == None
 
     def test_used_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        id_2 = db.copy_to_used_blueprint_node(id)
-        result = db.lookup_used_blueprint_property(id_2, NodeProperties.Blueprint.TEST_FAIL)
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        id_2 = db.copy_node_to_node(id,NodeLabels.BLUEPRINT,NodeLabels.USED_BLUEPRINT)
+        result = db.lookup_node_property(id_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
         assert result == None
 
 
@@ -214,30 +250,35 @@ class TestLookupPropertyNodeNotFound:
     check returned property value
     """
 
+    def test_global_settings(self,db:Database):
+        result = db.lookup_node_property(random_UUID, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_FAIL)
+        assert result == None
+
     def test_user_settings(self,db:Database):
-        result = db.lookup_user_settings_property('wrong_id', NodeProperties.UserSettings.TEST_FAIL)
+        result = db.lookup_node_property(random_UUID, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_FAIL)
         assert result == None
 
     def test_project(self,db:Database):
-        result = db.lookup_project_property('wrong_id', NodeProperties.Project.TEST_FAIL)
+        result = db.lookup_node_property(random_UUID, NodeLabels.PROJECT, NodeProperties.Project.TEST_FAIL)
         assert result == None
 
     def test_blueprint(self,db:Database):
-        result = db.lookup_blueprint_property('wrong_id', NodeProperties.Blueprint.TEST_FAIL)
+        result = db.lookup_node_property(random_UUID, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
         assert result == None
 
     def test_result_blueprint(self,db:Database):
-        result = db.lookup_result_blueprint_property('wrong_id', NodeProperties.ResultBlueprint.TEST_FAIL)
+        result = db.lookup_node_property(random_UUID, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_FAIL)
         assert result == None
 
     def test_used_blueprint(self,db:Database):
-        result = db.lookup_used_blueprint_property('wrong_id', NodeProperties.Blueprint.TEST_FAIL)
+        result = db.lookup_node_property(random_UUID, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
         assert result == None
 
 
 class TestRemovePropertyFound:
-    """Property remove
-    
+    """
+    Test that property was removed
+
     1. create node
     2. set property
     3. remove property
@@ -245,50 +286,50 @@ class TestRemovePropertyFound:
     """
 
     def test_global_settings(self,db:Database):
-        db.add_global_settings_node()
-        db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
-        result_1 = db.remove_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
-        result_2 = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
+        id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        db.set_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS, 'Verdana')
+        result_1 = db.remove_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_user_settings(self,db:Database):
-        db.add_user_settings_node('alice')
-        db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'Alice')
-        result_1 = db.remove_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS)
-        result_2 = db.lookup_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS)
+        id = db.add_node(NodeLabels.USER_SETTINGS)
+        db.set_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'Alice')
+        result_1 = db.remove_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_project(self,db:Database):
-        id = db.add_project_node()
-        db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
-        result_1 = db.remove_project_property(id, NodeProperties.Project.TEST_PASS)
-        result_2 = db.lookup_project_property(id, NodeProperties.Project.TEST_PASS)
+        id = db.add_node(NodeLabels.PROJECT)
+        db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS, 'foo')
+        result_1 = db.remove_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        result_1 = db.remove_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
-        result_2 = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        result_1 = db.remove_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_result_blueprint(self,db:Database):
-        id = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        result_1 = db.remove_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
-        result_2 = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
+        id = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.set_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        result_1 = db.remove_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
+        result_2 = db.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
@@ -296,7 +337,8 @@ class TestRemovePropertyFound:
 
 
 class TestRemovePropertyNotFound:
-    """Remove property not found
+    """
+    Test removing of non-existent property
     
     1. create node
     2. remove non-existent property
@@ -304,56 +346,58 @@ class TestRemovePropertyNotFound:
     """
 
     def test_global_settings(self,db:Database):
-        db.add_global_settings_node()
-        result = db.remove_global_settings_property(NodeProperties.GlobalSettings.TEST_FAIL)
+        id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        result = db.remove_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_FAIL)
         assert result == False
     def test_user_settings(self,db:Database):
-        db.add_user_settings_node('alice')
-        result = db.remove_user_settings_property('alice', NodeProperties.UserSettings.TEST_FAIL)
+        id = db.add_node(NodeLabels.USER_SETTINGS)
+        result = db.remove_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_FAIL)
         assert result == False
 
     def test_project(self,db:Database):
-        id = db.add_project_node()
-        result = db.remove_project_property(id, NodeProperties.Project.TEST_FAIL)
+        id = db.add_node(NodeLabels.PROJECT)
+        result = db.remove_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_FAIL)
         assert result == False
 
     def test_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        result = db.remove_blueprint_property(id, NodeProperties.Blueprint.TEST_FAIL)
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        result = db.remove_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
         assert result == False
 
     def test_result_blueprint(self,db:Database):
-        id = db.add_result_blueprint_node()
-        result = db.remove_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_FAIL)
+        id = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        result = db.remove_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_FAIL)
         assert result == False
 
 
 class TestRemovePropertyNodeNotFound:
-    """Remove property node not found
+    """
+    Test removing property that wasn't found
     
     1. Remove property from non-existent node
     check returned bool
     """
 
     def test_user_settings(self,db:Database):
-        result = db.remove_user_settings_property('wrong_id', NodeProperties.UserSettings.TEST_FAIL)
+        result = db.remove_node_property(random_UUID, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_FAIL)
         assert result == False
 
     def test_project(self,db:Database):
-        result = db.remove_project_property('wrong_id', NodeProperties.Project.TEST_FAIL)
+        result = db.remove_node_property(random_UUID, NodeLabels.PROJECT, NodeProperties.Project.TEST_FAIL)
         assert result == False
 
     def test_blueprint(self,db:Database):
-        result = db.remove_blueprint_property('wrong_id', NodeProperties.Blueprint.TEST_FAIL)
+        result = db.remove_node_property(random_UUID, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_FAIL)
         assert result == False
 
     def test_result_blueprint(self,db:Database):
-        result = db.remove_result_blueprint_property('wrong_id', NodeProperties.ResultBlueprint.TEST_FAIL)
+        result = db.remove_node_property(random_UUID, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_FAIL)
         assert result == False
 
 
 class TestDeleteNode:
-    """Delete node
+    """
+    Test node deletion
     
     1. create node
     2. add property TEST_PASS    
@@ -362,50 +406,50 @@ class TestDeleteNode:
     """
 
     def test_global_settings(self,db:Database):
-        db.add_global_settings_node()
-        db.set_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS, 'foo')
-        result_1 = db.delete_global_settings()
-        result_2 = db.lookup_global_settings_property(NodeProperties.GlobalSettings.TEST_PASS)
+        id = db.add_node(NodeLabels.GLOBAL_SETTINGS)
+        db.set_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS, 'foo')
+        result_1 = db.delete_node(id, NodeLabels.GLOBAL_SETTINGS)
+        result_2 = db.lookup_node_property(id, NodeLabels.GLOBAL_SETTINGS, NodeProperties.GlobalSettings.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_user_settings(self,db:Database):
-        db.add_user_settings_node('alice')
-        db.set_user_settings_property('alice', NodeProperties.UserSettings.TEST_PASS, 'foo')
-        result_1 = db.delete_user_settings('alice')
-        result_2 = db.lookup_user_settings_property(id, NodeProperties.UserSettings.TEST_PASS)
+        id = db.add_node(NodeLabels.USER_SETTINGS)
+        db.set_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'foo')
+        result_1 = db.delete_node(id, NodeLabels.USER_SETTINGS)
+        result_2 = db.lookup_node_property(id, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_project(self,db:Database):
-        id = db.add_project_node()
-        db.set_project_property(id, NodeProperties.Project.TEST_PASS, 'foo')
-        result_1 = db.delete_project(id)
-        result_2 = db.lookup_project_property(id, NodeProperties.Project.TEST_PASS)
+        id = db.add_node(NodeLabels.PROJECT)
+        db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS, 'foo')
+        result_1 = db.delete_node(id, NodeLabels.PROJECT)
+        result_2 = db.lookup_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        db.set_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        result_1 = db.delete_blueprint(id)
-        result_2 = db.lookup_blueprint_property(id, NodeProperties.Blueprint.TEST_PASS)
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        result_1 = db.delete_node(id, NodeLabels.BLUEPRINT)
+        result_2 = db.lookup_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
         )
 
     def test_result_blueprint(self,db:Database):
-        id = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        result_1 = db.delete_result_blueprint(id)
-        result_2 = db.lookup_result_blueprint_property(id, NodeProperties.ResultBlueprint.TEST_PASS)
+        id = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.set_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        result_1 = db.delete_node(id, NodeLabels.RESULT_BLUEPRINT)
+        result_2 = db.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
         assert (
             result_1 == True 
             and result_2 == None
@@ -413,7 +457,8 @@ class TestDeleteNode:
 
 
 class TestDeleteNodeAdvanced:
-    """Delete node and nodes connected to it: (deleted too) -[rel]-> (deleted)
+    """
+    Test that nodes connected to certain nodes also are deleted. (also deleted) -[rel]-> (deleted)
     
     1. create "parent" node
     2. create nodes and connect them to "parent" node
@@ -432,29 +477,30 @@ class TestDeleteNodeAdvanced:
         6. delete user
         check if any is found(project,blueprint,result,used_blueprint)
         """
-        db.add_user_settings_node('alice')
+        id_user = db.add_node(NodeLabels.USER_SETTINGS)
+        db.set_node_property(id_user, NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.TEST_PASS, 'foo')
 
-        id_project = db.add_project_node()
-        db.set_project_property(id_project, NodeProperties.Project.TEST_PASS, 'foo')
-        db.connect_project_to_user_settings(id_project,'alice')
+        id_project = db.add_node(NodeLabels.PROJECT)
+        db.set_node_property(id_project, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS, 'foo')
+        db.connect_node_to_node(id_project, NodeLabels.PROJECT, id_user, NodeLabels.USER_SETTINGS)
 
-        id_blueprint = db.add_blueprint_node()
-        db.set_blueprint_property(id_blueprint, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        db.connect_blueprint_to_user_settings(id_blueprint,'alice')
+        id_blueprint = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id_blueprint, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        db.connect_node_to_node(id_blueprint, NodeLabels.BLUEPRINT, id_user, NodeLabels.USER_SETTINGS)
 
-        id_result = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id_result, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        db.connect_result_blueprint_to_project(id_result,id_project)
+        id_result = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.set_node_property(id_result, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        db.connect_node_to_node(id_result, NodeLabels.RESULT_BLUEPRINT, id_project, NodeLabels.PROJECT)
 
-        id_used_blueprint = db.copy_to_used_blueprint_node(id_blueprint)
-        db.connect_used_blueprint_to_result_blueprint(id_used_blueprint,id_result)
+        id_used_blueprint = db.copy_node_to_node(id_blueprint, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        db.connect_node_to_node(id_used_blueprint, NodeLabels.USED_BLUEPRINT, id_result, NodeLabels.RESULT_BLUEPRINT)
 
-        db.delete_user_settings('alice')
+        db.delete_node(id_user, NodeLabels.USER_SETTINGS)
 
-        result_1 = db.lookup_blueprint_property(id_blueprint, NodeProperties.Blueprint.TEST_PASS)
-        result_2 = db.lookup_project_property(id_project, NodeProperties.Project.TEST_PASS)
-        result_3 = db.lookup_result_blueprint_property(id_result, NodeProperties.ResultBlueprint.TEST_PASS)
-        result_4 = db.lookup_used_blueprint_property(id_used_blueprint, NodeProperties.Blueprint.TEST_PASS)
+        result_1 = db.lookup_node_property(id_blueprint, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
+        result_2 = db.lookup_node_property(id_project, NodeLabels.PROJECT, NodeProperties.Project.TEST_PASS)
+        result_3 = db.lookup_node_property(id_result, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
+        result_4 = db.lookup_node_property(id_used_blueprint, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
 
         assert (
             result_1 == None 
@@ -472,32 +518,31 @@ class TestDeleteNodeAdvanced:
         5. delete project
         check if any is found(result,used_blueprint)
         """
-        id_project = db.add_project_node()
+        id_project = db.add_node(NodeLabels.PROJECT)
 
-        id_blueprint = db.add_blueprint_node()
-        db.set_blueprint_property(id_blueprint, NodeProperties.Blueprint.TEST_PASS, 'foo')
-        db.connect_blueprint_to_user_settings(id_blueprint,'alice')
+        id_blueprint = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id_blueprint, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
 
-        id_result_1 = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id_result_1, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        db.connect_result_blueprint_to_project(id_result_1,id_project)
+        id_result_1 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.set_node_property(id_result_1, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        db.connect_node_to_node(id_result_1, NodeLabels.RESULT_BLUEPRINT, id_project, NodeLabels.PROJECT)
 
-        id_used_blueprint_1 = db.copy_to_used_blueprint_node(id_blueprint)
-        db.connect_used_blueprint_to_result_blueprint(id_used_blueprint_1,id_result_1)
+        id_result_2 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.set_node_property(id_result_2, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
+        db.connect_node_to_node(id_result_2, NodeLabels.RESULT_BLUEPRINT, id_project, NodeLabels.PROJECT)
 
-        id_result_2 = db.add_result_blueprint_node()
-        db.set_result_blueprint_property(id_result_2, NodeProperties.ResultBlueprint.TEST_PASS, 'foo')
-        db.connect_result_blueprint_to_project(id_result_2,id_project)
+        id_used_blueprint_1 = db.copy_node_to_node(id_blueprint, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        db.connect_node_to_node(id_used_blueprint_1, NodeLabels.USED_BLUEPRINT, id_result_1, NodeLabels.RESULT_BLUEPRINT)
 
-        id_used_blueprint_2 = db.copy_to_used_blueprint_node(id_blueprint)
-        db.connect_used_blueprint_to_result_blueprint(id_used_blueprint_2,id_result_2)
+        id_used_blueprint_2 = db.copy_node_to_node(id_blueprint, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        db.connect_node_to_node(id_used_blueprint_2, NodeLabels.USED_BLUEPRINT, id_result_2, NodeLabels.RESULT_BLUEPRINT)
 
-        db.delete_project(id_project)
+        db.delete_node(id_project, NodeLabels.PROJECT)
 
-        result_1 = db.lookup_result_blueprint_property(id_result_1, NodeProperties.ResultBlueprint.TEST_PASS)
-        result_2 = db.lookup_used_blueprint_property(id_used_blueprint_1, NodeProperties.Blueprint.TEST_PASS)
-        result_3 = db.lookup_result_blueprint_property(id_result_2, NodeProperties.ResultBlueprint.TEST_PASS)
-        result_4 = db.lookup_used_blueprint_property(id_used_blueprint_2, NodeProperties.Blueprint.TEST_PASS)
+        result_1 = db.lookup_node_property(id_result_1, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
+        result_2 = db.lookup_node_property(id_used_blueprint_1, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
+        result_3 = db.lookup_node_property(id_result_2, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.TEST_PASS)
+        result_4 = db.lookup_node_property(id_used_blueprint_2, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
 
         assert (
             result_1 == None 
@@ -514,53 +559,53 @@ class TestDeleteNodeAdvanced:
         5. delete result
         check if any is found(used_blueprint)
         """
-        id_result = db.add_result_blueprint_node()
+        id_result = db.add_node(NodeLabels.RESULT_BLUEPRINT)
 
-        id_blueprint = db.add_blueprint_node()
-        db.set_blueprint_property(id_blueprint, NodeProperties.Blueprint.TEST_PASS, 'foo')
+        id_blueprint = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id_blueprint, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.TEST_PASS, 'foo')
 
-        id_used_blueprint = db.copy_to_used_blueprint_node(id_blueprint)
-        db.connect_used_blueprint_to_result_blueprint(id_used_blueprint,id_result)
+        id_used_blueprint = db.copy_node_to_node(id_blueprint, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        db.connect_node_to_node(id_used_blueprint, NodeLabels.USED_BLUEPRINT, id_result, NodeLabels.RESULT_BLUEPRINT)
 
-        db.delete_result_blueprint(id_result)
+        db.delete_node(id_result, NodeLabels.RESULT_BLUEPRINT)
 
-        result_1 = db.lookup_used_blueprint_property(id_used_blueprint, NodeProperties.Blueprint.TEST_PASS)
+        result_1 = db.lookup_node_property(id_used_blueprint, NodeLabels.USED_BLUEPRINT, NodeProperties.Blueprint.TEST_PASS)
 
         assert result_1 == None
 
 
 class TestDeleteNodeNotFound:
-    """Delete node not found
+    """
+    Test to delete node that isn't found
     
     1. delete non-existent node
     check returned bool
     """
 
     def test_global_settings(self,db:Database):
-        result = db.delete_global_settings()
+        result = db.delete_node(random_UUID, NodeLabels.GLOBAL_SETTINGS)
         assert result == False
 
     def test_user_settings(self,db:Database):
-        result = db.delete_user_settings('wrong_id')
+        result = db.delete_node(random_UUID, NodeLabels.USER_SETTINGS)
         assert result == False
 
     def test_project(self,db:Database):
-        result = db.delete_project('wrong_id')
+        result = db.delete_node(random_UUID, NodeLabels.PROJECT)
         assert result == False
 
     def test_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        result = db.delete_blueprint('wrong_id')
+        result = db.delete_node(random_UUID, NodeLabels.BLUEPRINT)
         assert result == False
 
     def test_result_blueprint(self,db:Database):
-        id = db.add_result_blueprint_node()
-        result = db.delete_result_blueprint('wrong_id')
+        result = db.delete_node(random_UUID, NodeLabels.RESULT_BLUEPRINT)
         assert result == False
 
 
 class TestRelationshipCreationGoodToGood:
-    """Relationships between nodes
+    """
+    Testing positive relationship cases (good->good)
     
     1. create nodes
     2. connect nodes
@@ -568,28 +613,28 @@ class TestRelationshipCreationGoodToGood:
     """
 
     def test_blueprint_user_settings(self,db:Database):
-        id_1 = db.add_blueprint_node()
-        id_2 = db.add_user_settings_node('alice')
-        result = db.connect_blueprint_to_user_settings(id_1, id_2)
+        id_1 = db.add_node(NodeLabels.BLUEPRINT)
+        id_2 = db.add_node(NodeLabels.USER_SETTINGS)
+        result = db.connect_node_to_node(id_1, NodeLabels.BLUEPRINT, id_2, NodeLabels.USER_SETTINGS)
         assert result == True
 
     def test_project_user_settings(self,db:Database):
-        id_1 = db.add_project_node()
-        id_2 = db.add_user_settings_node('alice')
-        result = db.connect_project_to_user_settings(id_1, id_2)
+        id_1 = db.add_node(NodeLabels.PROJECT)
+        id_2 = db.add_node(NodeLabels.USER_SETTINGS)
+        result = db.connect_node_to_node(id_1, NodeLabels.PROJECT, id_2, NodeLabels.USER_SETTINGS)
         assert result == True
 
     def test_result_blueprint_project(self,db:Database):
-        id_1 = db.add_result_blueprint_node()
-        id_2 = db.add_project_node()
-        result = db.connect_result_blueprint_to_project(id_1, id_2)
+        id_1 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        id_2 = db.add_node(NodeLabels.PROJECT)
+        result = db.connect_node_to_node(id_1, NodeLabels.RESULT_BLUEPRINT, id_2, NodeLabels.PROJECT)
         assert result == True
 
     def test_used_blueprint_result_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        id_1 = db.copy_to_used_blueprint_node(id)
-        id_2 = db.add_result_blueprint_node()
-        result = db.connect_used_blueprint_to_result_blueprint(id_1, id_2)
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        id_1 = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        id_2 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        result = db.connect_node_to_node(id_1, NodeLabels.USED_BLUEPRINT, id_2, NodeLabels.RESULT_BLUEPRINT)
         assert result == True
 
 
@@ -602,23 +647,23 @@ class TestRelationshipCreationBadToGood:
     """
 
     def test_blueprint_user_settings(self,db:Database):
-        id_2 = db.add_user_settings_node('alice')
-        result = db.connect_blueprint_to_user_settings('wrong_id', id_2)
+        id_2 = db.add_node(NodeLabels.USER_SETTINGS)
+        result = db.connect_node_to_node(random_UUID, NodeLabels.BLUEPRINT, id_2, NodeLabels.USER_SETTINGS)
         assert result == False
 
     def test_project_user_settings(self,db:Database):
-        id_2 = db.add_user_settings_node('alice')
-        result = db.connect_project_to_user_settings('wrong_id', id_2)
+        id_2 = db.add_node(NodeLabels.USER_SETTINGS)
+        result = db.connect_node_to_node(random_UUID, NodeLabels.PROJECT, id_2, NodeLabels.USER_SETTINGS)
         assert result == False
 
     def test_result_blueprint_project(self,db:Database):
-        id_2 = db.add_project_node()
-        result = db.connect_result_blueprint_to_project('wrong_id', id_2)
+        id_2 = db.add_node(NodeLabels.PROJECT)
+        result = db.connect_node_to_node(random_UUID, NodeLabels.BLUEPRINT, id_2, NodeLabels.PROJECT)
         assert result == False
 
     def test_used_blueprint_result_blueprint(self,db:Database):
-        id_2 = db.add_result_blueprint_node()
-        result = db.connect_used_blueprint_to_result_blueprint('wrong_id', id_2)
+        id_2 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        result = db.connect_node_to_node(random_UUID, NodeLabels.USED_BLUEPRINT, id_2, NodeLabels.RESULT_BLUEPRINT)
         assert result == False
 
 
@@ -631,24 +676,24 @@ class TestRelationshipCreationGoodToBad:
     """
 
     def test_blueprint_user_settings(self,db:Database):
-        id_1 = db.add_blueprint_node()
-        result = db.connect_blueprint_to_user_settings(id_1, 'wrong_id')
+        id_1 = db.add_node(NodeLabels.BLUEPRINT)
+        result = db.connect_node_to_node(id_1, NodeLabels.BLUEPRINT, random_UUID, NodeLabels.USER_SETTINGS)
         assert result == False
 
     def test_project_user_settings(self,db:Database):
-        id_1 = db.add_project_node()
-        result = db.connect_project_to_user_settings(id_1, 'wrong_id')
+        id_1 = db.add_node(NodeLabels.PROJECT)
+        result = db.connect_node_to_node(id_1, NodeLabels.PROJECT, random_UUID, NodeLabels.USER_SETTINGS)
         assert result == False
 
     def test_result_blueprint_project(self,db:Database):
-        id_1 = db.add_result_blueprint_node()
-        result = db.connect_result_blueprint_to_project(id_1, 'wrong_id')
+        id_1 = db.add_node(NodeLabels.BLUEPRINT)
+        result = db.connect_node_to_node(id_1, NodeLabels.BLUEPRINT, random_UUID, NodeLabels.PROJECT)
         assert result == False
 
     def test_used_blueprint_result_blueprint(self,db:Database):
-        id = db.add_blueprint_node()
-        id_1 = db.copy_to_used_blueprint_node(id)
-        result = db.connect_used_blueprint_to_result_blueprint(id_1, 'wrong_id')
+        id = db.add_node(NodeLabels.BLUEPRINT)
+        id_1 = db.copy_node_to_node(id, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+        result = db.connect_node_to_node(id_1, NodeLabels.USED_BLUEPRINT, random_UUID, NodeLabels.RESULT_BLUEPRINT)
         assert result == False
 
 
@@ -660,19 +705,19 @@ class TestRelationshipCreationBadToBad:
     """
 
     def test_blueprint_user_settings(self,db:Database):
-        result = db.connect_blueprint_to_user_settings('wrong_id', 'wrong_id')
+        result = db.connect_node_to_node(random_UUID, NodeLabels.BLUEPRINT, random_UUID, NodeLabels.USER_SETTINGS)
         assert result == False
 
     def test_project_user_settings(self,db:Database):
-        result = db.connect_project_to_user_settings('wrong_id', 'wrong_id')
+        result = db.connect_node_to_node(random_UUID, NodeLabels.PROJECT, random_UUID, NodeLabels.USER_SETTINGS)
         assert result == False
 
     def test_result_blueprint_project(self,db:Database):
-        result = db.connect_result_blueprint_to_project('wrong_id', 'wrong_id')
+        result = db.connect_node_to_node(random_UUID, NodeLabels.BLUEPRINT, random_UUID, NodeLabels.PROJECT)
         assert result == False
 
     def test_used_blueprint_result_blueprint(self,db:Database):
-        result = db.connect_used_blueprint_to_result_blueprint('wrong_id', 'wrong_id')
+        result = db.connect_node_to_node(random_UUID, NodeLabels.USED_BLUEPRINT, random_UUID, NodeLabels.RESULT_BLUEPRINT)
         assert result == False
 
 
@@ -683,64 +728,77 @@ class TestNodeLookups:
     2. add names
     check lookup nodes result (NAME and/or DATETIME)
     """
-    def helper_datetime_checker(self,date_string):
-        try:
-            print(datetime.fromisoformat(date_string))
-            return True
-        except:
-            return False
-
     def test_lookup_project_nodes(self,db:Database):
-        id_1 = db.add_project_node()
-        db.set_project_property(id_1,NodeProperties.Project.NAME,'foo_1')
-        id_2 = db.add_project_node()
-        db.set_project_property(id_2,NodeProperties.Project.NAME,'foo_2')
+        id_1 = db.add_node(NodeLabels.PROJECT)
+        db.set_node_property(id_1, NodeLabels.PROJECT, NodeProperties.Project.NAME, 'foo_1')
+        id_2 = db.add_node(NodeLabels.PROJECT)
+        db.set_node_property(id_2, NodeLabels.PROJECT, NodeProperties.Project.NAME, 'foo_2')
 
-        result = db.lookup_project_nodes()
+        result = db.lookup_nodes(NodeLabels.PROJECT)
 
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
             and result[0][1] == 'foo_2' # order matters
             and result[1][1] == 'foo_1'
-            and self.helper_datetime_checker(result[0][2]) == True 
-            and self.helper_datetime_checker(result[1][2]) == True
+            # and self.helper_datetime_checker(result[0][2]) == True 
+            # and self.helper_datetime_checker(result[1][2]) == True
+            and isinstance(result[0][2], DateTime) == True 
+            and isinstance(result[1][2], DateTime) == True
         )
 
     def test_lookup_blueprint_nodes(self,db:Database):
-        id_1 = db.add_blueprint_node()
-        db.set_blueprint_property(id_1,NodeProperties.Blueprint.NAME,'foo_1')
-        id_2 = db.add_blueprint_node()
-        db.set_blueprint_property(id_2,NodeProperties.Blueprint.NAME,'foo_2')
+        id_1 = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id_1,NodeLabels.BLUEPRINT,NodeProperties.Blueprint.NAME,'foo_1')
+        id_2 = db.add_node(NodeLabels.BLUEPRINT)
+        db.set_node_property(id_2,NodeLabels.BLUEPRINT,NodeProperties.Blueprint.NAME,'foo_2')
 
-        result = db.lookup_blueprint_nodes()
-
+        result = db.lookup_nodes(NodeLabels.BLUEPRINT)
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
             and result[0][1] == 'foo_2' # order matters
             and result[1][1] == 'foo_1'
-            and self.helper_datetime_checker(result[0][2]) == True 
-            and self.helper_datetime_checker(result[1][2]) == True
+            and isinstance(result[0][2], DateTime) == True 
+            and isinstance(result[1][2], DateTime) == True
         )
 
     def test_lookup_result_blueprint_nodes(self,db:Database):
-        id = db.add_project_node()
+        id = db.add_node(NodeLabels.PROJECT)
 
-        id_1 = db.add_result_blueprint_node()
-        db.connect_result_blueprint_to_project(id_1,id)
-        id_2 = db.add_result_blueprint_node()
-        db.connect_result_blueprint_to_project(id_2,id)
+        id_1 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.connect_node_to_node(id_1,NodeLabels.RESULT_BLUEPRINT,id,NodeLabels.PROJECT)
+        id_2 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.connect_node_to_node(id_2,NodeLabels.RESULT_BLUEPRINT,id,NodeLabels.PROJECT)
 
-        result = db.lookup_result_blueprint_nodes(id)
+        result = db.lookup_nodes(NodeLabels.RESULT_BLUEPRINT,NodeLabels.PROJECT,id)
 
         assert (
             UUID(result[0][0],version=4)
             and UUID(result[1][0],version=4)
             and result[0][0] == id_2 # order matters
             and result[1][0] == id_1
-            and self.helper_datetime_checker(result[0][1]) == True 
-            and self.helper_datetime_checker(result[1][1]) == True
+            and isinstance(result[0][1], DateTime) == True 
+            and isinstance(result[1][1], DateTime) == True
+        )
+    
+    def test_lookup_used_blueprint_node(self,db:Database):
+        id = db.add_node(NodeLabels.PROJECT)
+
+        id_1 = db.add_node(NodeLabels.RESULT_BLUEPRINT)
+        db.connect_node_to_node(id_1,NodeLabels.RESULT_BLUEPRINT,id,NodeLabels.PROJECT)
+
+        id_2 = db.add_node(NodeLabels.BLUEPRINT)
+        id_3 = db.copy_node_to_node(id_2, NodeLabels.BLUEPRINT, NodeLabels.USED_BLUEPRINT)
+
+        db.connect_node_to_node(id_3, NodeLabels.USED_BLUEPRINT, id_1, NodeLabels.RESULT_BLUEPRINT)
+
+        result = db.lookup_nodes(NodeLabels.USED_BLUEPRINT,NodeLabels.RESULT_BLUEPRINT,id_1)
+
+        assert (
+            UUID(result[0][0],version=4)
+            and result[0][0] == id_3 # order matters
+            and isinstance(result[0][2], DateTime) == True 
         )
 
 
