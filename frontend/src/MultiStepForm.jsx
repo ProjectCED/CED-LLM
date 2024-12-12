@@ -576,7 +576,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   const handleEditClick = (step) => {
     // Prevent editing another step if currently in editing mode
     if (isEditing) {
-      alert('Please save or cancel the current editing step before editing another step.');
+      alert('Please save the current editing step before editing another step.');
       return;
     }
     setCurrentStep(step);
