@@ -149,15 +149,19 @@ class Database(metaclass=DatabaseMeta):
     Enforced to be Singleton class.
     """
     def __init__(self) -> None:
-        """Start up database driver.
-        Setup (according to database design v4):
-          - labels
-          - identifier names
-          - relationship types
+        """
+        Start up database driver and setup constraints.
         """
 
         self.__driver = GraphDatabase.driver(os.getenv('DB_URL'), auth=(os.getenv('DB_USERNAME'), os.getenv('DB_PASSWORD')))
         self.__name = os.getenv('DB_NAME')
+
+        ### setup constraints
+        # special, user_name must be unique
+        self.__create_unique_constraints(NodeLabels.USER_SETTINGS, NodeProperties.UserSettings.USER_NAME.value)
+        # node identifier should always be unique (adds index by default)
+        for node_label in NodeLabels:
+            self.__create_unique_constraints(node_label, node_label.id)
 
         self.__global_settings_type = 'Settings'
         self.__global_settings_id = 'name'
@@ -252,6 +256,40 @@ class Database(metaclass=DatabaseMeta):
 
         return "Whole database printed out in console"
     
+    def __create_unique_constraints(self, node_label:NodeLabels, property_name:str):
+        """
+        Create unique constraint for specific node property.
+
+        Warning: Will not check property_name validity.
+
+        Args:
+            label (NodeLabels): Node label
+            property_name (string): Node property
+
+        Raises:
+            RuntimeError: If database query error.
+
+        Returns:
+            None: This function does not return any value.
+        """
+
+        query_string = f"""
+        CREATE CONSTRAINT {node_label.label}_{property_name}_unique IF NOT EXISTS
+        FOR (n:{node_label.label})
+        REQUIRE n.{property_name} IS UNIQUE
+        """
+
+        try:
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
+
+        except Exception as e:
+            error_string = str(e)
+            raise RuntimeError( "Neo4j create_unique_constraints() error: " + error_string )
+    
 
     def __add_node(self, type, id_type, id_value = None):
         """
@@ -287,10 +325,16 @@ class Database(metaclass=DatabaseMeta):
             )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+
             return next(iter(records)).data()[id_type]
         
         except Exception as e:
@@ -326,13 +370,13 @@ class Database(metaclass=DatabaseMeta):
             "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
             "SET n." + property_name + " = $old_data" 
         )
-
         try:
-            self.__driver.execute_query(
-                query_string,
-                old_data = new_data,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    old_data=new_data,
+                    database=self.__name,
+                )
             return True
         
         except Exception as e:
@@ -398,11 +442,16 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
-            
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+
             try:
                 return next(iter(records)).data()[property_name]
             except:
@@ -464,11 +513,16 @@ class Database(metaclass=DatabaseMeta):
             query_string += f"RETURN COLLECT ([n.{id_type}{property_list_string}]) AS list "
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
-        
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+      
             try:
                 # gives out [[ ]]
                 double_list = next(iter(records)).data()['list']
@@ -536,10 +590,11 @@ class Database(metaclass=DatabaseMeta):
             return TypeError( "Invalid exclude_relationships type: " + type(exclude_relationships) )
         
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -576,10 +631,11 @@ class Database(metaclass=DatabaseMeta):
         )
         
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -617,10 +673,11 @@ class Database(metaclass=DatabaseMeta):
         )
         
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -669,10 +726,11 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            with self.__driver.session() as session:
+                session.run(
+                    query_string,
+                    database=self.__name,
+                )
 
             return True
 
@@ -721,10 +779,16 @@ class Database(metaclass=DatabaseMeta):
             )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+
             return next(iter(records)).data()[id_type]
         
         except Exception as e:
@@ -842,10 +906,15 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
 
             if not records:
                 return False
@@ -880,10 +949,16 @@ class Database(metaclass=DatabaseMeta):
         )
 
         try:
-            records, summary, keys = self.__driver.execute_query(
-                query_string,
-                database_= self.__name,
-            )
+            records = []
+
+            with self.__driver.session() as session:
+                result = session.run(
+                    query_string,
+                    database=self.__name,
+                )
+                for record in result:
+                    records.append(record)
+
             if not records:
                 return False
             else:
@@ -1010,7 +1085,18 @@ class Database(metaclass=DatabaseMeta):
         # Check that node_label has property_name
         self.__helper_get_property_enum_and_validate(node_label, property_name)
 
-        return self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
+        result = self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
+
+        # Update datetime (modified), similar to add_node()
+        if node_label in [
+            NodeLabels.BLUEPRINT,
+            NodeLabels.PROJECT,
+            NodeLabels.RESULT_BLUEPRINT,
+        ]:
+            datetime_property = self.__helper_get_property_enum_and_validate(node_label, 'DATETIME')
+            self.__set_node_property(node_label.label, node_label.id, id, datetime_property.value, DateTime.now())
+
+        return result
 
     def remove_node_property(self, id:UUID, node_label:NodeLabels, property_name:Enum):
         """

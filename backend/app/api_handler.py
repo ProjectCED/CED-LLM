@@ -86,7 +86,7 @@ class ApiHandler():
         text = utils.extract_text_from_file(filepath)
         if text is None:
             return None
-        return text
+        return self.analyze_text(text, blueprint, model)
 
     def mistral_analyze(self, prompt) -> str:
         """
