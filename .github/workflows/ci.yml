@@ -32,9 +32,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install mkdocs mkdocs-material mkdocstrings
+        working-directory: ./backend
 
       - name: Build MkDocs site
         run: mkdocs build
+        working-directory: ./backend
 
       - name: Create .nojekyll file
         run: echo "" > site/.nojekyll
