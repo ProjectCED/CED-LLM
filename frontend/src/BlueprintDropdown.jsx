@@ -15,14 +15,18 @@ const BlueprintDropdown = ({ blueprints, selectedBlueprint, onSelectBlueprint })
       {/* Render a select element for choosing a blueprint */}
       <select
         id="blueprint-select"
-        value={selectedBlueprint && selectedBlueprint.name}
+        value={
+          selectedBlueprint 
+            ? blueprints.findIndex((bp) => bp.name === selectedBlueprint.name) 
+            : ""
+        }
         onChange={(e) => {
           const index = parseInt(e.target.value);
           onSelectBlueprint(index);
         }}
       >
         {/* Default option prompting the user to select a blueprint */}
-        <option value="" disabled selected>
+        <option value="" disabled>
           {selectedBlueprint ? selectedBlueprint.name : "-- Select a saved blueprint --"}
         </option>
         {/* Iterate over the blueprints array and create an option element for each blueprint */}
