@@ -302,7 +302,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Create new result 
   const today = new Date();
-  const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
+  const formattedDate = `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')} ${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
 
   // If the user selected "New Project"
   if (selectedProjectOption === 'New Project') {
