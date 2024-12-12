@@ -290,6 +290,8 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   const handleAnalyze = async () => {
   let analysisResult = null;
   let filename = null;
+  if (selectedAI === 'Mistral') {
+    
   if (selectedFiles.length > 0) {
     filename = await uploadFile(selectedFiles[0]);
     analysisResult = await analyzeUploadedFile(filename, selectedBlueprint);
