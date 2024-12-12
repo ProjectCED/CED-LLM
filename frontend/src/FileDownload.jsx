@@ -143,7 +143,11 @@ const FileDownload = ({ onFileUpload, onTextChange }) => {
             <div className="file-info">
               <ul>
                 <li>
-                  <span className="file-name">{selectedFile.name}</span>
+                  <span className="file-name" title={selectedFile.name}>
+                    {selectedFile.name.length > 43
+                      ? `${selectedFile.name.slice(0, 40)}...`
+                      : selectedFile.name}
+                  </span>
                 </li>
               </ul>
             </div>
