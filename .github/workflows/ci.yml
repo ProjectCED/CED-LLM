@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - main
+      - backend-documentation
 permissions:
   contents: write
 jobs:
