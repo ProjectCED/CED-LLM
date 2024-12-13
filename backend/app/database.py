@@ -392,9 +392,9 @@ class Database(metaclass=DatabaseMeta):
             RuntimeError: If database query error.
 
         Returns:
-            list[string, Any] or None:
+            list[string, Any] or []:
                 - [ID, property_name value] A list of found nodes with ID and wanted property combination.
-                - None if nothing was found.
+                - [] if nothing was found.
         """
         # sorting string
         sorting_string = '' # this will be used if no sorting property detected
@@ -435,6 +435,7 @@ class Database(metaclass=DatabaseMeta):
                 double_list = next(iter(records)).data()['list']
                 return double_list
             except:
+                # TODO: this actually never happens, empty results will be []
                 return None
         
         except Exception as e:
@@ -1015,9 +1016,9 @@ class Database(metaclass=DatabaseMeta):
             RuntimeError: If an invalid sort_direction value is provided (should not occur).
 
         Returns:
-            list[list[string]] or None:
+            list[list[string]] or []:
                 - list[list[string]] A list of found nodes with ID, NAME, DATETIME.iso()... etc combination.
-                - None if nothing was found.
+                - [] if nothing was found.
         """
         property_list = []
         parent_info = None
