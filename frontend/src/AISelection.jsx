@@ -37,7 +37,6 @@ const AISelection = ({ selectedAI, onSelectAI }) => {
   const handleAISelection = (ai) => {
     setLocalSelectedAI(ai);
     onSelectAI(ai);
-    testMistral();
   };
 
   return (
