@@ -1,4 +1,4 @@
-from app.database import Database, NodeProperties
+from app.database import Database, NodeProperties, NodeLabels
 from app.models.result import Result
 
 class Project:
@@ -23,6 +23,6 @@ class Project:
         Returns:
             string: UUID-type ID of the newly created project node in the database.
         """
-        projectId = self.__database.add_project_node()
-        self.__database.set_project_property(projectId, NodeProperties.Project.NAME, self.__name)
+        projectId = self.__database.add_node(NodeLabels.PROJECT)
+        self.__database.set_node_property(projectId, NodeLabels.PROJECT, NodeProperties.Project.NAME, self.__name)
         return projectId

@@ -91,7 +91,7 @@ function Sidebar({
       const id = await saveProject(newProjectName);
       newProject.id = id;
       
-      setProjects([...projects, newProject]);
+      setProjects([newProject, ...projects]);
       setNewProjectName('');
     } else {
       alert("Project name cannot be empty");
@@ -315,6 +315,7 @@ function Sidebar({
 
               <div className="result-data">
                 <p>Project: {projects[selectedResult?.projectIndex]?.name}</p>
+                <p>Filename: {selectedResult?.result?.filename}</p>
                 <p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic Blueprint'}</p>
               </div>
                 

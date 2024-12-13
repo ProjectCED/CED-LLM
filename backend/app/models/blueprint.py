@@ -1,4 +1,4 @@
-from app.database import Database, NodeProperties
+from app.database import Database, NodeProperties, NodeLabels
 
 class Blueprint:
     """
@@ -32,8 +32,8 @@ class Blueprint:
         """
         # This check allows editing blueprint, no need to create a new node
         if self.__blueprintId is None:
-            self.__blueprintId = self.__database.add_blueprint_node()
-        self.__database.set_blueprint_property(self.__blueprintId, NodeProperties.Blueprint.NAME, self.__name)
-        self.__database.set_blueprint_property(self.__blueprintId, NodeProperties.Blueprint.DESCRIPTION, self.__description)
-        self.__database.set_blueprint_property(self.__blueprintId, NodeProperties.Blueprint.QUESTIONS, self.__questions)
+            self.__blueprintId = self.__database.add_node(NodeLabels.BLUEPRINT)
+        self.__database.set_node_property(self.__blueprintId, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.NAME, self.__name)
+        self.__database.set_node_property(self.__blueprintId, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.DESCRIPTION, self.__description)
+        self.__database.set_node_property(self.__blueprintId, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.QUESTIONS, self.__questions)
         return self.__blueprintId
