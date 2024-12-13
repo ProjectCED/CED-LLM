@@ -749,13 +749,20 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
       {/* Show Analyze button disabled until all steps are completed */}
       <div className="analyze-section">
-        <button 
-          className="analyze-button" 
-          onClick={handleAnalyze} 
-          disabled={!allStepsCompleted}
-        >
-          Analyze
-        </button>
+        <div className="tooltip-container">
+          <button 
+            className="analyze-button" 
+            onClick={handleAnalyze} 
+            disabled={!allStepsCompleted || isEditing}
+          >
+            Analyze
+          </button>
+          {(!allStepsCompleted || isEditing) && (
+            <span className="tooltip">
+              All selections must be completed and saved to enable analysis.
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
