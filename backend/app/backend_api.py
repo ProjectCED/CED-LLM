@@ -280,9 +280,9 @@ def __get_results_for_project(projectId):
     results_with_all_properties = []
     for res in results:
         id = res[0]
-        #name = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.NAME)
-        datetime = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.DATETIME)
-        name = f"{datetime.hour}:{datetime.minute} {datetime.day}-{datetime.month}-{datetime.year}"
+        name = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.NAME)
+        # datetime = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.DATETIME)
+        # name = f"{datetime.hour}:{datetime.minute} {datetime.day}-{datetime.month}-{datetime.year}"
         filename = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.FILENAME)
         result = database.lookup_node_property(id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.RESULT)
 
