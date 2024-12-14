@@ -40,10 +40,24 @@ class ApiHandler():
                 Can be None if the rate limit even for the backup model (GPT-4o-mini) is reached.
         """
         # TODO: Create separate file for instructions in both Finnish and English
-        instructions = "Analyze the themes and key points of the text"
-        if blueprint is not None and "questions" in blueprint:
-            instructions += " using the following questions:\n"  + "\n".join(blueprint["questions"])
+        instructions = (
+            "You are an expert in text analysis. Please read the provided text carefully "
+            "and then produce a structured analysis with the following components:\n\n"
 
+            "1. **Main Themes**: Identify and summarize the core themes or central ideas present in the text.\n"
+            "2. **Key Points**: Highlight the most important details, arguments, or statements that stand out.\n"
+            "3. **Notable Quotes or Passages**: Include any direct quotes or paraphrased sections that are especially significant or illustrative.\n"
+            "4. **Overall Sentiment**: Describe the general tone or emotional quality of the text (e.g., optimistic, critical, neutral, etc.).\n\n"
+
+            "If there are specific questions provided, answer each of them thoroughly after completing your summary. "
+            "Make sure your answers are clear, concise, and directly address the questions.\n"
+        )
+
+        if blueprint is not None and "questions" in blueprint:
+            instructions += (
+                "\nAdditionally, please answer the following questions:\n" +
+                "\n".join(f"- {question}" for question in blueprint["questions"])
+            )
         # Try to get the response from the chat completions API
         try:
             response = self.__client.chat.completions.create(
@@ -104,9 +118,24 @@ class ApiHandler():
             requests.exceptions.RequestException: If the API request fails.
             json.JSONDecodeError: If the response contains invalid JSON.
         """
-        instructions = "Analyze the themes and key points of the text"
+        instructions = (
+            "You are an expert in text analysis. Please read the provided text carefully "
+            "and then produce a structured analysis with the following components:\n\n"
+
+            "1. **Main Themes**: Identify and summarize the core themes or central ideas present in the text.\n"
+            "2. **Key Points**: Highlight the most important details, arguments, or statements that stand out.\n"
+            "3. **Notable Quotes or Passages**: Include any direct quotes or paraphrased sections that are especially significant or illustrative.\n"
+            "4. **Overall Sentiment**: Describe the general tone or emotional quality of the text (e.g., optimistic, critical, neutral, etc.).\n\n"
+
+            "If there are specific questions provided, answer each of them thoroughly after completing your summary. "
+            "Make sure your answers are clear, concise, and directly address the questions.\n"
+        )
+
         if blueprint is not None and "questions" in blueprint:
-            instructions += " using the following questions:\n"  + "\n".join(blueprint["questions"])
+            instructions += (
+                "\nAdditionally, please answer the following questions:\n" +
+                "\n".join(f"- {question}" for question in blueprint["questions"])
+            )
         data = {
             "model": MISTRAL_MODEL,
             "prompt": instructions,
