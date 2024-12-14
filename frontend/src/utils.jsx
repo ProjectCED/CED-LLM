@@ -21,10 +21,10 @@ export const uploadFile = async (file) => {
  * @param {Object} blueprint Blueprint to use for analysis, containing questions for LLM.
  * @returns {Promise<string>} Analysis result text with line breaks replaced by <br />.
  */
-export const analyzeUploadedFile = async (filename, blueprint) => {
+export const analyzeUploadedFile = async (filename, blueprint, model) => {
 const response = await fetch('/api/analyze_file', {
         method: 'POST',
-        body: JSON.stringify({ filename, blueprint }),
+        body: JSON.stringify({ filename, blueprint, model }),
         headers: {
             'Content-Type': 'application/json'
         }
@@ -41,10 +41,10 @@ const response = await fetch('/api/analyze_file', {
  * @param {Object} blueprint Blueprint to use for analysis, containing questions for LLM.
  * @returns {Promise<string>} Analysis result text with line breaks replaced by <br />.
  */
-export const analyzeText = async (text, blueprint) => {
+export const analyzeText = async (text, blueprint, model) => {
     const response = await fetch('/api/analyze_text', {
         method: 'POST',
-        body: JSON.stringify({ text, blueprint }),
+        body: JSON.stringify({ text, blueprint, model }),
         headers: {
             'Content-Type': 'application/json'
         }

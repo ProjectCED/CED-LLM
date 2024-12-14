@@ -288,19 +288,19 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
    * and associating results with a project.
    */
   const handleAnalyze = async () => {
-  let analysisResult = null;
-  let filename = null;
+    let analysisResult = null;
+    let filename = null;
   
     
-  if (selectedFiles.length > 0) {
-    filename = await uploadFile(selectedFiles[0]);
-    analysisResult = await analyzeUploadedFile(filename, selectedBlueprint);
-  } else {
-    analysisResult = await analyzeText(copiedText, selectedBlueprint);
-  }
+    if (selectedFiles.length > 0) {
+      filename = await uploadFile(selectedFiles[0]);
+      analysisResult = await analyzeUploadedFile(filename, selectedBlueprint, selectedAI);
+    } else {
+      analysisResult = await analyzeText(copiedText, selectedBlueprint, selectedAI);
+    }
 
-  console.log("Analysis result:", analysisResult);
-  console.log("Filename:", filename);
+    console.log("Analysis result:", analysisResult);
+    console.log("Filename:", filename);
 
   // Create new result 
   const today = new Date();
