@@ -60,7 +60,8 @@ def analyze_file():
     """
     filename = request.json['filename']
     blueprint = request.json['blueprint']
-    results = apiHandler.analyze_file(filename, blueprint)
+    model = request.json['model']
+    results = apiHandler.analyze_file(filename, blueprint, model)
 
     # TODO: Actually handle errors. Currently not stability-threatening, but should be implemented.
     try:
@@ -89,7 +90,8 @@ def analyze_text():
     """
     text = request.json['text']
     blueprint = request.json['blueprint']
-    results = apiHandler.analyze_text(text, blueprint)
+    model = request.json['model']
+    results = apiHandler.analyze(text, blueprint, model)
 
     return jsonify(results)
 
