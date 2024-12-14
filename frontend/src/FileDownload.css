@@ -167,3 +167,12 @@ label {
 .remove-file:hover {
     color: #ff4d4d;
 }
+
+.file-name {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #E8F1F2; /* Tai mikä tahansa värisi */
+}

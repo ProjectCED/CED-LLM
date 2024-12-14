@@ -90,7 +90,6 @@
     text-align: left; 
     border-radius: 5px; 
     width: fit-content; 
-    
   }
   
   /* Ensures all p elements don't have space between them */
@@ -115,7 +114,7 @@
 .analyze-button:disabled {
   background-color: #c0c0c0; 
   color: #666666; 
-  cursor: not-allowed; 
+  cursor: default; 
 }
 
 .classification-heading {
@@ -127,4 +126,38 @@
   line-height: 1.5;
   font-weight: 700;
   color: white;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  visibility: hidden;
+  background-color: #333;
+  color: #e8f1f2;
+  text-align: center;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 5px;
+  position: absolute;
+  bottom: 80%; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s;
+  width: max-content;
+  white-space: nowrap;
+}
+
+.tooltip-container button:disabled:hover + .tooltip {
+  visibility: visible;
+  opacity: 0.8;
 }

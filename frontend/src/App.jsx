@@ -28,7 +28,7 @@ function App() {
    * State to control the sidebar's expanded state.
    * @type {boolean}
    */
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   /**
    * State to track the currently selected result in the sidebar.
