@@ -290,7 +290,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
   const handleAnalyze = async () => {
   let analysisResult = null;
   let filename = null;
-  if (selectedAI === 'Mistral') {
+  
     
   if (selectedFiles.length > 0) {
     filename = await uploadFile(selectedFiles[0]);
@@ -304,7 +304,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
 
   // Create new result 
   const today = new Date();
-  const formattedDate = `${String(today.getDate()).padStart(2, '0')}${String(today.getMonth() + 1).padStart(2, '0')}${today.getFullYear()}`;
+  const formattedDate = `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')} ${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
 
   // If the user selected "New Project"
   if (selectedProjectOption === 'New Project') {
@@ -337,7 +337,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     newProject.results.push(newResult);
 
     // Add the new project to the projects list
-    setProjects((prevProjects) => [...prevProjects, newProject]);
+    setProjects((prevProjects) => [newProject, ...prevProjects]);
 
     // Set the new project as the selected one and open the Sidebar
     setSelectedResult({
@@ -381,7 +381,7 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     setProjects((prevProjects) => {
       const updatedProjects = prevProjects.map((project, index) => {
         if (index === existingProjectIndex) {
-          return { ...project, results: [...project.results, newResult], open: true };
+          return { ...project, results: [newResult, ...project.results], open: true };
         }
         return project;
       });
@@ -762,5 +762,5 @@ const MultiStepForm = ({ projects, setProjects, setExpanded, setSelectedResult, 
     </div>
   );
 };
-};
+
 export default MultiStepForm;

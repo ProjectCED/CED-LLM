@@ -72,7 +72,7 @@ const Blueprints = () => {
     };
     const id = await saveBlueprint(newBlueprint);
     newBlueprint.id = id;
-    setBlueprints([...blueprints, newBlueprint]);
+    setBlueprints([newBlueprint, ...blueprints]);
     setIsAdding(false); 
     setShowSuccessMessage(true); 
 
