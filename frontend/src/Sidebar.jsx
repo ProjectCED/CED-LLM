@@ -327,7 +327,7 @@ function Sidebar({
 
               {/* Download button */}
               <button className="download-pdf-button" onClick={downloadPDF}>
-                Download to PDF
+                Download as PDF
               </button>
 
             </div>
