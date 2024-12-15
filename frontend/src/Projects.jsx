@@ -44,16 +44,16 @@ const Projects = () => {
   }, []);
 
   return (
-    <div className="projects-container">
-      <h2>Analysis Results</h2>
-      {loading ? (
-        <p>Analyzing...</p>
-      ) : (
-        <div
-          style={{ whiteSpace: 'pre-wrap', textAlign: 'justify'}}
-          dangerouslySetInnerHTML={{ __html: result }}/>
-      )}
-    </div>
+      <div className="projects-container">
+        <h2>Analysis Results</h2>
+        {loading ? (
+          <p>Analyzing...</p>
+        ) : (
+          <div
+            style={{ whiteSpace: 'pre-wrap', textAlign: 'justify'}}
+            dangerouslySetInnerHTML={{ __html: result }}/>
+        )}
+      </div>
   );
 };
 
