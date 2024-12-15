@@ -3,6 +3,7 @@ from neo4j import GraphDatabase
 from dotenv import load_dotenv
 from enum import Enum
 from neo4j.time import DateTime
+import time
 import os
 from uuid import UUID
 from typing import Any
@@ -251,35 +252,47 @@ class Database(metaclass=DatabaseMeta):
         # check if node already exists
         if id_value != None and self.__does_node_exist(type, id_type, id_value):
             return None
-
-        if id_value == None:
-            query_string = (
-                "CREATE (n:" + type + " {" + id_type + ": randomUUID()}) "
-                "RETURN n." + id_type + " AS " + id_type
-            )
-        else:
-            id_value = str(id_value)
-            query_string = (
-                "MERGE (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
-                "RETURN n." + id_type + " AS " + id_type
-            )
-
-        try:
-            records = []
-
-            with self.__driver.session() as session:
-                result = session.run(
-                    query_string,
-                    database=self.__name,
-                )
-                for record in result:
-                    records.append(record)
-
-            return next(iter(records)).data()[id_type]
         
-        except Exception as e:
-            error_string = str(e)
-            raise RuntimeError( "Neo4j add_node() query failed: " + error_string )
+        # Try again if randomUUID() fails to give an unique value
+        attempts = 0
+        while attempts < 3:
+
+            if id_value == None:
+                query_string = (
+                    "CREATE (n:" + type + " {" + id_type + ": randomUUID()}) "
+                    "RETURN n." + id_type + " AS " + id_type
+                )
+            else:
+                id_value = str(id_value)
+                query_string = (
+                    "MERGE (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+                    "RETURN n." + id_type + " AS " + id_type
+                )
+
+            try:
+                records = []
+
+                with self.__driver.session() as session:
+                    result = session.run(
+                        query_string,
+                        database=self.__name,
+                    )
+                    for record in result:
+                        records.append(record)
+
+                return next(iter(records)).data()[id_type]
+            
+            except Exception as e:
+                error_string = str(e)
+                # retry for certain amount of times if randomUUID() is already in database
+                if "ConstraintValidationFailed" in error_string and attempts < 3:
+                    attempts += 1
+                    time.sleep(1000)
+                # If all 3 attempts fail, raise an error
+                if attempts == 3:
+                    raise RuntimeError(f"Neo4j add_node() failed to create node after 3 attempts: "  + error_string )
+                else:
+                    raise RuntimeError( "Neo4j add_node() query failed: " + error_string )
             
 
     def __set_node_property(self, type, id_type, id_value, property_name, new_data):
@@ -667,41 +680,56 @@ class Database(metaclass=DatabaseMeta):
         Returns:
             string: string containing ID value for the created node. 
         """
-        id_value = str(id_value)
-        if id_value_new == None:
-            query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
-                "CREATE (m:" + node_type_new + ") "
-                "SET m = properties(n) "
-                "SET m." + id_type_new + " = randomUUID() "
-                "RETURN m." + id_type + " AS " + id_type
-        )
-        else:
-            id_value_new = str(id_value_new)
-            query_string = (
-                "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
-                "CREATE (m:" + node_type_new + " ) "
-                "SET m = properties(n) "
-                "SET m." + id_type_new + " = '" + id_value_new + "' "
-                "RETURN m." + id_type_new + " AS " + id_type_new
+
+        # Try again if randomUUID() fails to give an unique value
+        attempts = 0
+        while attempts < 3:
+
+            id_value = str(id_value)
+            if id_value_new == None:
+                query_string = (
+                    "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+                    "CREATE (m:" + node_type_new + ") "
+                    "SET m = properties(n) "
+                    "SET m." + id_type_new + " = randomUUID() "
+                    "RETURN m." + id_type + " AS " + id_type
             )
-
-        try:
-            records = []
-
-            with self.__driver.session() as session:
-                result = session.run(
-                    query_string,
-                    database=self.__name,
+            else:
+                id_value_new = str(id_value_new)
+                query_string = (
+                    "MATCH (n:" + type + " {" + id_type + ": '" + id_value + "'}) "
+                    "CREATE (m:" + node_type_new + " ) "
+                    "SET m = properties(n) "
+                    "SET m." + id_type_new + " = '" + id_value_new + "' "
+                    "RETURN m." + id_type_new + " AS " + id_type_new
                 )
-                for record in result:
-                    records.append(record)
 
-            return next(iter(records)).data()[id_type]
-        
-        except Exception as e:
-            error_string = str(e)
-            raise RuntimeError( "Neo4j copy_node() query failed: " + error_string )
+            try:
+                records = []
+
+                with self.__driver.session() as session:
+                    result = session.run(
+                        query_string,
+                        database=self.__name,
+                    )
+                    for record in result:
+                        records.append(record)
+
+                return next(iter(records)).data()[id_type]
+            
+            except Exception as e:
+                error_string = str(e)
+                # retry for certain amount of times if randomUUID() is already in database
+                if "ConstraintValidationFailed" in error_string and attempts < 3:
+                    attempts += 1
+                    time.sleep(1000)
+                # If all 3 attempts fail, raise an error
+                if attempts == 3:
+                    raise RuntimeError(f"Neo4j copy_node() failed to create node after 3 attempts: "  + error_string )
+                else:
+                    raise RuntimeError( "Neo4j copy_node() query failed: " + error_string )
+                
+
 
    
     def __does_property_exist(self, type, id_type, id_value, property_name):
@@ -909,8 +937,6 @@ class Database(metaclass=DatabaseMeta):
         # Check that node_label has property_name
         self.__helper_get_property_enum_and_validate(node_label, property_name)
 
-        result = self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
-
         # Update datetime (modified), similar to add_node()
         if node_label in [
             NodeLabels.BLUEPRINT,
@@ -920,7 +946,7 @@ class Database(metaclass=DatabaseMeta):
             datetime_property = self.__helper_get_property_enum_and_validate(node_label, 'DATETIME')
             self.__set_node_property(node_label.label, node_label.id, id, datetime_property.value, DateTime.now())
 
-        return result
+        return self.__set_node_property(node_label.label, node_label.id, id, property_name.value, new_data)
 
     def remove_node_property(self, id:UUID, node_label:NodeLabels, property_name:Enum):
         """
