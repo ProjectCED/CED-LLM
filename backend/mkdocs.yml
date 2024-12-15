@@ -1,5 +1,4 @@
 site_name: CED-LLM Documentation
-docs_dir: app/docs
 
 plugins:
   - search

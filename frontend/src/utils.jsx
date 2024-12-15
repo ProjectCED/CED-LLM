@@ -21,17 +21,18 @@ export const uploadFile = async (file) => {
  * @param {Object} blueprint Blueprint to use for analysis, containing questions for LLM.
  * @returns {Promise<string>} Analysis result text with line breaks replaced by <br />.
  */
-export const analyzeUploadedFile = async (filename, blueprint) => {
+export const analyzeUploadedFile = async (filename, blueprint, model) => {
 const response = await fetch('/api/analyze_file', {
         method: 'POST',
-        body: JSON.stringify({ filename, blueprint }),
+        body: JSON.stringify({ filename, blueprint, model }),
         headers: {
             'Content-Type': 'application/json'
         }
     });
 
     let data = await response.json();
-    data = data.replace(/\\n/g, '<br />');
+    // data = data.replace(/\\n/g, '<br />');
+    console.log(data);
     return data;
 };
 
@@ -41,16 +42,17 @@ const response = await fetch('/api/analyze_file', {
  * @param {Object} blueprint Blueprint to use for analysis, containing questions for LLM.
  * @returns {Promise<string>} Analysis result text with line breaks replaced by <br />.
  */
-export const analyzeText = async (text, blueprint) => {
+export const analyzeText = async (text, blueprint, model) => {
     const response = await fetch('/api/analyze_text', {
         method: 'POST',
-        body: JSON.stringify({ text, blueprint }),
+        body: JSON.stringify({ text, blueprint, model }),
         headers: {
             'Content-Type': 'application/json'
         }
     });
     let data = await response.json();
-    data = data.replace(/\\n/g, '<br />');
+    // data = data.replace(/\\n/g, '<br />');
+    console.log(data);
     return data;
 }
 
@@ -101,20 +103,6 @@ export const deleteBlueprint = async (id) => {
   const data = await response.json();
   return data.success;
 };
-
-export const testMistral = async () => {
-    const response = await fetch("/api/mistral", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            "prompt": "Explain the theory of relativity in layman's terms."
-        })
-    });
-    const data = await response.json();
-    console.log(data);
-    return data;
-
-}
 // Projects
 /**
  * Creates a new project with the given name, saving it to the backend database.
