@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { FaTrash } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
-import jsPDF from "jspdf"; 
+import { jsPDF } from "jspdf";
+import { marked } from "marked";
 import './Sidebar.css';
 import { saveProject, deleteProject, deleteResult } from './utils';
+import ReactMarkdown from 'react-markdown';
 
 /**
  * Sidebar component provides a collapsible interface for managing projects and their associated results.
@@ -179,6 +181,9 @@ function Sidebar({
     const filename = selectedResult?.result?.filename;
     const blueprintName = selectedResult?.result?.blueprint?.name;
 
+    // Convert markdown to HTML
+    const htmlContent = marked(resultText);
+
     // PDF styling (margins, width, height)
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -190,47 +195,28 @@ function Sidebar({
     // Tracks the current line's height, start with a bit of an offset
     let y = lineHeight * 2;
 
-    // Add content to the PDF
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.text("Analysis Result", margin, y);
-    y += lineHeight * 2;
+    // Construct a combined HTML with headers and info
+    // You can add inline styles or use basic HTML tags for formatting
+    const combinedHTML = `
+      <h1>Analysis Result</h1>
+      <p><strong>Project:</strong> ${projectName}</p>
+      <p><strong>Result:</strong> ${resultName}</p>
+      ${filename ? `<p><strong>Filename:</strong> ${filename}</p>` : ""}
+      <p><strong>Blueprint:</strong> ${blueprintName || "Automatic Blueprint"}</p>
+      <hr />
+    ${htmlContent}
+  `;
 
-    doc.setFontSize(12);
-
-    doc.text(`Project: ${projectName}`, margin, y);
-    y += lineHeight;
-
-    doc.text(`Result: ${resultName}`, margin, y);
-    y += lineHeight;
-
-    // Add filename if it exists
-    if (filename) {
-      doc.text(`Filename: ${filename}`, margin, y);
-      y += lineHeight;
-    }
-
-    doc.text(`Blueprint: ${blueprintName || "Automatic Blueprint"}`, margin, y);
-    y += lineHeight * 2;
-
-    doc.setFont("helvetica", "normal");
-
-    // Split the resultText into lines that fit the page
-    const lines = doc.splitTextToSize(resultText, maxWidth);
-
-    // Add lines to the PDF one at a time
-    lines.forEach((line) => {
-      // Signifies going over the page, so add a page and reset y (tracks height on current page)
-      if (y + lineHeight > pageHeight - margin) {
-        doc.addPage();
-        y = margin;
+    doc.html(combinedHTML, {
+      x: margin,
+      y: margin,
+      width: pageWidth - margin * 2,
+      // Set windowWidth to something close to your actual PDF width to maintain proper scaling
+      windowWidth: 800, // Experiment with this value
+      callback: (doc) => {
+        doc.save(`${resultName}.pdf`);
       }
-      doc.text(line, margin, y);
-      y += lineHeight;
     });
-
-    // Save the PDF
-    doc.save(`${resultName}.pdf`);
   };
 
   return (
@@ -317,12 +303,27 @@ function Sidebar({
                 <p>Project: {projects[selectedResult?.projectIndex]?.name}</p>
                 <p>Filename: {selectedResult?.result?.filename}</p>
                 <p>Blueprint: {selectedResult?.result?.blueprint?.name || 'Automatic Blueprint'}</p>
-              </div>
-                
-                <p>
-                {selectedResult.result.result}
-                </p>
-
+              </div> 
+                <ReactMarkdown
+                  components={{
+                    p: ({node, ...props}) => <p style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    h1: ({node, ...props}) => <h1 style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    h2: ({node, ...props}) => <h2 style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    h3: ({node, ...props}) => <h3 style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    h4: ({node, ...props}) => <h4 style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    h5: ({node, ...props}) => <h5 style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    h6: ({node, ...props}) => <h6 style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    li: ({node, ...props}) => <li style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    strong: ({node, ...props}) => <strong style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    em: ({node, ...props}) => <em style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    blockquote: ({node, ...props}) => <blockquote style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    code: ({node, ...props}) => <code style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    pre: ({node, ...props}) => <pre style={{color: 'white', textAlign: 'left'}} {...props} />,
+                    a: ({node, ...props}) => <a style={{color: 'white', textAlign: 'left'}} {...props} />,
+                  }}
+                >
+                  {selectedResult.result.result}
+                </ReactMarkdown>
               </div>
 
               {/* Download button */}
