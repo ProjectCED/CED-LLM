@@ -31,7 +31,8 @@ const response = await fetch('/api/analyze_file', {
     });
 
     let data = await response.json();
-    data = data.replace(/\\n/g, '<br />');
+    // data = data.replace(/\\n/g, '<br />');
+    console.log(data);
     return data;
 };
 
@@ -50,7 +51,8 @@ export const analyzeText = async (text, blueprint, model) => {
         }
     });
     let data = await response.json();
-    data = data.replace(/\\n/g, '<br />');
+    // data = data.replace(/\\n/g, '<br />');
+    console.log(data);
     return data;
 }
 

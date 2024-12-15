@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './AISelection.css'; 
-import { testMistral } from './utils'; 
 
 /**
  * AISelection component allows users to select an AI model from a set of predefined options.
@@ -36,6 +35,7 @@ const AISelection = ({ selectedAI, onSelectAI }) => {
    */
   const handleAISelection = (ai) => {
     setLocalSelectedAI(ai);
+
     onSelectAI(ai);
   };
 
