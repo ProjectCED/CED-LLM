@@ -1,4 +1,5 @@
 from app.database import Database, NodeProperties, NodeLabels
+from neo4j.time import DateTime
 
 # just for show questions, don't use these
 blueprint_questions = [
@@ -141,56 +142,64 @@ class DatabaseDummy:
         #   blueprint-name,
         #   datetime.iso(),
         #   result,
-        #   filename)]
+        #   filename,
+        #   name)]
         __result_blueprints = [
             (
                 __projects[1][0],
                 __blueprints[1][0],
-                '2023-05-15T09:45:15',
+                DateTime(2024, 1, 12, 14, 25, 36, 0),
                 'Lorem Ipsum sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'employee_performance_review_2024.pdf',
+                '14:25 12-1-2024',
                 ),
             (
                 __projects[1][0],
                 __blueprints[2][0],
-                '2022-01-01T00:00:00',
+                DateTime(2024, 3, 5, 9, 13, 45, 0), 
                 'Lorem Ipsum nulla facilisi, sed dapibus leo a quam ullamcorper, eu hendrerit odio condimentum.',
                 'performance_evaluation_summary_Q1_2023.txt',
+                '9:13 5-3-2024',
                 ),
             (
                 __projects[1][0],
                 __blueprints[3][0],
-                '2021-12-31T23:59:59',
+                DateTime(2024, 4, 18, 22, 57, 12, 0),
                 'Lorem Ipsum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'annual_performance_feedback_2023.cvs',
+                '22:57 18-4-2024',
                 ),
             (
                 __projects[2][0],
                 __blueprints[4][0],
-                '2021-09-15T19:00:00',
+                DateTime(2024, 6, 7, 7, 30, 0, 0),
                 'Lorem Ipsum sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'efficiency_metrics_analysis_2023.txt',
+                '7:30 7-6-2024'
                 ),
             (
                 __projects[3][0],
                 __blueprints[5][0],
-                '2022-03-10T11:30:45',
+                DateTime(2024, 8, 14, 16, 45, 22, 0),
                 'Lorem Ipsum sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'customer_feedback_analysis_2024.txt',
+                '16:45 14-8-2024',
                 ),
             (
                 __projects[4][0],
                 __blueprints[2][0],
-                '2023-06-20T16:45:00',
+                DateTime(2024, 10, 3, 11, 8, 9, 0),
                 'Lorem Ipsum sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'efficiency_metrics_analysis_2023.txt',
+                '11:08 3-10-2024',
                 ),
             (
                 __projects[4][0],
                 __blueprints[4][0],
-                '2024-11-01T08:15:30',
+                DateTime(2024, 11, 21, 20, 19, 40, 0),
                 'Lorem Ipsum sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'compliance_assessment_report_2024.txt',
+                '20:19 21-11-2024',
                 ),
         ]
         self.__result_blueprint(__result_blueprints)
@@ -212,7 +221,7 @@ class DatabaseDummy:
             id = self.db.add_node(NodeLabels.USER_SETTINGS)
             self.db.set_node_property(id, NodeLabels.USER_SETTINGS,NodeProperties.UserSettings.NAME, user[0])
             self.db.set_node_property(id, NodeLabels.USER_SETTINGS,NodeProperties.UserSettings.USER_NAME, user[1])
-            # add more here
+            ### add more here
 
     def __blueprints(self, blueprints):
         '''Blueprints'''
@@ -227,7 +236,7 @@ class DatabaseDummy:
 
             if not blueprint[2] == None:
                 self.db.set_node_property(id, NodeLabels.BLUEPRINT, NodeProperties.Blueprint.QUESTIONS, blueprint[2])
-            # add more here
+            ### add more here
 
     def __projects(self, projects):
         '''Projects'''
@@ -236,7 +245,7 @@ class DatabaseDummy:
 
             if not project[0] == None:
                 self.db.set_node_property(id, NodeLabels.PROJECT, NodeProperties.Project.NAME, project[0])
-            # add more here
+            ### add more here
 
 
     def __result_blueprint(self, results):
@@ -262,12 +271,16 @@ class DatabaseDummy:
                     self.db.connect_node_to_node(used_blue_id, NodeLabels.USED_BLUEPRINT, result_id, NodeLabels.RESULT_BLUEPRINT)
 
                     # properties
-                    if not result[2] == None:
-                        self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.DATETIME, result[2])
-
                     if not result[3] == None:
                         self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.RESULT, result[3])
 
                     if not result[4] == None:
                         self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.FILENAME, result[4])
-                    # add more here
+
+                    if not result[5] == None:
+                        self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.NAME, result[5])
+                    ### add more here
+
+                    # datetime has to be last as it will get overwritten otherwise by .now()
+                    if not result[2] == None:
+                        self.db.set_node_property(result_id, NodeLabels.RESULT_BLUEPRINT, NodeProperties.ResultBlueprint.DATETIME, result[2])
