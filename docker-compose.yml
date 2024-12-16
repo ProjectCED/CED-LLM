@@ -120,10 +120,15 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    volumes:
+      - ./ollama/entrypoint.sh:/entrypoint.sh
+      - ollama:/root/.ollama
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
     networks:
       - llm
-      
+
 volumes:
   neo4j_data:
   neo4j_logs:
   neo4j_plugins:
+  ollama:
