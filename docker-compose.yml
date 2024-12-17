@@ -120,9 +120,9 @@ services:
         max-size: "10m"
         max-file: "3"
     volumes:
-      - ./ollama/entrypoint.sh:/entrypoint.sh # Mistral automatically loaded (mainly for initial start)
+      - ./ollama/entrypoint.sh:/entrypoint.sh
       - ollama:/root/.ollama # Mistral stored for quick restart
-    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"] # Mistral automatically loaded (mainly for initial start)
     networks:
       - llm
 
