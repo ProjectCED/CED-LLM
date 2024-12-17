@@ -122,7 +122,11 @@ services:
     volumes:
       - ./ollama/entrypoint.sh:/entrypoint.sh
       - ollama:/root/.ollama # Mistral stored for quick restart
-    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"] # Mistral automatically loaded (mainly for initial start)
+    # Mistral automatically loaded (mainly for initial start)
+    # Can also be done manually with more progress information:
+    #   docker exec -it ollama /bin/bash -c "ollama run mistral"
+    # Remember to comment out entrypoint.sh before doing it manually
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"] 
     networks:
       - llm
 
