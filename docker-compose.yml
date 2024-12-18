@@ -48,8 +48,8 @@ services:
     depends_on:
       neo4j:
         condition: service_healthy
-      # ollama:
-      #   condition: service_healthy
+      ollama:
+        condition: service_healthy
     networks:
       - backend
       - database
@@ -109,21 +109,29 @@ services:
       - ${GPU_VISIBLE_DEVICES:-NVIDIA_VISIBLE_DEVICES}=all
       - ${GPU_DRIVER_CAPABILITIES:-NVIDIA_DRIVER_CAPABILITIES}=compute,utility
     healthcheck:
-      test: ollama list || exit 1
+      test: ollama list | grep -q mistral || exit 1 # check that mistral is installed by entrypoint.sh
       interval: 10s
       timeout: 30s
-      retries: 5
+      retries: 50 # if download speed is really slow (~4GB), you might want to increase this or do the entrypoint.sh manually
       start_period: 5s
-    # workaround on healthcheck spam not making log too large
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    volumes:
+      - ./ollama/entrypoint.sh:/entrypoint.sh
+      - ollama:/root/.ollama # Mistral stored for quick restart
+    # Mistral automatically loaded (mainly for initial start)
+    # Can also be done manually with more progress information:
+    #   docker exec -it ollama /bin/bash -c "ollama run mistral"
+    # Remember to comment out entrypoint before doing it manually
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"] 
     networks:
       - llm
-      
+
 volumes:
   neo4j_data:
   neo4j_logs:
   neo4j_plugins:
+  ollama:
