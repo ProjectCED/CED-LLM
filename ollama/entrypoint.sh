@@ -1,3 +1,5 @@
+# WARNING, this file needs to be in UNIX format for end-of-line characters
+
 #!/bin/bash
 
 # Start Ollama in the background.
